@@ -1,4 +1,5 @@
 # Cisne Blanco — Web (GitHub Ready)
+Prueba de ruleset y PR.
 
 Este repositorio contiene la base para versionar y publicar el sitio **Cisne Blanco**.
 
