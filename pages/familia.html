@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cisne Blanco — Familia</title>
+  <meta name="description" content="Proyecto Cisne Blanco — Maqueta Base">
+  <link rel="stylesheet" href="../css/mini.css">
+  <link rel="icon" href="/assets/favicon.ico">
+</head>
+<body>
+  <header class="border-b backdrop-blur sticky">
+    <div class="mx-auto container-pro px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-full bg-black text-white flex items-center justify-center font-bold">CB</div>
+        <span class="font-semibold">Cisne Blanco — Maqueta Base</span>
+      </div>
+      <nav class="flex items-center gap-2 text-sm">
+        <a href="../index.html" data-page="home" class="px-3 py-1 rounded-lg hover:bg-gray-100">Inicio</a>
+        <a href="calendario.html" data-page="calendario" class="px-3 py-1 rounded-lg hover:bg-gray-100">Calendario</a>
+        <a href="habitos.html" data-page="habitos" class="px-3 py-1 rounded-lg hover:bg-gray-100">Hábitos</a>
+        <a href="salud.html" data-page="salud" class="px-3 py-1 rounded-lg hover:bg-gray-100">Salud</a>
+        <a href="familia.html" data-page="familia" class="px-3 py-1 rounded-lg hover:bg-gray-100">Familia</a>
+        <a href="social.html" data-page="social" class="px-3 py-1 rounded-lg hover:bg-gray-100">Social</a>
+        <a href="finanzas.html" data-page="finanzas" class="px-3 py-1 rounded-lg hover:bg-gray-100">Finanzas</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto container-pro px-4 pt-8">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h1 class="text-2xl font-bold mb-1">Familia (planes y resumen)</h1>
+        <p class="text-gray-600 text-sm">Todo se guarda en este navegador y sólo vos lo ves.</p>
+      </div>
+      <div class="flex gap-2">
+        <button id="btnNew" class="btn btn--primary">+ Plan</button>
+        <button id="btnClearAll" class="btn">Borrar todo</button>
+      </div>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2">
+      <!-- Panel de creación/edición -->
+      <section class="p-4 border rounded-2xl bg-white">
+        <h2 class="font-semibold mb-3">Plan familiar</h2>
+        <form id="plan-form" class="space-y-3">
+          <input type="hidden" id="plan-id">
+          <div class="grid gap-3 md:grid-cols-2">
+            <div>
+              <label class="text-sm text-gray-600">Título</label>
+              <input id="titulo" type="text" required placeholder="Ej.: Picnic en el parque" class="mt-1 w-full border rounded-lg px-3 py-2">
+            </div>
+            <div>
+              <label class="text-sm text-gray-600">Fecha</label>
+              <input id="fecha" type="date" required class="mt-1 w-full border rounded-lg px-3 py-2">
+            </div>
+          </div>
+          <div class="grid gap-3 md:grid-cols-2">
+            <div>
+              <label class="text-sm text-gray-600">Personas (separadas por coma)</label>
+              <input id="personas" type="text" placeholder="Ana, Sofi, Maxi" class="mt-1 w-full border rounded-lg px-3 py-2">
+              <div class="text-xs text-gray-500 mt-1">Se mostrarán como etiquetas.</div>
+            </div>
+            <div>
+              <label class="text-sm text-gray-600">Lugar</label>
+              <input id="lugar" type="text" placeholder="Parque Saavedra" class="mt-1 w-full border rounded-lg px-3 py-2">
+            </div>
+          </div>
+          <div class="grid gap-3 md:grid-cols-3">
+            <div>
+              <label class="text-sm text-gray-600">Estado</label>
+              <select id="estado" required class="mt-1 w-full border rounded-lg px-3 py-2">
+                <option>Idea</option>
+                <option>Programado</option>
+                <option>Hecho</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-sm text-gray-600">Costo estimado (ARS)</label>
+              <input id="costoEstimado" type="number" inputmode="decimal" min="0" step="0.01" placeholder="15000" class="mt-1 w-full border rounded-lg px-3 py-2">
+            </div>
+            <div>
+              <label class="text-sm text-gray-600">Costo real (ARS)</label>
+              <input id="costoReal" type="number" inputmode="decimal" min="0" step="0.01" placeholder="12500" class="mt-1 w-full border rounded-lg px-3 py-2">
+            </div>
+          </div>
+          <div>
+            <label class="text-sm text-gray-600">Notas</label>
+            <textarea id="notas" rows="3" placeholder="Llevar mantas, comprar bebidas…" class="mt-1 w-full border rounded-lg px-3 py-2"></textarea>
+          </div>
+          <div class="flex gap-2">
+            <button type="submit" id="save-btn" class="btn btn--primary">Guardar</button>
+            <button type="button" id="reset-btn" class="btn">Limpiar</button>
+            <button type="button" id="delete-btn" class="btn btn--danger" hidden>Eliminar</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Panel derecho: filtros + resumen + listado -->
+      <section class="p-4 border rounded-2xl bg-white">
+        <div class="mb-3">
+          <h2 class="font-semibold">Planes familiares</h2>
+        </div>
+
+        <!-- Filtros -->
+        <div class="grid gap-3 md:grid-cols-3 mb-3">
+          <div>
+            <label class="text-sm text-gray-600">Buscar</label>
+            <input id="buscar" type="search" placeholder="Título, personas, lugar, notas" class="mt-1 w-full border rounded-lg px-3 py-2">
+          </div>
+          <div>
+            <label class="text-sm text-gray-600">Estado</label>
+            <select id="filtro-estado" class="mt-1 w-full border rounded-lg px-3 py-2">
+              <option value="">Todos</option>
+              <option>Idea</option>
+              <option>Programado</option>
+              <option>Hecho</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-sm text-gray-600">Resumen del mes</label>
+            <input id="mes-resumen" type="month" class="mt-1 w-full border rounded-lg px-3 py-2">
+          </div>
+        </div>
+
+        <!-- Resumen -->
+        <aside class="p-3 border rounded-xl bg-gray-50 mb-3">
+          <div class="grid grid-cols-2 md:grid-cols-6 gap-2 text-sm">
+            <div><strong>Idea:</strong> <span id="cnt-idea">0</span></div>
+            <div><strong>Programado:</strong> <span id="cnt-programado">0</span></div>
+            <div><strong>Hecho:</strong> <span id="cnt-hecho">0</span></div>
+            <div class="md:col-span-1"></div>
+            <div class="md:col-span-1 md:text-right"><strong>Estimado:</strong> <span id="sum-estimado">ARS 0</span></div>
+            <div class="md:col-span-1 md:text-right"><strong>Real:</strong> <span id="sum-real">ARS 0</span></div>
+          </div>
+        </aside>
+
+        <!-- Listado -->
+        <div class="overflow-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr>
+                <th class="text-left py-2 border-b">Fecha</th>
+                <th class="text-left py-2 border-b">Título</th>
+                <th class="text-left py-2 border-b">Personas</th>
+                <th class="text-left py-2 border-b">Lugar</th>
+                <th class="text-left py-2 border-b">Estado</th>
+                <th class="text-right py-2 border-b">Estimado</th>
+                <th class="text-right py-2 border-b">Real</th>
+                <th class="text-left py-2 border-b">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-planes"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div class="mt-6">
+      <a href="../index.html" class="inline-flex items-center px-4 py-2 border rounded-lg hover:bg-gray-100">← Volver al inicio</a>
+    </div>
+  </main>
+
+  <footer class="mt-16 border-t">
+    <div class="mx-auto container-pro px-4 py-6 text-xs text-gray-500 flex items-center justify-between">
+      <span>© 2025 Cisne Blanco</span>
+      <span>v1.2 — Familia</span>
+    </div>
+  </footer>
+
+  <script>
+    // === Estado & almacenamiento ===
+    const DB_KEY = 'cb_familia_plans_v1';
+    const load = () => {
+      try { return JSON.parse(localStorage.getItem(DB_KEY) || '[]'); }
+      catch(e) { console.warn('No se pudo parsear localStorage, se reinicia.', e); return []; }
+    };
+    const save = (data) => localStorage.setItem(DB_KEY, JSON.stringify(data));
+
+    // Utilidades
+    const $ = s => document.querySelector(s);
+    const nf = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
+    const uid = () => (crypto.randomUUID ? crypto.randomUUID() : (Date.now().toString(36)+Math.random().toString(36).slice(2,8)));
+    const parsePeople = txt => (txt||'').split(',').map(s=>s.trim()).filter(Boolean);
+
+    let planes = [];
+    let editingId = null;
+
+    function seedIfEmpty(){
+      if (planes.length) return;
+      planes = [
+        { id: uid(), titulo: 'Picnic en el parque', fecha: '2025-10-05', personas: ['Ana','Sofi'], lugar: 'Parque Saavedra', estado: 'Programado', costoEstimado: 15000, costoReal: null, notas: 'Llevar mantas', createdAt: Date.now(), updatedAt: Date.now() },
+        { id: uid(), titulo: 'Cumple de papá', fecha: '2025-11-12', personas: ['Familia'], lugar: 'Casa', estado: 'Idea', costoEstimado: 40000, costoReal: null, notas: 'Torta + bebidas', createdAt: Date.now(), updatedAt: Date.now() },
+        { id: uid(), titulo: 'Noche de cine', fecha: '2025-09-28', personas: ['Maxi','Agus'], lugar: 'Shopping DOT', estado: 'Hecho', costoEstimado: null, costoReal: 12500, notas: 'Película + pochoclos', createdAt: Date.now(), updatedAt: Date.now() }
+      ];
+      save(planes);
+    }
+
+    function sanitizeNumber(v){
+      if (v === '' || v === null || v === undefined) return null;
+      const num = Number(v);
+      return Number.isFinite(num) ? num : null;
+    }
+
+    function estadoNext(e){ return e==='Idea' ? 'Programado' : (e==='Programado' ? 'Hecho' : 'Idea'); }
+
+    function chipsHTML(arr){
+      return (arr||[]).map(p => '<span class="inline-flex items-center px-2 py-0.5 border rounded-full text-xs">'+p+'</span>').join(' ') || '<span class="text-gray-400">–</span>';
+    }
+
+    function filaHTML(p){
+      return `
+        <tr data-id="${p.id}">
+          <td class="py-2 pr-2 whitespace-nowrap">${p.fecha || '—'}</td>
+          <td class="py-2 pr-2">${p.titulo}</td>
+          <td class="py-2 pr-2">${chipsHTML(p.personas)}</td>
+          <td class="py-2 pr-2">${p.lugar || '—'}</td>
+          <td class="py-2 pr-2">
+            <button class="btn btn--sm" data-action="cycle">${p.estado}</button>
+          </td>
+          <td class="py-2 pl-2 text-right">${p.costoEstimado!=null ? nf.format(p.costoEstimado) : '—'}</td>
+          <td class="py-2 pl-2 text-right">${p.costoReal!=null ? nf.format(p.costoReal) : '—'}</td>
+          <td class="py-2 pl-2">
+            <div class="flex gap-1 flex-wrap">
+              <button class="btn btn--sm" data-action="edit">Editar</button>
+              <button class="btn btn--sm" data-action="dup">Duplicar</button>
+              <button class="btn btn--sm btn--danger" data-action="del">Borrar</button>
+            </div>
+          </td>
+        </tr>`;
+    }
+
+    function render(){
+      const term = ($('#buscar').value || '').toLowerCase();
+      const est = $('#filtro-estado').value;
+
+      const filtrados = planes.filter(p => {
+        const hayTexto = [p.titulo, p.lugar, p.notas, (p.personas||[]).join(' ')]
+          .map(x => (x||'').toLowerCase()).some(x => x.includes(term));
+        const hayEstado = !est || p.estado === est;
+        return hayTexto && hayEstado;
+      }).sort((a,b)=> (a.fecha||'') < (b.fecha||'') ? -1 : 1);
+
+      $('#tabla-planes').innerHTML = filtrados.map(filaHTML).join('');
+      renderResumen();
+    }
+
+    function renderResumen(){
+      const ym = $('#mes-resumen').value; // YYYY-MM
+      const inMonth = p => (!ym || !p.fecha) ? true : p.fecha.startsWith(ym);
+      const subset = planes.filter(inMonth);
+
+      const cntIdea = subset.filter(p=>p.estado==='Idea').length;
+      const cntProg = subset.filter(p=>p.estado==='Programado').length;
+      const cntHecho = subset.filter(p=>p.estado==='Hecho').length;
+      const sumEst = subset.reduce((acc,p)=> acc + (p.costoEstimado || 0), 0);
+      const sumReal = subset.reduce((acc,p)=> acc + (p.costoReal || 0), 0);
+
+      $('#cnt-idea').textContent = cntIdea;
+      $('#cnt-programado').textContent = cntProg;
+      $('#cnt-hecho').textContent = cntHecho;
+      $('#sum-estimado').textContent = nf.format(sumEst);
+      $('#sum-real').textContent = nf.format(sumReal);
+    }
+
+    function fillForm(p){
+      editingId = p.id;
+      $('#plan-id').value = p.id;
+      $('#titulo').value = p.titulo || '';
+      $('#fecha').value = p.fecha || '';
+      $('#personas').value = (p.personas || []).join(', ');
+      $('#lugar').value = p.lugar || '';
+      $('#estado').value = p.estado || 'Idea';
+      $('#costoEstimado').value = p.costoEstimado ?? '';
+      $('#costoReal').value = p.costoReal ?? '';
+      $('#notas').value = p.notas || '';
+      $('#delete-btn').hidden = false;
+      $('#save-btn').textContent = 'Actualizar';
+    }
+
+    function clearForm(){
+      editingId = null;
+      $('#plan-id').value = '';
+      $('#plan-form').reset();
+      $('#delete-btn').hidden = true;
+      $('#save-btn').textContent = 'Guardar';
+    }
+
+    // === Eventos ===
+    document.getElementById('plan-form').addEventListener('submit', (ev)=>{
+      ev.preventDefault();
+      const data = {
+        titulo: $('#titulo').value.trim(),
+        fecha: $('#fecha').value || null,
+        personas: parsePeople($('#personas').value || ''),
+        lugar: $('#lugar').value.trim(),
+        estado: $('#estado').value,
+        costoEstimado: sanitizeNumber($('#costoEstimado').value),
+        costoReal: sanitizeNumber($('#costoReal').value),
+        notas: $('#notas').value.trim(),
+      };
+      if (!data.titulo) { alert('Completá el título'); return; }
+      if (!data.fecha) { alert('Completá la fecha'); return; }
+
+      if (editingId) {
+        const idx = planes.findIndex(p=>p.id===editingId);
+        if (idx>-1) planes[idx] = { ...planes[idx], ...data, updatedAt: Date.now() };
+      } else {
+        planes.push({ id: uid(), ...data, createdAt: Date.now(), updatedAt: Date.now() });
+      }
+      save(planes); render(); clearForm();
+    });
+
+    document.getElementById('reset-btn').addEventListener('click', clearForm);
+
+    document.getElementById('delete-btn').addEventListener('click', ()=>{
+      if (!editingId) return;
+      if (confirm('¿Eliminar este plan?')) {
+        planes = planes.filter(p=>p.id!==editingId);
+        save(planes); render(); clearForm();
+      }
+    });
+
+    document.getElementById('btnNew').addEventListener('click', ()=>{
+      clearForm();
+      document.getElementById('titulo').focus();
+    });
+
+    document.getElementById('btnClearAll').addEventListener('click', ()=>{
+      if (!planes.length) return;
+      if (confirm('¿Eliminar TODOS los planes?')) {
+        planes = [];
+        save(planes); render(); clearForm();
+      }
+    });
+
+    document.getElementById('buscar').addEventListener('input', render);
+    document.getElementById('filtro-estado').addEventListener('change', render);
+    document.getElementById('mes-resumen').addEventListener('change', renderResumen);
+
+    document.getElementById('tabla-planes').addEventListener('click', (ev)=>{
+      const btn = ev.target.closest('button[data-action]');
+      if (!btn) return;
+      const tr = ev.target.closest('tr[data-id]');
+      const id = tr && tr.getAttribute('data-id');
+      const p = planes.find(x=>x.id===id);
+      if (!p) return;
+
+      const action = btn.getAttribute('data-action');
+      if (action === 'edit') {
+        fillForm(p);
+      } else if (action === 'del') {
+        if (confirm('¿Eliminar este plan?')) {
+          planes = planes.filter(x=>x.id!==id);
+          save(planes); render();
+          if (editingId === id) clearForm();
+        }
+      } else if (action === 'dup') {
+        const copia = { ...p, id: uid(), titulo: p.titulo + ' (copia)', createdAt: Date.now(), updatedAt: Date.now() };
+        planes.push(copia);
+        save(planes); render();
+      } else if (action === 'cycle') {
+        p.estado = (p.estado === 'Idea') ? 'Programado' : (p.estado === 'Programado' ? 'Hecho' : 'Idea');
+        p.updatedAt = Date.now();
+        save(planes); render();
+      }
+    });
+
+    // === Init ===
+    (function init(){
+      planes = load();
+      seedIfEmpty();
+      const d = new Date();
+      document.getElementById('mes-resumen').value = String(d.getFullYear()) + '-' + String(d.getMonth()+1).padStart(2,'0');
+      render();
+    })();
+  </script>
+
+  <script>
+    // === Resaltado de navegación idéntico al de Calendario ===
+    (function() {
+      const path = location.pathname;
+      const map = {
+        "/": "home",
+        "index.html": "home",
+        "calendario.html": "calendario",
+        "habitos.html": "habitos",
+        "salud.html": "salud",
+        "familia.html": "familia",
+        "social.html": "social",
+        "finanzas.html": "finanzas"
+      };
+      let key = "home";
+      for (const k in map) {
+        if (path.endsWith(k)) { key = map[k]; break; }
+      }
+      document.querySelectorAll('a[data-page]').forEach(a => {
+        if (a.dataset.page === key) {
+          a.style.background = '#000';
+          a.style.color = '#fff';
+          a.style.borderRadius = '10px';
+          a.style.padding = '6px 10px';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

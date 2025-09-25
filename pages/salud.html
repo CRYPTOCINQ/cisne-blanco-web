@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cisne Blanco — Salud</title>
+  <meta name="description" content="Proyecto Cisne Blanco — Maqueta Base">
+  <link rel="stylesheet" href="../css/mini.css">
+  <link rel="icon" href="/assets/favicon.ico">
+</head>
+<body>
+  <header class="border-b backdrop-blur sticky">
+    <div class="mx-auto container-pro px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-full bg-black text-white flex items-center justify-center font-bold">CB</div>
+        <span class="font-semibold">Cisne Blanco — Maqueta Base</span>
+      </div>
+      <nav class="flex items-center gap-2 text-sm">
+        <a href="../index.html" data-page="home" class="px-3 py-1 rounded-lg hover:bg-gray-100">Inicio</a>
+        <a href="calendario.html" data-page="calendario" class="px-3 py-1 rounded-lg hover:bg-gray-100">Calendario</a>
+        <a href="habitos.html" data-page="habitos" class="px-3 py-1 rounded-lg hover:bg-gray-100">Hábitos</a>
+        <a href="salud.html" data-page="salud" class="px-3 py-1 rounded-lg hover:bg-gray-100">Salud</a>
+        <a href="familia.html" data-page="familia" class="px-3 py-1 rounded-lg hover:bg-gray-100">Familia</a>
+        <a href="social.html" data-page="social" class="px-3 py-1 rounded-lg hover:bg-gray-100">Social</a>
+        <a href="finanzas.html" data-page="finanzas" class="px-3 py-1 rounded-lg hover:bg-gray-100">Finanzas</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto container-pro px-4 pt-8">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h1 class="text-2xl font-bold mb-1">Salud (semana actual)</h1>
+        <p class="text-gray-600 text-sm">Tus datos se guardan en este navegador (localStorage). Todo es privado y offline.</p>
+      </div>
+      <div class="flex gap-2">
+        <button id="prevWeekBtn" class="btn">← Semana anterior</button>
+        <button id="thisWeekBtn" class="btn">Esta semana</button>
+        <button id="nextWeekBtn" class="btn">Semana siguiente →</button>
+      </div>
+    </div>
+
+    <div class="note mb-4">
+      <span id="weekLabel" class="font-semibold"></span>
+    </div>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+      <div class="card">
+        <div class="card-title">Sueño</div>
+        <div>Total: <strong><span id="sleepTotal">0</span> h</strong></div>
+        <div>Promedio: <strong><span id="sleepAvg">0</span> h/día</strong></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Agua</div>
+        <div>Total: <strong><span id="waterTotal">0</span> L</strong></div>
+        <div>Promedio: <strong><span id="waterAvg">0</span> L/día</strong></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Pasos</div>
+        <div>Total: <strong><span id="stepsTotal">0</span></strong></div>
+        <div>Promedio: <strong><span id="stepsAvg">0</span> pasos/día</strong></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Entreno y Meditación</div>
+        <div>Entrenos (cant.): <strong><span id="trainCount">0</span></strong></div>
+        <div>Racha meditación (semana): <strong><span id="medStreak">0</span> días</strong></div>
+      </div>
+    </section>
+
+    <div class="grid-wrap">
+      <table class="table" id="weekTable" aria-label="Control diario de salud">
+        <thead>
+          <tr>
+            <th>Día</th>
+            <th>Sueño (h)</th>
+            <th>Agua (L)</th>
+            <th>Pasos</th>
+            <th>Entreno</th>
+            <th>Meditación (min)</th>
+            <th>Notas</th>
+            <th class="center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="weekBody"></tbody>
+      </table>
+    </div>
+
+    <footer class="note">
+      <div class="small" style="padding:8px 16px">
+        <span class="chip">Editar / Borrar por día</span>
+        <span class="chip">Persistencia automática</span>
+        <span class="chip">Navegación semanal</span>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Resalta la pestaña activa según la URL -->
+  <script>
+    (function() {
+      const path = location.pathname;
+      const map = {
+        "/": "home",
+        "index.html": "home",
+        "calendario.html": "calendario",
+        "habitos.html": "habitos",
+        "salud.html": "salud",
+        "familia.html": "familia",
+        "social.html": "social",
+        "finanzas.html": "finanzas"
+      };
+      let key = "home";
+      for (const k in map) {
+        if (path.endsWith(k)) { key = map[k]; break; }
+      }
+      document.querySelectorAll('a[data-page]').forEach(a => {
+        if (a.dataset.page === key) {
+          a.style.background = '#000';
+          a.style.color = '#fff';
+          a.style.borderRadius = '10px';
+          a.style.padding = '6px 10px';
+        }
+      });
+    })();
+  </script>
+
+  <script>
+  // ===== Utilidades de fecha (semana Lunes-Domingo) =====
+  const toMidnight = (d)=>{ const x=new Date(d); x.setHours(0,0,0,0); return x; };
+  const addDays = (d,n)=>{ const x=new Date(d); x.setDate(x.getDate()+n); return x; };
+  const mondayOfWeek = (d)=>{ const date=toMidnight(d); const day=date.getDay(); const diff=(day===0?-6:1-day); date.setDate(date.getDate()+diff); return date; };
+  const formatDM = (d)=> d.toLocaleDateString('es-AR', { day:'2-digit', month:'2-digit' });
+  const formatRange = (a,b)=> `${a.toLocaleDateString('es-AR',{weekday:'short', day:'2-digit', month:'2-digit'})} • ${b.toLocaleDateString('es-AR',{weekday:'short', day:'2-digit', month:'2-digit'})}`;
+  const DAY_NAMES = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  const getWeekKey = (start)=> `salud_v1_${start.getFullYear()}_${String(start.getMonth()+1).padStart(2,'0')}_${String(start.getDate()).padStart(2,'0')}`;
+
+  // ===== Persistencia =====
+  function loadWeek(start){
+    const key = getWeekKey(start);
+    const raw = localStorage.getItem(key);
+    if(!raw){
+      return Array.from({length:7}, (_,i)=> ({
+        date: addDays(start,i).toISOString().slice(0,10),
+        sleep:"", water:"", steps:"", train:false, trainType:"", trainDur:"", med:"", notes:""
+      }));
+    }
+    try { return JSON.parse(raw); } catch(e){ console.warn('JSON inválido, reinicio de semana'); localStorage.removeItem(key); return loadWeek(start); }
+  }
+  function saveWeek(start,data){
+    localStorage.setItem(getWeekKey(start), JSON.stringify(data));
+  }
+  function isEmptyWeek(data){
+    return data.every(d=> (d.sleep==="" && d.water==="" && d.steps==="" && !d.train && d.trainType==="" && d.trainDur==="" && (d.med==="" || d.med===0) && (d.notes==="" || d.notes==null)));
+  }
+
+  // ===== Estado =====
+  let currentMonday = mondayOfWeek(new Date());
+  let weekData = loadWeek(currentMonday);
+
+  // Precarga opcional (solo si la semana está vacía)
+  (function seedIfEmpty(){
+    const data = loadWeek(currentMonday);
+    if(!isEmptyWeek(data)) return;
+    // Indices: 0=Lun, 2=Mié, 5=Sáb
+    const put = (idx, vals)=> data[idx] = { ...data[idx], ...vals };
+    put(0, { sleep:7.5, water:2.0, steps:8200, train:true, trainType:"Fuerza", trainDur:45, med:10, notes:"brazo/pecho" });
+    put(2, { sleep:6.8, water:2.5, steps:10100, train:false, trainType:"", trainDur:"", med:0, notes:"día largo" });
+    put(5, { sleep:8.0, water:3.0, steps:12300, train:true, trainType:"Cardio", trainDur:30, med:5, notes:"parque" });
+    saveWeek(currentMonday, data);
+  })();
+
+  // ===== UI =====
+  const $weekLabel = document.getElementById('weekLabel');
+  const $weekBody = document.getElementById('weekBody');
+
+  function renderWeek(){
+    const start = toMidnight(currentMonday);
+    const end = addDays(start, 6);
+    $weekLabel.textContent = `Semana: ${formatRange(start,end)}`;
+    weekData = loadWeek(start);
+    $weekBody.innerHTML = '';
+    for(let i=0;i<7;i++){
+      const d = addDays(start,i);
+      $weekBody.appendChild(buildRow(i, d, weekData[i]));
+    }
+    renderSummary();
+  }
+
+  function cellInput(type, value, attrs=""){ 
+    return `<input type="${type}" ${attrs} value="${value ?? ""}" disabled class="input">`; 
+  }
+  function cellTextarea(value, attrs=""){
+    return `<textarea ${attrs} disabled class="input" style="min-height:44px;resize:vertical;">${value ?? ""}</textarea>`;
+  }
+  function cellTrain(item){
+    const checked = item.train ? "checked" : "";
+    return `<label class="flex items-center gap-2">
+      <input type="checkbox" ${checked} disabled> Sí
+    </label>
+    <div class="small text-gray-600 mt-1">Tipo:</div>
+    <input type="text" value="${item.trainType ?? ""}" placeholder="Fuerza, cardio..." disabled class="input">
+    <div class="small text-gray-600 mt-1">Duración (min):</div>
+    <input type="number" min="0" step="1" value="${item.trainDur ?? ""}" disabled class="input">`;
+  }
+
+  function buildRow(index, dateObj, item){
+    const tr = document.createElement('tr');
+    tr.dataset.index = index;
+
+    const dayTd = document.createElement('td');
+    dayTd.innerHTML = `<strong>${DAY_NAMES[index]}</strong><div class="text-gray-600 small">${formatDM(dateObj)}</div>`;
+
+    const sleepTd = document.createElement('td'); sleepTd.innerHTML = cellInput("number", item.sleep, 'min="0" step="0.25"');
+    const waterTd = document.createElement('td'); waterTd.innerHTML = cellInput("number", item.water, 'min="0" step="0.1"');
+    const stepsTd = document.createElement('td'); stepsTd.innerHTML = cellInput("number", item.steps, 'min="0" step="1"');
+    const trainTd = document.createElement('td'); trainTd.innerHTML = cellTrain(item);
+    const medTd = document.createElement('td');   medTd.innerHTML   = cellInput("number", item.med, 'min="0" step="1"');
+    const notesTd = document.createElement('td'); notesTd.innerHTML = cellTextarea(item.notes, 'placeholder="Notas del día..."');
+
+    const actionsTd = document.createElement('td');
+    actionsTd.className = "center";
+    actionsTd.innerHTML = `<div class="flex gap-2">
+      <button class="btn editBtn">Editar</button>
+      <button class="btn primary saveBtn" hidden>Guardar</button>
+      <button class="btn cancelBtn" hidden>Cancelar</button>
+      <button class="btn danger outline deleteBtn">Borrar</button>
+    </div>`;
+
+    tr.append(dayTd, sleepTd, waterTd, stepsTd, trainTd, medTd, notesTd, actionsTd);
+
+    const editBtn = tr.querySelector('.editBtn');
+    const saveBtn = tr.querySelector('.saveBtn');
+    const cancelBtn = tr.querySelector('.cancelBtn');
+    const deleteBtn = tr.querySelector('.deleteBtn');
+    const inputs = tr.querySelectorAll('input, textarea');
+
+    function setDisabled(disabled){ inputs.forEach(el=> el.disabled = disabled); }
+    function snapshot(){ return Array.from(inputs).map(el=> (el.type==='checkbox' ? el.checked : el.value)); }
+    let cached = snapshot();
+
+    editBtn.addEventListener('click', ()=>{
+      setDisabled(false); editBtn.hidden = true; saveBtn.hidden = false; cancelBtn.hidden = false;
+    });
+    cancelBtn.addEventListener('click', ()=>{
+      let i=0; inputs.forEach(el=>{ if(el.type==='checkbox'){ el.checked = Boolean(cached[i]); } else { el.value = cached[i]; } i++; });
+      setDisabled(true); editBtn.hidden = false; saveBtn.hidden = true; cancelBtn.hidden = true;
+    });
+    saveBtn.addEventListener('click', ()=>{
+      const vals = readValuesFromRow(tr);
+      const data = loadWeek(currentMonday);
+      data[index] = { date: item.date, ...vals };
+      saveWeek(currentMonday, data);
+      cached = snapshot();
+      setDisabled(true); editBtn.hidden = false; saveBtn.hidden = true; cancelBtn.hidden = true;
+      renderSummary();
+    });
+    deleteBtn.addEventListener('click', ()=>{
+      if(!confirm('¿Borrar los datos de este día?')) return;
+      const data = loadWeek(currentMonday);
+      data[index] = { date: item.date, sleep:"", water:"", steps:"", train:false, trainType:"", trainDur:"", med:"", notes:"" };
+      saveWeek(currentMonday, data);
+      renderWeek();
+    });
+
+    return tr;
+  }
+
+  function readValuesFromRow(tr){
+    const tds = tr.querySelectorAll('td');
+    const sleep = tds[1].querySelector('input').value;
+    const water = tds[2].querySelector('input').value;
+    const steps = tds[3].querySelector('input').value;
+    const trainBox = tds[4].querySelector('input[type="checkbox"]');
+    const trainType = tds[4].querySelector('input[type="text"]').value;
+    const trainDur = tds[4].querySelector('input[type="number"]').value;
+    const med = tds[5].querySelector('input').value;
+    const notes = tds[6].querySelector('textarea').value;
+    return {
+      sleep: sleep !== "" ? parseFloat(sleep) : "",
+      water: water !== "" ? parseFloat(water) : "",
+      steps: steps !== "" ? parseInt(steps) : "",
+      train: !!trainBox.checked,
+      trainType: trainType || "",
+      trainDur: trainDur !== "" ? parseInt(trainDur) : "",
+      med: med !== "" ? parseInt(med) : "",
+      notes: notes || ""
+    };
+  }
+
+  function renderSummary(){
+    const data = loadWeek(currentMonday);
+    const isNum = (x)=> typeof x === 'number' && !isNaN(x);
+    const sum = (acc,v)=> acc + (isNum(v)? v : 0);
+
+    const sleepTotal = data.map(d=>d.sleep).reduce(sum,0);
+    const waterTotal = data.map(d=>d.water).reduce(sum,0);
+    const stepsTotal = data.map(d=>d.steps).reduce(sum,0);
+    const medTotal = data.map(d=>d.med).reduce(sum,0);
+    const trainCount = data.filter(d=> d.train).length;
+
+    const countDays = (key)=> data.filter(d=> isNum(d[key])).length;
+    const daysSleep = countDays('sleep') || 0;
+    const daysWater = countDays('water') || 0;
+    const daysSteps = countDays('steps') || 0;
+    const daysMed = countDays('med') || 0;
+
+    document.getElementById('sleepTotal').textContent = sleepTotal.toFixed(2);
+    document.getElementById('sleepAvg').textContent   = daysSleep? (sleepTotal/daysSleep).toFixed(2) : "0";
+    document.getElementById('waterTotal').textContent = waterTotal.toFixed(2);
+    document.getElementById('waterAvg').textContent   = daysWater? (waterTotal/daysWater).toFixed(2) : "0";
+    document.getElementById('stepsTotal').textContent = stepsTotal.toLocaleString('es-AR');
+    document.getElementById('stepsAvg').textContent   = daysSteps? Math.round(stepsTotal/daysSteps).toLocaleString('es-AR') : "0";
+    document.getElementById('medStreak').textContent  = maxStreak(d=> (typeof d.med==='number' && d.med>0));
+    document.getElementById('trainCount').textContent = trainCount;
+  }
+
+  function maxStreak(predicate){
+    const data = loadWeek(currentMonday);
+    let best=0, cur=0;
+    for(const d of data){
+      if(predicate(d)){ cur++; best = Math.max(best,cur); }
+      else cur=0;
+    }
+    return best;
+  }
+
+  // Navegación semanal
+  document.getElementById('prevWeekBtn').addEventListener('click', ()=>{ currentMonday = addDays(currentMonday, -7); renderWeek(); });
+  document.getElementById('nextWeekBtn').addEventListener('click', ()=>{ currentMonday = addDays(currentMonday, 7); renderWeek(); });
+  document.getElementById('thisWeekBtn').addEventListener('click', ()=>{ currentMonday = mondayOfWeek(new Date()); renderWeek(); });
+
+  // Init
+  renderWeek();
+  </script>
+</body>
+</html>

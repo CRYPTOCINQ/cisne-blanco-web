@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cisne Blanco — Inicio</title>
+  <meta name="description" content="Proyecto Cisne Blanco — Maqueta Base">
+  <link rel="stylesheet" href="css/mini.css">
+  <link rel="icon" href="/assets/favicon.ico">
+</head>
+<body>
+  <header class="border-b backdrop-blur sticky">
+    <div class="mx-auto container-pro px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-full bg-black text-white flex items-center justify-center font-bold">CB</div>
+        <span class="font-semibold">Cisne Blanco — Maqueta Base</span>
+      </div>
+      <nav class="flex items-center gap-2 text-sm">
+        <a href="index.html" data-page="home" class="px-3 py-1 rounded-lg hover:bg-gray-100">Inicio</a>
+        <a href="pages/calendario.html" data-page="calendario" class="px-3 py-1 rounded-lg hover:bg-gray-100">Calendario</a>
+        <a href="pages/habitos.html" data-page="habitos" class="px-3 py-1 rounded-lg hover:bg-gray-100">Hábitos</a>
+        <a href="pages/salud.html" data-page="salud" class="px-3 py-1 rounded-lg hover:bg-gray-100">Salud</a>
+        <a href="pages/familia.html" data-page="familia" class="px-3 py-1 rounded-lg hover:bg-gray-100">Familia</a>
+        <a href="pages/social.html" data-page="social" class="px-3 py-1 rounded-lg hover:bg-gray-100">Social</a>
+        <a href="pages/finanzas.html" data-page="finanzas" class="px-3 py-1 rounded-lg hover:bg-gray-100">Finanzas</a>
+      </nav>
+    </div>
+  </header>
+  <main class="mx-auto container-pro px-4 pt-8">
+    <h1 class="text-2xl font-bold mb-2">Bienvenido, Maximiliano 👋</h1>
+    <p class="text-gray-600 mb-8">Base del Proyecto Cisne Blanco. Calendario con creación y <strong>edición</strong> de eventos.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <a class="block border rounded-2xl p-5 bg-white hover:shadow-sm transition" href="pages/calendario.html">
+        <h2 class="font-semibold mb-1">Calendario</h2>
+        <p class="text-sm text-gray-600">Vista mensual (crear/editar/borrar eventos).</p>
+      </a>
+      <a class="block border rounded-2xl p-5 bg-white hover:shadow-sm transition" href="pages/habitos.html">
+        <h2 class="font-semibold mb-1">Hábitos</h2>
+        <p class="text-sm text-gray-600">Rachas y frecuencia (próximo).</p>
+      </a>
+      <a class="block border rounded-2xl p-5 bg-white hover:shadow-sm transition" href="pages/salud.html">
+        <h2 class="font-semibold mb-1">Salud</h2>
+        <p class="text-sm text-gray-600">Registros y tendencias (próximo).</p>
+      </a>
+      <a class="block border rounded-2xl p-5 bg-white hover:shadow-sm transition" href="pages/familia.html">
+        <h2 class="font-semibold mb-1">Familia</h2>
+        <p class="text-sm text-gray-600">Planes de calidad (próximo).</p>
+      </a>
+      <a class="block border rounded-2xl p-5 bg-white hover:shadow-sm transition" href="pages/social.html">
+        <h2 class="font-semibold mb-1">Social</h2>
+        <p class="text-sm text-gray-600">Reuniones (próximo).</p>
+      </a>
+      <a class="block border rounded-2xl p-5 bg-white hover:shadow-sm transition" href="pages/finanzas.html">
+        <h2 class="font-semibold mb-1">Finanzas (Trading)</h2>
+        <p class="text-sm text-gray-600">KPIs y bitácora (próximo).</p>
+      </a>
+    </div>
+  </main>
+  <footer class="mt-16 border-t">
+    <div class="mx-auto container-pro px-4 py-6 text-xs text-gray-500 flex items-center justify-between">
+      <span>© 2025 Cisne Blanco</span>
+      <span>v2.4 — Editar evento</span>
+    </div>
+  </footer>
+  <script>
+    (function() {
+      const path = location.pathname;
+      const map = {
+        "/": "home",
+        "index.html": "home",
+        "calendario.html": "calendario",
+        "habitos.html": "habitos",
+        "salud.html": "salud",
+        "familia.html": "familia",
+        "social.html": "social",
+        "finanzas.html": "finanzas"
+      };
+      let key = "home";
+      for (const k in map) {
+        if (path.endsWith(k)) { key = map[k]; break; }
+      }
+      document.querySelectorAll('a[data-page]').forEach(a => {
+        if (a.dataset.page === key) {
+          a.style.background = '#000';
+          a.style.color = '#fff';
+          a.style.borderRadius = '10px';
+          a.style.padding = '6px 10px';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

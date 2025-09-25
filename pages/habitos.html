@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cisne Blanco — Hábitos</title>
+  <meta name="description" content="Proyecto Cisne Blanco — Maqueta Base">
+  <link rel="stylesheet" href="../css/mini.css">
+  <link rel="icon" href="/assets/favicon.ico">
+</head>
+<body>
+  <header class="border-b backdrop-blur sticky">
+    <div class="mx-auto container-pro px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-full bg-black text-white flex items-center justify-center font-bold">CB</div>
+        <span class="font-semibold">Cisne Blanco — Maqueta Base</span>
+      </div>
+      <nav class="flex items-center gap-2 text-sm">
+        <a href="../index.html" data-page="home" class="px-3 py-1 rounded-lg hover:bg-gray-100">Inicio</a>
+        <a href="calendario.html" data-page="calendario" class="px-3 py-1 rounded-lg hover:bg-gray-100">Calendario</a>
+        <a href="habitos.html" data-page="habitos" class="px-3 py-1 rounded-lg hover:bg-gray-100">Hábitos</a>
+        <a href="salud.html" data-page="salud" class="px-3 py-1 rounded-lg hover:bg-gray-100">Salud</a>
+        <a href="familia.html" data-page="familia" class="px-3 py-1 rounded-lg hover:bg-gray-100">Familia</a>
+        <a href="social.html" data-page="social" class="px-3 py-1 rounded-lg hover:bg-gray-100">Social</a>
+        <a href="finanzas.html" data-page="finanzas" class="px-3 py-1 rounded-lg hover:bg-gray-100">Finanzas</a>
+      </nav>
+    </div>
+  </header>
+  <main class="mx-auto container-pro px-4 pt-8">
+<div class="container">
+  <section class="card">
+    <div class="header">
+      <h1 class="title">Hábitos v1</h1>
+      <div class="controls">
+        <div class="period-toggle">
+          <label><input type="radio" name="period" value="week" checked> Semana</label>
+          <label><input type="radio" name="period" value="month"> Mes</label>
+        </div>
+        <button id="prevBtn" class="btn small" title="Periodo anterior">⟨</button>
+        <button id="todayBtn" class="btn small" title="Volver a hoy">Hoy</button>
+        <button id="nextBtn" class="btn small" title="Periodo siguiente">⟩</button>
+      </div>
+    </div>
+
+    <form id="habitForm" class="form" autocomplete="off">
+      <div>
+        <label for="name" class="small">Nombre</label>
+        <input id="name" name="name" type="text" placeholder="Ej.: Hidratación 2L" required>
+      </div>
+      <div>
+        <label for="freq" class="small">Frecuencia</label>
+        <select id="freq" name="freq">
+          <option value="D">Diaria</option>
+          <option value="W">Semanal</option>
+          <option value="M">Mensual</option>
+        </select>
+      </div>
+      <div>
+        <label for="goal" class="small">Meta (✔ por período)</label>
+        <input id="goal" name="goal" type="number" min="1" step="1" placeholder="Ej.: 5" required>
+        <div class="help small">Ej.: Diario 7, Semanal 3, Mensual 15</div>
+      </div>
+      <div>
+        <label for="status" class="small">Estado</label>
+        <select id="status" name="status">
+          <option>Nuevo</option>
+          <option>En práctica</option>
+          <option>Consolidado</option>
+        </select>
+      </div>
+      <div>
+        <input type="hidden" id="editId" value="">
+        <button type="submit" class="btn" id="submitBtn">Agregar hábito</button>
+      </div>
+      <div class="full small help">Marcá tus ✔ en la tabla. Los datos quedan guardados en tu navegador (localStorage). Todo es privado.</div>
+    </form>
+
+    <div class="grid-wrap">
+      <table class="table" id="habitTable" aria-label="Matriz día por hábito">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <footer class="note">
+      <div class="small" style="padding:8px 16px">
+        <span class="kbd">Ctrl/Cmd + D</span> para marcar hoy (con la casilla focalizada). |
+        <a href="#" id="resetDemo" class="small">Restablecer ejemplos</a>
+      </div>
+    </footer>
+  </section>
+</div>
+</main>
+  <footer class="mt-16 border-t">
+    <div class="mx-auto container-pro px-4 py-6 text-xs text-gray-500 flex items-center justify-between">
+      <span>© 2025 Cisne Blanco</span>
+      <span>v2.4 — Editar evento</span>
+    </div>
+  </footer>
+  <script>
+    (function() {
+      const path = location.pathname;
+      const map = {
+        "/": "home",
+        "index.html": "home",
+        "calendario.html": "calendario",
+        "habitos.html": "habitos",
+        "salud.html": "salud",
+        "familia.html": "familia",
+        "social.html": "social",
+        "finanzas.html": "finanzas"
+      };
+      let key = "home";
+      for (const k in map) {
+        if (path.endsWith(k)) { key = map[k]; break; }
+      }
+      document.querySelectorAll('a[data-page]').forEach(a => {
+        if (a.dataset.page === key) {
+          a.style.background = '#000';
+          a.style.color = '#fff';
+          a.style.borderRadius = '10px';
+          a.style.padding = '6px 10px';
+        }
+      });
+    })();
+  </script>
+
+<script>
+/* CB_HABITOS_V1_JS */
+(() => {
+  "use strict";
+  const qs = (s, el=document) => el.querySelector(s);
+  const qsa = (s, el=document) => [...el.querySelectorAll(s)];
+  const $head = qs('#tableHead');
+  const $body = qs('#tableBody');
+  const $form = qs('#habitForm');
+  const $submitBtn = qs('#submitBtn');
+  const $editId = qs('#editId');
+  const $name = qs('#name');
+  const $freq = qs('#freq');
+  const $goal = qs('#goal');
+  const $status = qs('#status');
+  const $prev = qs('#prevBtn');
+  const $next = qs('#nextBtn');
+  const $today = qs('#todayBtn');
+  const $periodRadios = qsa('input[name="period"]');
+  const $resetDemo = qs('#resetDemo');
+
+  const LS_HABITS = 'cb_habits_v1';
+  const LS_CHECKS = 'cb_habits_checks_v1';
+
+  let anchor = stripTime(new Date());
+  let period = 'week';
+
+  function load(key, fallback) {
+    try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
+    catch(e){ console.warn('No se pudo leer localStorage', key, e); return fallback; }
+  }
+  function save(key, val) {
+    try { localStorage.setItem(key, JSON.stringify(val)); }
+    catch(e){ console.error('No se pudo guardar en localStorage', e); }
+  }
+  function uid(){ return 'h_' + Math.random().toString(36).slice(2,9); }
+
+  function stripTime(d){ const t=new Date(d); t.setHours(0,0,0,0); return t; }
+  function fmtISO(d){ return d.toISOString().slice(0,10); }
+  function startOfWeek(d){ const t=stripTime(d); const day=(t.getDay()+6)%7; t.setDate(t.getDate()-day); return t; }
+  function weekDays(d){ const s=startOfWeek(d); return Array.from({length:7},(_,i)=>{ const dt=new Date(s); dt.setDate(s.getDate()+i); return stripTime(dt);}); }
+  function startOfMonth(d){ const t=stripTime(d); t.setDate(1); return t; }
+  function monthDays(d){ const s=startOfMonth(d); const out=[]; const m=s.getMonth(); let c=new Date(s); while(c.getMonth()===m){ out.push(stripTime(c)); c.setDate(c.getDate()+1);} return out; }
+  const DAY_NAMES = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+
+  let habits = load(LS_HABITS, []);
+  let checks = load(LS_CHECKS, {});
+
+  if (!habits || habits.length===0){
+    habits = [
+      { id: uid(), name:'Hidratación 2L', freq:'D', goal:7, status:'En práctica', createdAt: Date.now() },
+      { id: uid(), name:'Meditación 10’', freq:'D', goal:5, status:'Nuevo', createdAt: Date.now() },
+      { id: uid(), name:'Gimnasio', freq:'W', goal:3, status:'En práctica', createdAt: Date.now() },
+    ];
+    save(LS_HABITS, habits);
+    save(LS_CHECKS, checks);
+  }
+
+  function render(){
+    const days = (period==='week') ? weekDays(anchor) : monthDays(anchor);
+    const headCells = ['<th>Hábito</th>'].concat(days.map(d=>{
+      const lab = (period==='week') ? `${DAY_NAMES[(d.getDay()+6)%7]} ${d.getDate()}` : `${d.getDate()}`;
+      const sub = (period==='week') ? `${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear().toString().slice(2)}` : DAY_NAMES[(d.getDay()+6)%7];
+      return `<th><div class="date-label">${lab}</div><div class="small">${sub}</div></th>`;
+    }));
+    $head.innerHTML = `<tr>${headCells.join('')}</tr>`;
+
+    if (!Array.isArray(habits) || habits.length===0){
+      $body.innerHTML = `<tr><td colspan="${days.length+1}" class="small">No hay hábitos. Agregá uno arriba.</td></tr>`;
+      return;
+    }
+    const rows = habits.map(h=>{
+      const doneCount = days.reduce((a,d)=>a+(isChecked(h.id,d)?1:0),0);
+      const goal = Number(h.goal||0);
+      const percent = days.length>0 ? Math.round((doneCount/Math.min(goal||days.length, days.length))*100) : 0;
+      const missing = Math.max(0, goal - doneCount);
+      const streak = computeStreak(h.id);
+      const metaBadges = `
+        <span class="badge muted">${labelFreq(h.freq)}</span>
+        <span class="badge muted">Meta ${goal}/${period==='week'?7:days.length}</span>
+        <span class="badge ${h.status==='Consolidado'?'ok':h.status==='Nuevo'?'warn':'muted'}">${h.status}</span>`;
+      const summary = `<div class="summary small"><span>Racha: <strong>${streak}</strong></span><span>% período: <strong>${percent}%</strong></span><span>Faltan: <strong>${missing}</strong></span></div>`;
+      const actions = `<div class="row-actions"><button class="btn small" data-edit="${h.id}" title="Editar">✎ Editar</button><button class="btn small" data-del="${h.id}" title="Borrar">🗑 Borrar</button></div>`;
+      const title = `<div class="row-title"><div><strong>${escapeHtml(h.name)}</strong></div></div><div class="row-meta">${metaBadges}</div>${summary}${actions}`;
+      const checksTds = days.map(d=>{
+        const id = `cb_${h.id}_${fmtISO(d)}`;
+        const checked = isChecked(h.id,d)?'checked':'';
+        return `<td class="checkbox"><input type="checkbox" id="${id}" data-habit="${h.id}" data-date="${fmtISO(d)}" ${checked} aria-label="${h.name} ${fmtISO(d)}"></td>`;
+      }).join('');
+      return `<tr><td>${title}</td>${checksTds}</tr>`;
+    });
+    $body.innerHTML = rows.join('');
+    wireRowActions(); wireCheckboxes();
+  }
+
+  function labelFreq(f){ return f==='D'?'Diaria':f==='W'?'Semanal':'Mensual'; }
+  function isChecked(id,d){ const k=fmtISO(d); return !!(checks[k] && checks[k][id]); }
+  function setChecked(id,k,val){ if(!checks[k]) checks[k]={}; if(val) checks[k][id]=true; else delete checks[k][id]; save(LS_CHECKS, checks); }
+  function computeStreak(id){
+    let streak=0; let cur=stripTime(new Date());
+    for(let i=0;i<3650;i++){ const k=fmtISO(cur); if(checks[k] && checks[k][id]){ streak++; cur.setDate(cur.getDate()-1);} else break; }
+    return streak;
+  }
+  function wireRowActions(){
+    qsa('button[data-edit]').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        e.preventDefault();
+        const id = btn.getAttribute('data-edit');
+        const h = habits.find(x=>x.id===id); if(!h) return;
+        $editId.value=h.id; $name.value=h.name; $freq.value=h.freq; $goal.value=h.goal; $status.value=h.status;
+        $submitBtn.textContent='Guardar cambios'; $name.focus();
+      });
+    });
+    qsa('button[data-del]').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        e.preventDefault();
+        const id = btn.getAttribute('data-del');
+        if(!confirm('¿Borrar este hábito? Esta acción no elimina tus checks históricos.')) return;
+        habits = habits.filter(h=>h.id!==id); save(LS_HABITS, habits); render();
+      });
+    });
+  }
+  function wireCheckboxes(){
+    qsa('input[type="checkbox"][data-habit]').forEach(cb=>{
+      cb.addEventListener('change', ()=>{
+        const id=cb.getAttribute('data-habit'); const k=cb.getAttribute('data-date');
+        setChecked(id,k,cb.checked); render();
+      });
+      cb.addEventListener('keydown', ev=>{
+        const isCmd = ev.metaKey || ev.ctrlKey;
+        if(isCmd && (ev.key.toLowerCase()==='d')){
+          ev.preventDefault();
+          const id=cb.getAttribute('data-habit');
+          const todayStr = fmtISO(stripTime(new Date()));
+          const target = document.querySelector(`input[data-habit="${id}"][data-date="${todayStr}"]`);
+          if(target){ target.checked=!target.checked; setChecked(id, todayStr, target.checked); render(); }
+        }
+      });
+    });
+  }
+  $form.addEventListener('submit', e=>{
+    e.preventDefault();
+    const payload = {
+      name: ($name.value||'').trim(),
+      freq: $freq.value,
+      goal: Math.max(1, Number($goal.value||1)),
+      status: $status.value
+    };
+    if(!payload.name) return;
+    const id = $editId.value;
+    if(id){ const idx=habits.findIndex(h=>h.id===id); if(idx>=0){ habits[idx] = { ...habits[idx], ...payload }; } $submitBtn.textContent='Agregar hábito'; }
+    else{ habits.push({ id: uid(), createdAt: Date.now(), ...payload }); }
+    save(LS_HABITS, habits); $form.reset(); $editId.value=''; render();
+  });
+  document.getElementById('prevBtn').addEventListener('click', ()=>{ anchor = step(anchor,-1); render(); });
+  document.getElementById('nextBtn').addEventListener('click', ()=>{ anchor = step(anchor, 1); render(); });
+  document.getElementById('todayBtn').addEventListener('click', ()=>{ anchor = stripTime(new Date()); render(); });
+  qsa('input[name="period"]').forEach(r=>r.addEventListener('change', ()=>{
+    period = document.querySelector('input[name="period"]:checked').value;
+    anchor = stripTime(new Date()); render();
+  }));
+
+  function step(base, dir){ const d=new Date(base); if(period==='week'){ d.setDate(d.getDate()+dir*7);} else { d.setMonth(d.getMonth()+dir); d.setDate(Math.min(d.getDate(),28)); } return d; }
+  function escapeHtml(s){ return s.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+
+  document.getElementById('resetDemo').addEventListener('click', e=>{
+    e.preventDefault();
+    if(!confirm('Esto borrará TODOS los hábitos y tildes. ¿Continuar?')) return;
+    localStorage.removeItem(LS_HABITS); localStorage.removeItem(LS_CHECKS);
+    habits = []; checks = {};
+    habits = [
+      { id: uid(), name:'Hidratación 2L', freq:'D', goal:7, status:'En práctica', createdAt: Date.now() },
+      { id: uid(), name:'Meditación 10’', freq:'D', goal:5, status:'Nuevo', createdAt: Date.now() },
+      { id: uid(), name:'Gimnasio', freq:'W', goal:3, status:'En práctica', createdAt: Date.now() },
+    ];
+    save(LS_HABITS, habits); save(LS_CHECKS, checks); render();
+  });
+  render();
+})();
+</script>
+
+</body>
+</html>

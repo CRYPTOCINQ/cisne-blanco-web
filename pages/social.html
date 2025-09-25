@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cisne Blanco — Social</title>
+  <meta name="description" content="Proyecto Cisne Blanco — Social v1.1">
+  <link rel="stylesheet" href="../css/mini.css">
+  <link rel="icon" href="../assets/favicon.ico">
+</head>
+<body>
+  <!-- Header: mismo markup/clases que la interfaz base -->
+  <header class="border-b backdrop-blur sticky">
+    <div class="mx-auto container-pro px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-full bg-black text-white flex items-center justify-center font-bold">CB</div>
+        <span class="font-semibold">Cisne Blanco — Maqueta Base</span>
+      </div>
+      <nav class="flex items-center gap-2 text-sm">
+        <a href="../index.html" data-page="home" class="px-3 py-1 rounded-lg hover:bg-gray-100">Inicio</a>
+        <a href="calendario.html" data-page="calendario" class="px-3 py-1 rounded-lg hover:bg-gray-100">Calendario</a>
+        <a href="habitos.html" data-page="habitos" class="px-3 py-1 rounded-lg hover:bg-gray-100">Hábitos</a>
+        <a href="salud.html" data-page="salud" class="px-3 py-1 rounded-lg hover:bg-gray-100">Salud</a>
+        <a href="familia.html" data-page="familia" class="px-3 py-1 rounded-lg hover:bg-gray-100">Familia</a>
+        <a href="social.html" data-page="social" class="px-3 py-1 rounded-lg hover:bg-gray-100">Social</a>
+        <a href="finanzas.html" data-page="finanzas" class="px-3 py-1 rounded-lg hover:bg-gray-100">Finanzas</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto container-pro px-4 pt-8">
+    <h1 class="text-2xl font-bold mb-2">Social</h1>
+    <p class="text-gray-600 mb-4">Encuentros e ideas (privado/offline en tu navegador).</p>
+
+    <!-- Toolbar semana + filtros -->
+    <section class="border rounded-2xl p-4 bg-white mb-4">
+      <div class="flex items-center gap-2 flex-wrap">
+        <strong class="text-sm">Social v1.1</strong>
+        <span id="weekLabel" class="px-2 py-1 rounded-lg border text-xs"></span>
+        <div class="flex-1"></div>
+        <button id="btnPrevWeek" class="px-3 py-1 rounded-lg border hover:bg-gray-50 text-sm" aria-label="Semana anterior">◀</button>
+        <button id="btnThisWeek" class="px-3 py-1 rounded-lg border hover:bg-gray-50 text-sm">Esta semana</button>
+        <button id="btnNextWeek" class="px-3 py-1 rounded-lg border hover:bg-gray-50 text-sm" aria-label="Semana siguiente">▶</button>
+        <button id="btnSeed" class="px-3 py-1 rounded-lg border hover:bg-gray-50 text-sm" title="Precargar ejemplos">Cargar ejemplos</button>
+      </div>
+      <div class="flex items-end gap-3 flex-wrap mt-3">
+        <label class="text-sm">Persona
+          <input id="filterPerson" list="peopleList" class="block border rounded-lg px-2 py-1 text-sm" placeholder="ej. Juan" />
+        </label>
+        <datalist id="peopleList"></datalist>
+        <label class="text-sm">Tipo
+          <select id="filterType" class="block border rounded-lg px-2 py-1 text-sm">
+            <option value="">(todos)</option>
+            <option value="Cena">Cena</option>
+            <option value="Café">Café</option>
+            <option value="Salida">Salida</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </label>
+        <label class="text-sm">Etiqueta
+          <input id="filterTag" class="block border rounded-lg px-2 py-1 text-sm" placeholder="Amigos / Familia / Trabajo" />
+        </label>
+        <div class="flex-1"></div>
+        <button id="btnClearFilters" class="px-3 py-1 rounded-lg border hover:bg-gray-50 text-sm">Limpiar filtros</button>
+      </div>
+    </section>
+
+    <!-- Grid principal -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Formulario -->
+      <div class="border rounded-2xl p-4 bg-white">
+        <h2 id="formTitle" class="font-semibold mb-2">Nuevo encuentro / idea</h2>
+        <form id="editForm" autocomplete="off" class="space-y-3">
+          <input type="hidden" id="recId">
+          <label class="block text-sm">Con quién (separá por coma)
+            <input id="people" class="block w-full border rounded-lg px-2 py-1 text-sm" placeholder="Juan, Lola" required>
+          </label>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <label class="text-sm">Tipo
+              <select id="type" class="block w-full border rounded-lg px-2 py-1 text-sm">
+                <option value="Cena">Cena</option>
+                <option value="Café">Café</option>
+                <option value="Salida">Salida</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </label>
+            <label class="text-sm">Fecha
+              <input id="date" type="date" class="block w-full border rounded-lg px-2 py-1 text-sm">
+            </label>
+            <label class="text-sm">Hora
+              <input id="time" type="time" class="block w-full border rounded-lg px-2 py-1 text-sm">
+            </label>
+          </div>
+          <label class="block text-sm">Lugar
+            <input id="place" class="block w-full border rounded-lg px-2 py-1 text-sm" placeholder="Palermo / Casa / Microcentro">
+          </label>
+          <div class="grid grid-cols-2 md:grid-cols-2 gap-3">
+            <label class="text-sm">Gasto (ARS)
+              <input id="cost" type="number" step="0.01" min="0" class="block w-full border rounded-lg px-2 py-1 text-sm" placeholder="0">
+            </label>
+            <label class="text-sm">Etiqueta
+              <input id="tag" class="block w-full border rounded-lg px-2 py-1 text-sm" placeholder="Amigos / Familia / Trabajo">
+            </label>
+          </div>
+          <label class="block text-sm">Notas
+            <textarea id="notes" rows="2" class="block w-full border rounded-lg px-2 py-1 text-sm" placeholder="Detalle opcional"></textarea>
+          </label>
+          <div class="flex items-center gap-2">
+            <button type="submit" id="btnSave" class="px-3 py-1 rounded-lg border hover:bg-gray-50 text-sm">Guardar</button>
+            <button type="button" id="btnReset" class="px-3 py-1 rounded-lg border hover:bg-gray-50 text-sm">Limpiar</button>
+            <span class="text-xs text-gray-600">Dejá fecha/hora vacías para crear una <strong>Idea</strong>.</span>
+          </div>
+        </form>
+      </div>
+
+      <!-- Agenda semanal -->
+      <div class="border rounded-2xl p-4 bg-white">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="font-semibold">Agenda — semana</h2>
+          <span id="agendaCount" class="text-xs text-gray-600"></span>
+        </div>
+        <div id="agendaList" class="space-y-2 text-sm"></div>
+      </div>
+
+      <!-- Resumen + Personas -->
+      <div class="border rounded-2xl p-4 bg-white">
+        <h2 class="font-semibold">Resumen semanal</h2>
+        <div id="weeklySummary" class="space-y-1 text-sm mt-1"></div>
+        <hr class="my-3"/>
+        <h2 class="font-semibold">Personas</h2>
+        <div class="text-xs text-gray-600">Último contacto y días desde ese contacto.</div>
+        <div id="peopleSummary" class="space-y-2 text-sm mt-2"></div>
+      </div>
+    </section>
+
+    <!-- Ideas + Ayuda -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      <div class="border rounded-2xl p-4 bg-white">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="font-semibold">Ideas (sin fecha)</h2>
+          <span id="ideasCount" class="text-xs text-gray-600"></span>
+        </div>
+        <div id="ideasList" class="space-y-2 text-sm"></div>
+      </div>
+
+      <div class="border rounded-2xl p-4 bg-white">
+        <details open>
+          <summary class="font-semibold">Acciones rápidas</summary>
+          <ul class="list-disc pl-5 text-sm mt-2 space-y-1">
+            <li>Crear encuentro: completá <em>Con quién</em> + <em>Tipo</em> + <em>Fecha</em> (opcional hora) y <em>Guardar</em>.</li>
+            <li>Crear idea: dejá <em>Fecha</em> y <em>Hora</em> vacías y <em>Guardar</em>.</li>
+            <li>Editar/Borrar/Duplicar: botones en cada tarjeta.</li>
+            <li>Mover <em>Idea → Programado</em>: botón <em>Programar</em> y elegí fecha/hora.</li>
+            <li>Filtrar: por persona, tipo o etiqueta.</li>
+          </ul>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="mt-16 border-t">
+    <div class="mx-auto container-pro px-4 py-6 text-xs text-gray-500 flex items-center justify-between">
+      <span>© 2025 Cisne Blanco</span>
+      <span>v2.4 — Editar evento</span>
+    </div>
+  </footer>
+
+  <!-- Script de realce activo: mismo de la base -->
+  <script>
+    (function() {
+      const path = location.pathname;
+      const map = {
+        "/": "home",
+        "index.html": "home",
+        "calendario.html": "calendario",
+        "habitos.html": "habitos",
+        "salud.html": "salud",
+        "familia.html": "familia",
+        "social.html": "social",
+        "finanzas.html": "finanzas"
+      };
+      let key = "social";
+      for (const k in map) {
+        if (path.endsWith(k)) { key = map[k]; break; }
+      }
+      document.querySelectorAll('a[data-page]').forEach(a => {
+        if (a.dataset.page === key) {
+          a.style.background = '#000';
+          a.style.color = '#fff';
+          a.style.borderRadius = '10px';
+          a.style.padding = '6px 10px';
+        }
+      });
+    })();
+  </script>
+
+  <!-- Lógica de Social (localStorage, vistas, filtros) -->
+  <script>
+  (function(){
+    const LS_KEY = 'cb_social_v1_records';
+    const LS_SEEDED = 'cb_social_v1_seeded';
+    const state = { weekOffset: 0, filterPerson: '', filterType: '', filterTag: '' };
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+
+    function load(){ try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch(e){ console.error(e); return []; } }
+    function save(r){ localStorage.setItem(LS_KEY, JSON.stringify(r)); }
+    function uid(){ return 'r_' + Math.random().toString(36).slice(2,10); }
+    function parsePeople(str){ return (str||'').split(',').map(s=>s.trim()).filter(Boolean); }
+    function toISO(d,t){ if(!d) return null; const hh = t && t.length ? t : '00:00'; return new Date(d + 'T' + hh).toISOString(); }
+    function fromISO(iso){ if(!iso) return {date:'',time:''}; const d=new Date(iso); const p=n=>String(n).padStart(2,'0'); return {date:d.toISOString().slice(0,10), time:p(d.getHours())+':'+p(d.getMinutes())}; }
+    function startOfWeek(d){ const x=new Date(d); const day=(x.getDay()+6)%7; x.setDate(x.getDate()-day); x.setHours(0,0,0,0); return x; }
+    function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+    function fmtDate(d){ return d.toLocaleDateString('es-AR',{weekday:'short',day:'2-digit',month:'2-digit'}); }
+    function fmtMoney(v){ const n=Number(v||0); return n? new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(n):'$0'; }
+    function daysDiff(a,b=new Date()){ const x=new Date(a); x.setHours(0,0,0,0); const y=new Date(b); y.setHours(0,0,0,0); return Math.round((y-x)/(1000*60*60*24)); }
+
+    function seedIfEmpty(){
+      if(localStorage.getItem(LS_SEEDED)) return;
+      const recs = load(); if(recs.length) return;
+      const examples = [
+        { people:['Juan'], type:'Cena', iso: toISO('2025-10-03','20:30'), place:'Palermo', notes:'pizza', cost:18000, tag:'Amigos', status:'scheduled' },
+        { people:['Lola'], type:'Café', iso: toISO('2025-10-01','10:00'), place:'Microcentro', notes:'', cost:4500, tag:'Trabajo', status:'scheduled' },
+        { people:['Familia'], type:'Salida', iso: toISO('2025-09-28','13:00'), place:'Casa', notes:'Asado', cost:25000, tag:'Familia', status:'scheduled' },
+        { people:['Nico'], type:'Salida', iso:null, place:'', notes:'Trekking', cost:0, tag:'Amigos', status:'idea' },
+        { people:['Agus'], type:'Salida', iso:null, place:'', notes:'Juegos de mesa', cost:0, tag:'Amigos', status:'idea' }
+      ];
+      const seeded = examples.map(x=>({...x, id:uid(), createdAt:Date.now(), updatedAt:Date.now()}));
+      save(seeded); localStorage.setItem(LS_SEEDED,'1');
+    }
+
+    function upsert(rec){
+      const recs = load(); const i=recs.findIndex(r=>r.id===rec.id);
+      if(i>=0){ rec.updatedAt=Date.now(); recs[i]=rec; } else { rec.createdAt=Date.now(); rec.updatedAt=Date.now(); recs.push(rec); }
+      save(recs); render();
+    }
+    function remove(id){ save(load().filter(r=>r.id!==id)); render(); }
+    function duplicate(id){ const recs=load(); const src=recs.find(r=>r.id===id); if(!src) return; recs.push({...src, id:uid(), createdAt:Date.now(), updatedAt:Date.now()}); save(recs); render(); }
+
+    function passesFilters(r){
+      if(state.filterPerson){
+        const n=state.filterPerson.toLowerCase(); if(!(r.people||[]).some(p=>p.toLowerCase().includes(n))) return false;
+      }
+      if(state.filterType && r.type!==state.filterType) return false;
+      if(state.filterTag){ const tag=(r.tag||'').toLowerCase(); if(!tag.includes(state.filterTag.toLowerCase())) return false; }
+      return true;
+    }
+
+    function render(){
+      const recs = load();
+      // datalist
+      const uniquePeople = Array.from(new Set(recs.flatMap(r=>r.people||[]))).sort();
+      document.getElementById('peopleList').innerHTML = uniquePeople.map(p=>`<option value="${p}">`).join('');
+
+      // semana
+      const now=new Date(); const wkStart=startOfWeek(addDays(now,state.weekOffset*7)); const wkEnd=addDays(wkStart,6);
+      document.getElementById('weekLabel').textContent = `${fmtDate(wkStart)} — ${fmtDate(wkEnd)}`;
+
+      // agenda
+      const agenda = recs.filter(r=>r.status==='scheduled' && r.iso).filter(passesFilters).filter(r=>{
+        const d=new Date(r.iso); return d>=wkStart && d<=addDays(wkEnd,1);
+      }).sort((a,b)=> new Date(a.iso)-new Date(b.iso));
+
+      const groups = {}; agenda.forEach(r=>{ const key=new Date(r.iso).toISOString().slice(0,10); (groups[key]=groups[key]||[]).push(r); });
+      const keys = Object.keys(groups).sort();
+      const agendaHtml = keys.map(k=>{
+        const d=new Date(k);
+        const items = groups[k].map(cardRecord).join('');
+        return `<div class="pt-2 border-t border-dashed">
+          <h4 class="font-semibold text-sm mb-1">${fmtDate(d)}</h4>${items}
+        </div>`;
+      }).join('') || `<div class="text-xs text-gray-600">No hay encuentros esta semana.</div>`;
+      document.getElementById('agendaList').innerHTML = agendaHtml;
+      document.getElementById('agendaCount').textContent = `${agenda.length} encuentro(s)`;
+
+      // resumen semanal
+      const weekSpend = agenda.reduce((s,r)=> s + Number(r.cost||0), 0);
+      const summary = [
+        `<div>Total encuentros: <strong>${agenda.length}</strong></div>`,
+        `<div>Gasto semanal: <strong>${fmtMoney(weekSpend)}</strong></div>`
+      ];
+
+      // personas: último contacto
+      const lastByPerson = {};
+      recs.filter(r=>r.status==='scheduled' && r.iso).forEach(r=>{
+        r.people.forEach(p=>{ const d=new Date(r.iso); if(!lastByPerson[p] || d>lastByPerson[p]) lastByPerson[p]=d; });
+      });
+      const peopleRows = Object.entries(lastByPerson).map(([p,d])=>({p,d,days:daysDiff(d,now)})).sort((a,b)=> b.d-a.d);
+      const topNoContact = [...peopleRows].sort((a,b)=> b.days-a.days).slice(0,3);
+      if(topNoContact.length){
+        summary.push('<div class="text-xs text-gray-600">Personas con más días sin contacto:</div>');
+        topNoContact.forEach(x=> summary.push(`<div>• ${x.p}: <strong>${x.days}</strong> día(s)</div>`));
+      }
+      document.getElementById('weeklySummary').innerHTML = summary.join('');
+
+      document.getElementById('peopleSummary').innerHTML = peopleRows.length
+        ? peopleRows.map(x=> `<div class="flex items-center justify-between">
+            <div><strong>${x.p}</strong></div>
+            <div class="text-xs text-gray-600">Último: ${x.d.toLocaleDateString('es-AR')} — ${x.days} día(s)</div>
+          </div>`).join('')
+        : `<div class="text-xs text-gray-600">Sin contactos registrados todavía.</div>`;
+
+      // ideas
+      const ideas = recs.filter(r=>r.status==='idea').filter(passesFilters).sort((a,b)=> a.createdAt-b.createdAt);
+      document.getElementById('ideasList').innerHTML = ideas.length ? ideas.map(cardRecord).join('') : `<div class="text-xs text-gray-600">No hay ideas.</div>`;
+      document.getElementById('ideasCount').textContent = `${ideas.length} idea(s)`;
+    }
+
+    function cardRecord(r){
+      const when = r.iso ? new Date(r.iso) : null;
+      const dt = fromISO(r.iso);
+      const people = (r.people||[]).join(', ');
+      const badge = r.status==='idea' ? '<span class="px-2 py-0.5 rounded-full border text-xs">Idea</span>' : `<span class="px-2 py-0.5 rounded-full border text-xs">${r.type}</span>`;
+      const tag = r.tag ? `<span class="px-2 py-0.5 rounded-full border text-xs">${r.tag}</span>` : '';
+      return `<div class="border rounded-xl p-3 bg-white">
+        <div class="flex items-center justify-between">
+          <div class="space-x-1"><strong>${people}</strong> ${badge} ${tag}</div>
+          <div class="text-xs text-gray-600">${r.cost ? (new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(r.cost)) : ''}</div>
+        </div>
+        <div class="text-xs text-gray-600 mt-1">
+          ${when ? `${dt.date} ${dt.time}` : 'Sin fecha'}${r.place ? ` • ${r.place}` : ''}
+        </div>
+        ${r.notes ? `<div class="text-xs text-gray-700 mt-1">${r.notes}</div>` : ''}
+        <div class="flex items-center gap-2 mt-2">
+          <button data-act="edit" data-id="${r.id}" class="px-3 py-1 rounded-lg border hover:bg-gray-50 text-sm">Editar</button>
+          <button data-act="dup" data-id="${r.id}" class="px-3 py-1 rounded-lg border hover:bg-gray-50 text-sm">Duplicar</button>
+          ${r.status==='idea' ? `<button data-act="schedule" data-id="${r.id}" class="px-3 py-1 rounded-lg border hover:bg-gray-50 text-sm">Programar</button>` : ''}
+          <button data-act="del" data-id="${r.id}" class="px-3 py-1 rounded-lg border hover:bg-gray-50 text-sm">Borrar</button>
+        </div>
+      </div>`;
+    }
+
+    function bind(){
+      document.getElementById('btnPrevWeek').addEventListener('click', ()=>{ state.weekOffset--; render(); });
+      document.getElementById('btnNextWeek').addEventListener('click', ()=>{ state.weekOffset++; render(); });
+      document.getElementById('btnThisWeek').addEventListener('click', ()=>{ state.weekOffset=0; render(); });
+
+      document.getElementById('filterPerson').addEventListener('input', e=>{ state.filterPerson=e.target.value.trim(); render(); });
+      document.getElementById('filterType').addEventListener('change', e=>{ state.filterType=e.target.value; render(); });
+      document.getElementById('filterTag').addEventListener('input', e=>{ state.filterTag=e.target.value.trim(); render(); });
+      document.getElementById('btnClearFilters').addEventListener('click', ()=>{
+        state.filterPerson=state.filterType=state.filterTag='';
+        document.getElementById('filterPerson').value=''; document.getElementById('filterType').value=''; document.getElementById('filterTag').value=''; render();
+      });
+
+      document.getElementById('btnSeed').addEventListener('click', ()=>{
+        localStorage.removeItem(LS_SEEDED); localStorage.removeItem(LS_KEY); seedIfEmpty(); render();
+      });
+
+      document.addEventListener('click', e=>{
+        const btn = e.target.closest('button[data-act]'); if(!btn) return;
+        const id = btn.getAttribute('data-id'); const act = btn.getAttribute('data-act');
+        if(act==='del'){ if(confirm('¿Borrar este registro?')) remove(id); }
+        else if(act==='dup'){ duplicate(id); }
+        else if(act==='edit'){
+          const rec = load().find(r=>r.id===id); if(!rec) return;
+          document.getElementById('recId').value = rec.id;
+          document.getElementById('people').value = (rec.people||[]).join(', ');
+          document.getElementById('type').value = rec.type || 'Otro';
+          const dt = fromISO(rec.iso);
+          document.getElementById('date').value = dt.date;
+          document.getElementById('time').value = dt.time;
+          document.getElementById('place').value = rec.place || '';
+          document.getElementById('cost').value = rec.cost || '';
+          document.getElementById('tag').value = rec.tag || '';
+          document.getElementById('notes').value = rec.notes || '';
+          document.getElementById('formTitle').textContent = 'Editar registro';
+          window.scrollTo({ top: 0, behavior:'smooth' });
+        } else if(act==='schedule'){
+          const rec = load().find(r=>r.id===id); if(!rec) return;
+          const date = prompt('Fecha (YYYY-MM-DD):', new Date().toISOString().slice(0,10)); if(!date) return;
+          const time = prompt('Hora (HH:MM):', '20:00');
+          rec.iso = toISO(date, time); rec.status='scheduled'; upsert(rec);
+        }
+      });
+
+      document.getElementById('btnReset').addEventListener('click', ()=>{
+        document.getElementById('recId').value=''; document.getElementById('editForm').reset();
+        document.getElementById('formTitle').textContent = 'Nuevo encuentro / idea';
+      });
+
+      document.getElementById('editForm').addEventListener('submit', e=>{
+        e.preventDefault();
+        const id = document.getElementById('recId').value || uid();
+        const rec = {
+          id,
+          people: parsePeople(document.getElementById('people').value),
+          type: document.getElementById('type').value || 'Otro',
+          iso: toISO(document.getElementById('date').value, document.getElementById('time').value),
+          place: document.getElementById('place').value.trim(),
+          notes: document.getElementById('notes').value.trim(),
+          cost: Number(document.getElementById('cost').value || 0),
+          tag: document.getElementById('tag').value.trim(),
+          status: (document.getElementById('date').value ? 'scheduled' : 'idea')
+        };
+        upsert(rec); document.getElementById('btnReset').click();
+      });
+    }
+
+    seedIfEmpty(); bind(); render();
+  })();
+  </script>
+</body>
+</html>

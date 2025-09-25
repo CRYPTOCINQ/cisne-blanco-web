@@ -1,2 +1,13 @@
-# Auto detect text files and perform LF normalization
 * text=auto
+
+# Fin de línea para scripts por si algún día agregás .bat
+*.bat eol=crlf
+
+# Git LFS para binarios pesados de medios
+*.png filter=lfs diff=lfs merge=lfs -text
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+*.gif filter=lfs diff=lfs merge=lfs -text
+*.webp filter=lfs diff=lfs merge=lfs -text
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.mov filter=lfs diff=lfs merge=lfs -text

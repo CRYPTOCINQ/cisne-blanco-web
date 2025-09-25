@@ -1,0 +1,33 @@
+# SO / Editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Builds / cachés
+dist/
+build/
+cache/
+coverage/
+
+# Dependencias (por si sumás tooling en el futuro)
+node_modules/
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+
+# Archivos binarios o exportables
+*.zip
+*.rar
+*.7z
+*.pdf
+*.pptx
+
+# Config personal
+.env
+*.local
+
+# Servicios de despliegue opcionales
+.netlify/
+.vercel/

@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cisne Blanco — Finanzas</title>
+  <meta name="description" content="Proyecto Cisne Blanco — Finanzas v1.0">
+  <link rel="stylesheet" href="../css/mini.css">
+  <link rel="icon" href="/assets/favicon.ico">
+</head>
+<body>
+<header class="border-b backdrop-blur sticky">
+    <div class="mx-auto container-pro px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-full bg-black text-white flex items-center justify-center font-bold">CB</div>
+        <span class="font-semibold">Cisne Blanco — Maqueta Base</span>
+      </div>
+      <nav class="flex items-center gap-2 text-sm">
+        <a href="../index.html" data-page="home" class="px-3 py-1 rounded-lg hover:bg-gray-100">Inicio</a>
+        <a href="./calendario.html" data-page="calendario" class="px-3 py-1 rounded-lg hover:bg-gray-100">Calendario</a>
+        <a href="./habitos.html" data-page="habitos" class="px-3 py-1 rounded-lg hover:bg-gray-100">Hábitos</a>
+        <a href="./salud.html" data-page="salud" class="px-3 py-1 rounded-lg hover:bg-gray-100">Salud</a>
+        <a href="./familia.html" data-page="familia" class="px-3 py-1 rounded-lg hover:bg-gray-100">Familia</a>
+        <a href="./social.html" data-page="social" class="px-3 py-1 rounded-lg hover:bg-gray-100">Social</a>
+        <a href="./finanzas.html" data-page="finanzas" class="px-3 py-1 rounded-lg hover:bg-gray-100">Finanzas</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto container-pro px-4 pt-8">
+    <h1 class="text-2xl font-bold mb-2">Finanzas — Bitácora de operaciones</h1>
+    <p class="text-gray-600 mb-8">Privado y offline: todo se guarda en tu navegador (<code>localStorage</code>). Sin dependencias externas.</p>
+
+    <!-- Toolbar -->
+    <div class="border rounded-2xl p-4 bg-white mb-4">
+      <div class="flex flex-wrap items-end gap-2">
+        <button id="btn-nuevo" class="px-3 py-2 rounded-lg border">+ Nuevo trade</button>
+        <button id="btn-exportar" class="px-3 py-2 rounded-lg border">Exportar JSON</button>
+        <input id="file-import" type="file" accept="application/json" style="display:none">
+        <button id="btn-importar" class="px-3 py-2 rounded-lg border">Importar JSON</button>
+
+        <div class="ml-auto flex flex-wrap items-end gap-2">
+          <label class="text-sm">
+            <span class="block text-gray-600">Período</span>
+            <select id="filtro-periodo" class="px-2 py-1 rounded-lg border">
+              <option value="semana">Semana actual</option>
+              <option value="mes">Mes actual</option>
+              <option value="todo">Todo</option>
+              <option value="custom">Personalizado</option>
+            </select>
+          </label>
+          <label id="lbl-desde" class="text-sm hidden">
+            <span class="block text-gray-600">Desde</span>
+            <input id="f-desde" type="date" class="px-2 py-1 rounded-lg border">
+          </label>
+          <label id="lbl-hasta" class="text-sm hidden">
+            <span class="block text-gray-600">Hasta</span>
+            <input id="f-hasta" type="date" class="px-2 py-1 rounded-lg border">
+          </label>
+          <label class="text-sm">
+            <span class="block text-gray-600">Ticker</span>
+            <input id="f-ticker" type="text" placeholder="AAPL, BTCUSD..." class="px-2 py-1 rounded-lg border">
+          </label>
+          <label class="text-sm">
+            <span class="block text-gray-600">Dirección</span>
+            <select id="f-side" class="px-2 py-1 rounded-lg border">
+              <option value="all">Todas</option>
+              <option value="long">Long / Compra</option>
+              <option value="short">Short / Venta</option>
+            </select>
+          </label>
+          <label class="text-sm">
+            <span class="block text-gray-600">Estado</span>
+            <select id="f-status" class="px-2 py-1 rounded-lg border">
+              <option value="all">Todos</option>
+              <option value="open">Abierto</option>
+              <option value="closed">Cerrado</option>
+            </select>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4" id="kpis">
+      <div class="border rounded-2xl p-4 bg-white flex items-center justify-between">
+        <span class="text-gray-600 text-sm"># trades (filtro)</span><strong id="kpi-count">—</strong>
+      </div>
+      <div class="border rounded-2xl p-4 bg-white flex items-center justify-between">
+        <span class="text-gray-600 text-sm">Winrate %</span><strong id="kpi-winrate">—</strong>
+      </div>
+      <div class="border rounded-2xl p-4 bg-white flex items-center justify-between">
+        <span class="text-gray-600 text-sm">R medio</span><strong id="kpi-r-avg">—</strong>
+      </div>
+      <div class="border rounded-2xl p-4 bg-white flex items-center justify-between">
+        <span class="text-gray-600 text-sm">R total</span><strong id="kpi-r-sum">—</strong>
+      </div>
+      <div class="border rounded-2xl p-4 bg-white flex items-center justify-between">
+        <span class="text-gray-600 text-sm">Profit factor</span><strong id="kpi-pf">—</strong>
+      </div>
+      <div class="border rounded-2xl p-4 bg-white flex items-center justify-between">
+        <span class="text-gray-600 text-sm">$ promedio/trade</span><strong id="kpi-avg-pnl">—</strong>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="border rounded-2xl p-4 bg-white">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left border-b">
+              <th class="py-2 pr-3 whitespace-nowrap">Fecha/hora</th>
+              <th class="py-2 pr-3">Ticker</th>
+              <th class="py-2 pr-3">Mercado</th>
+              <th class="py-2 pr-3">Dir.</th>
+              <th class="py-2 pr-3 whitespace-nowrap">Cant.</th>
+              <th class="py-2 pr-3">Entrada</th>
+              <th class="py-2 pr-3">Stop</th>
+              <th class="py-2 pr-3">Take</th>
+              <th class="py-2 pr-3">Salida</th>
+              <th class="py-2 pr-3">Fees</th>
+              <th class="py-2 pr-3 whitespace-nowrap">Resultado / PnL</th>
+              <th class="py-2 pr-3">R</th>
+              <th class="py-2 pr-3">Setup</th>
+              <th class="py-2 pr-3">Notas</th>
+              <th class="py-2 pr-3">Estado</th>
+              <th class="py-2 pr-3">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p class="text-gray-600 text-sm mt-3">Tip: usá “Cerrar” para cargar rápido un precio de salida, o “Precio actual” para calcular PnL flotante en abiertos.</p>
+    </div>
+  </main>
+
+<footer class="mt-16 border-t">
+    <div class="mx-auto container-pro px-4 py-6 text-xs text-gray-500 flex items-center justify-between">
+      <span>© 2025 Cisne Blanco</span>
+      <span>v2.4 — Editar evento</span>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      document.querySelectorAll('a[data-page]').forEach(a => {
+        if (a.dataset.page === 'finanzas') {
+          a.style.background = '#000';
+          a.style.color = '#fff';
+          a.style.borderRadius = '10px';
+          a.style.padding = '6px 10px';
+        }
+      });
+    })();
+
+    const LS_KEY = 'cisne_blanco_finanzas_v1_trades';
+    const LS_SEEDED = 'cisne_blanco_finanzas_v1_seeded';
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const fmtMoney = (n) => (n===null || Number.isNaN(n)) ? '—' : new Intl.NumberFormat('es-AR', { maximumFractionDigits: 2 }).format(n);
+    const fmtR = (r) => (r===null || Number.isNaN(r)) ? '—' : (Math.round(r*100)/100).toFixed(2);
+    const parseNum = (v) => v==='' || v===null || v===undefined ? null : Number(v);
+    const isLong = (s) => (s||'').toString().toLowerCase().includes('long') || (s||'').toString().toLowerCase().includes('compra');
+    const isShort = (s) => (s||'').toString().toLowerCase().includes('short') || (s||'').toString().toLowerCase().includes('venta');
+    const todayISO = () => new Date(Date.now() - (new Date().getTimezoneOffset()*60000)).toISOString().slice(0,10);
+
+    function compute(tr){
+      const qty = Number(tr.qty||0);
+      const entry = Number(tr.entry||0);
+      const stop = Number(tr.stop||0);
+      const exit = (tr.exit==null||tr.exit==='') ? null : Number(tr.exit);
+      const fees = (tr.fees==null||tr.fees==='') ? 0 : Number(tr.fees);
+      const pxNow = (tr.pxNow==null||tr.pxNow==='') ? null : Number(tr.pxNow);
+      const side = tr.side;
+
+      const riskPerUnit = (entry && stop) ? Math.abs(entry - stop) : null;
+      const riskTotal = (riskPerUnit!=null) ? riskPerUnit * qty : null;
+
+      let pnl = null;
+      let R = null;
+      let status = 'open';
+
+      if(exit!=null){
+        status = 'closed';
+        const perUnit = isLong(side) ? (exit - entry) : (entry - exit);
+        pnl = perUnit * qty - fees;
+      }else if(pxNow!=null){
+        status = 'open';
+        const perUnit = isLong(side) ? (pxNow - entry) : (entry - pxNow);
+        pnl = perUnit * qty - fees;
+      }
+
+      if(pnl!=null && riskTotal && riskTotal>0){
+        R = pnl / riskTotal;
+      }
+
+      return { pnl, R, riskPerUnit, riskTotal, status };
+    }
+
+    function load(){
+      try{
+        const raw = localStorage.getItem(LS_KEY);
+        return raw ? JSON.parse(raw) : [];
+      }catch(e){
+        console.error('Error leyendo localStorage', e);
+        return [];
+      }
+    }
+    function save(arr){ localStorage.setItem(LS_KEY, JSON.stringify(arr)); }
+    function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,9); }
+
+    (function seed(){
+      if(localStorage.getItem(LS_SEEDED)) return;
+      const sample = [
+        { id: uid(), dt: new Date().toISOString(), ticker:'AAPL', market:'NASDAQ', side:'long', qty:10, entry:195, stop:190, take:null, exit:202, fees:0, setup:'Breakout', notes:'', pxNow:null },
+        { id: uid(), dt: new Date().toISOString(), ticker:'SPY', market:'NYSE', side:'short', qty:5, entry:510, stop:514, take:null, exit:503, fees:0, setup:'Reversa S/R', notes:'', pxNow:null },
+        { id: uid(), dt: new Date().toISOString(), ticker:'TSLA', market:'NASDAQ', side:'long', qty:4, entry:240, stop:232, take:null, exit:236, fees:0, setup:'Pullback EMA', notes:'', pxNow:null },
+        { id: uid(), dt: new Date().toISOString(), ticker:'BTCUSD', market:'CRYPTO', side:'long', qty:0.02, entry:61000, stop:59800, take:null, exit:null, fees:0, setup:'Tendencial', notes:'PnL flotante', pxNow:60650 },
+        { id: uid(), dt: new Date().toISOString(), ticker:'GGAL', market:'BYMA', side:'long', qty:50, entry:7800, stop:7500, take:null, exit:7650, fees:0, setup:'SFP', notes:'', pxNow:null },
+      ];
+      save(sample);
+      localStorage.setItem(LS_SEEDED, '1');
+    })();
+
+    function startOfWeek(d){ const x = new Date(d); const day = x.getDay(); const diff = (day===0 ? -6 : 1) - day; x.setDate(x.getDate() + diff); x.setHours(0,0,0,0); return x; }
+    function endOfWeek(d){ const s = startOfWeek(d); const e = new Date(s); e.setDate(s.getDate()+7); e.setMilliseconds(-1); return e; }
+    function startOfMonth(d){ const x = new Date(d); x.setDate(1); x.setHours(0,0,0,0); return x; }
+    function endOfMonth(d){ const x = new Date(d); x.setMonth(x.getMonth()+1, 1); x.setHours(0,0,0,0); x.setMilliseconds(-1); return x; }
+
+    function inRange(dt, from, to){
+      const t = new Date(dt).getTime();
+      if(from && t < from.getTime()) return false;
+      if(to && t > to.getTime()) return false;
+      return true;
+    }
+
+    const rowsEl = document.getElementById('rows');
+    const kpiEls = {
+      count: document.getElementById('kpi-count'),
+      winrate: document.getElementById('kpi-winrate'),
+      rAvg: document.getElementById('kpi-r-avg'),
+      rSum: document.getElementById('kpi-r-sum'),
+      pf: document.getElementById('kpi-pf'),
+      avgPnl: document.getElementById('kpi-avg-pnl'),
+    };
+
+    function currentFilters(){
+      const period = document.getElementById('filtro-periodo').value;
+      const ticker = document.getElementById('f-ticker').value.trim().toLowerCase();
+      const side = document.getElementById('f-side').value;
+      const status = document.getElementById('f-status').value;
+
+      let from=null, to=null;
+      const now = new Date();
+      if(period==='semana'){ from = startOfWeek(now); to = endOfWeek(now); }
+      else if(period==='mes'){ from = startOfMonth(now); to = endOfMonth(now); }
+      else if(period==='custom'){
+        const d = document.getElementById('f-desde').value ? new Date(document.getElementById('f-desde').value+"T00:00") : null;
+        const h = document.getElementById('f-hasta').value ? new Date(document.getElementById('f-hasta').value+"T23:59:59") : null;
+        from = d; to = h;
+      }
+      return { period, ticker, side, status, from, to };
+    }
+
+    function applyFilters(list, f){
+      return list.filter(tr => {
+        if(f.ticker && !tr.ticker?.toLowerCase().includes(f.ticker)) return false;
+        if(f.side!=='all'){
+          if(f.side==='long' && !isLong(tr.side)) return false;
+          if(f.side==='short' && !isShort(tr.side)) return false;
+        }
+        const comp = compute(tr);
+        if(f.status!=='all'){
+          if(f.status==='open' && comp.status!=='open') return false;
+          if(f.status==='closed' && comp.status!=='closed') return false;
+        }
+        if(!inRange(tr.dt, f.from, f.to)) return false;
+        return true;
+      });
+    }
+
+    function render(){
+      const data = load().sort((a,b)=> new Date(b.dt)-new Date(a.dt));
+      const f = currentFilters();
+      const arr = applyFilters(data, f);
+
+      const closed = arr.filter(t => compute(t).status==='closed');
+      const wins = closed.filter(t => compute(t).pnl>0);
+      const losses = closed.filter(t => compute(t).pnl<0);
+      const sum = (xs,fn) => xs.reduce((a,x)=>a+(fn?fn(x):x),0);
+      const rVals = closed.map(t => compute(t).R).filter(x => x!=null);
+      const pnlVals = closed.map(t => compute(t).pnl).filter(x => x!=null);
+      const winrate = closed.length ? (wins.length/closed.length*100) : null;
+      const rAvg = rVals.length ? sum(rVals)/rVals.length : null;
+      const rSum = rVals.length ? sum(rVals) : null;
+      const pf = (sum(wins, t=>compute(t).pnl) && sum(losses, t=>Math.abs(compute(t).pnl))) ? (sum(wins, t=>compute(t).pnl)/sum(losses, t=>Math.abs(compute(t).pnl))) : (wins.length && !losses.length ? Infinity : (losses.length && !wins.length ? 0 : null));
+      const avgPnl = pnlVals.length ? sum(pnlVals)/pnlVals.length : null;
+
+      kpiEls.count.textContent = arr.length;
+      kpiEls.winrate.textContent = winrate==null ? '—' : (Math.round(winrate*10)/10).toFixed(1)+'%';
+      kpiEls.rAvg.textContent = fmtR(rAvg);
+      kpiEls.rSum.textContent = fmtR(rSum);
+      kpiEls.pf.textContent = pf==null ? '—' : (pf===Infinity ? '∞' : (Math.round(pf*100)/100).toFixed(2));
+      kpiEls.avgPnl.textContent = (avgPnl==null ? '—' : ('$ ' + fmtMoney(avgPnl)));
+
+      rowsEl.innerHTML = '';
+      for(const tr of arr){
+        const c = compute(tr);
+        const pnlClass = (c.pnl==null) ? '' : (c.pnl>=0 ? 'text-green-700 font-semibold' : 'text-red-700 font-semibold');
+        const sidePill = isLong(tr.side) ? '<span class="px-2 py-1 rounded-full border text-xs bg-green-50 border-green-200">Long/Compra</span>' : '<span class="px-2 py-1 rounded-full border text-xs bg-red-50 border-red-200">Short/Venta</span>';
+        const statusPill = c.status==='open' ? '<span class="px-2 py-1 rounded-full border text-xs bg-amber-50 border-amber-200">Abierto</span>' : '<span class="px-2 py-1 rounded-full border text-xs bg-emerald-50 border-emerald-200">Cerrado</span>';
+
+        const trEl = document.createElement('tr');
+        trEl.className = "border-b hover:bg-gray-50";
+        trEl.innerHTML = `
+          <td class="py-2 pr-3 whitespace-nowrap">${new Date(tr.dt).toLocaleString()}</td>
+          <td class="py-2 pr-3">${tr.ticker||'—'}</td>
+          <td class="py-2 pr-3">${tr.market||'—'}</td>
+          <td class="py-2 pr-3">${sidePill}</td>
+          <td class="py-2 pr-3 whitespace-nowrap">${tr.qty??'—'}</td>
+          <td class="py-2 pr-3">${tr.entry??'—'}</td>
+          <td class="py-2 pr-3">${tr.stop??'—'}</td>
+          <td class="py-2 pr-3">${tr.take??'—'}</td>
+          <td class="py-2 pr-3">${tr.exit??'—'}</td>
+          <td class="py-2 pr-3">${tr.fees??'—'}</td>
+          <td class="py-2 pr-3 ${pnlClass}">${c.pnl==null?'—':('$ '+fmtMoney(c.pnl))}</td>
+          <td class="py-2 pr-3">${fmtR(c.R)}</td>
+          <td class="py-2 pr-3">${tr.setup||'—'}</td>
+          <td class="py-2 pr-3">${tr.notes||'—'}</td>
+          <td class="py-2 pr-3">${statusPill}</td>
+          <td class="py-2 pr-3">
+            <div class="flex flex-wrap gap-2">
+              <button data-act="edit" data-id="${tr.id}" class="px-2 py-1 rounded-lg border">Editar</button>
+              <button data-act="dup" data-id="${tr.id}" class="px-2 py-1 rounded-lg border">Duplicar</button>
+              ${c.status==='open'
+                ? `<button data-act="px" data-id="${tr.id}" class="px-2 py-1 rounded-lg border">Precio actual</button>
+                   <button data-act="close" data-id="${tr.id}" class="px-2 py-1 rounded-lg border">Cerrar</button>`
+                : ''}
+              <button data-act="del" data-id="${tr.id}" class="px-2 py-1 rounded-lg border">Borrar</button>
+            </div>
+          </td>
+        `;
+        rowsEl.appendChild(trEl);
+      }
+    }
+
+    const dlg = document.getElementById('dlg');
+    const frm = document.getElementById('frm');
+    document.getElementById('dlg-close').addEventListener('click', () => dlg.close());
+
+    function openModal(tr){
+      document.getElementById('dlg-title').textContent = tr ? 'Editar trade' : 'Nuevo trade';
+      document.getElementById('id').value = tr?.id || '';
+      document.getElementById('dt').value = tr?.dt ? tr.dt.slice(0,16) : new Date(Date.now() - (new Date().getTimezoneOffset()*60000)).toISOString().slice(0,16);
+      document.getElementById('ticker').value = tr?.ticker || '';
+      document.getElementById('market').value = tr?.market || '';
+      document.getElementById('side').value = (tr && isShort(tr.side)) ? 'short' : 'long';
+      document.getElementById('qty').value = tr?.qty ?? '';
+      document.getElementById('entry').value = tr?.entry ?? '';
+      document.getElementById('stop').value = tr?.stop ?? '';
+      document.getElementById('take').value = tr?.take ?? '';
+      document.getElementById('exit').value = tr?.exit ?? '';
+      document.getElementById('fees').value = tr?.fees ?? '';
+      document.getElementById('setup').value = tr?.setup || '';
+      document.getElementById('notes').value = tr?.notes || '';
+      document.getElementById('pxNow').value = tr?.pxNow ?? '';
+
+      document.getElementById('btn-del').style.display = tr ? '' : 'none';
+      document.getElementById('btn-dup').style.display = tr ? '' : 'none';
+
+      dlg.showModal();
+    }
+
+    function readForm(){
+      const obj = {
+        id: document.getElementById('id').value || uid(),
+        dt: new Date(document.getElementById('dt').value).toISOString(),
+        ticker: document.getElementById('ticker').value.trim(),
+        market: document.getElementById('market').value.trim() || null,
+        side: document.getElementById('side').value,
+        qty: parseNum(document.getElementById('qty').value),
+        entry: parseNum(document.getElementById('entry').value),
+        stop: parseNum(document.getElementById('stop').value),
+        take: parseNum(document.getElementById('take').value),
+        exit: parseNum(document.getElementById('exit').value),
+        fees: parseNum(document.getElementById('fees').value) || 0,
+        setup: document.getElementById('setup').value.trim() || null,
+        notes: document.getElementById('notes').value.trim() || null,
+        pxNow: parseNum(document.getElementById('pxNow').value),
+      };
+      if(!obj.ticker) throw new Error('Ticker es obligatorio');
+      if(!obj.qty || obj.qty<=0) throw new Error('Cantidad debe ser > 0');
+      if(obj.entry==null || obj.stop==null) throw new Error('Entrada y Stop son obligatorios');
+      return obj;
+    }
+
+    frm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      try{
+        const obj = readForm();
+        const arr = load();
+        const i = arr.findIndex(x=>x.id===obj.id);
+        if(i>=0) arr[i] = obj; else arr.push(obj);
+        save(arr);
+        dlg.close();
+        render();
+      }catch(err){
+        alert(err.message || 'Error al guardar');
+      }
+    });
+
+    document.getElementById('btn-del').addEventListener('click', ()=>{
+      const id = document.getElementById('id').value;
+      if(!id) return;
+      if(confirm('¿Eliminar este trade?')){
+        const arr = load().filter(x=>x.id!==id);
+        save(arr);
+        dlg.close();
+        render();
+      }
+    });
+
+    document.getElementById('btn-dup').addEventListener('click', ()=>{
+      const obj = readForm();
+      obj.id = uid();
+      obj.notes = (obj.notes||'') + ' (duplicado)';
+      const arr = load(); arr.push(obj); save(arr);
+      dlg.close();
+      render();
+    });
+
+    rowsEl.addEventListener('click', (e)=>{
+      const btn = e.target.closest('button[data-act]');
+      if(!btn) return;
+      const id = btn.getAttribute('data-id');
+      const act = btn.getAttribute('data-act');
+      const arr = load();
+      const tr = arr.find(x=>x.id===id);
+      if(!tr) return;
+
+      if(act==='edit'){ openModal(tr); }
+      else if(act==='dup'){ const cp = { ...tr, id: uid(), notes: (tr.notes||'')+' (duplicado)' }; arr.push(cp); save(arr); render(); }
+      else if(act==='del'){ if(confirm('¿Eliminar este trade?')){ save(arr.filter(x=>x.id!==id)); render(); } }
+      else if(act==='px'){
+        const val = prompt('Precio actual (manual):', tr.pxNow ?? '');
+        if(val!==null){
+          const v = Number(val);
+          if(Number.isFinite(v)){ tr.pxNow = v; save(arr); render(); }
+          else alert('Número inválido');
+        }
+      }
+      else if(act==='close'){
+        const val = prompt('Precio de salida para cerrar:', tr.exit ?? '');
+        if(val!==null){
+          const v = Number(val);
+          if(Number.isFinite(v)){ tr.exit = v; tr.pxNow = null; save(arr); render(); }
+          else alert('Número inválido');
+        }
+      }
+    });
+
+    function toggleCustomDates(show){
+      document.getElementById('lbl-desde').classList.toggle('hidden', !show);
+      document.getElementById('lbl-hasta').classList.toggle('hidden', !show);
+      if(show){
+        if(!document.getElementById('f-desde').value) document.getElementById('f-desde').value = todayISO();
+        if(!document.getElementById('f-hasta').value) document.getElementById('f-hasta').value = todayISO();
+      }
+    }
+    document.getElementById('filtro-periodo').addEventListener('change', ()=>{ toggleCustomDates(document.getElementById('filtro-periodo').value==='custom'); render(); });
+    document.getElementById('f-desde').addEventListener('change', render);
+    document.getElementById('f-hasta').addEventListener('change', render);
+    document.getElementById('f-ticker').addEventListener('input', render);
+    document.getElementById('f-side').addEventListener('change', render);
+    document.getElementById('f-status').addEventListener('change', render);
+
+    document.getElementById('btn-exportar').addEventListener('click', ()=>{
+      const dataStr = JSON.stringify(load(), null, 2);
+      const blob = new Blob([dataStr], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'cisne_blanco_finanzas_backup.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+    document.getElementById('btn-importar').addEventListener('click', ()=> document.getElementById('file-import').click());
+    document.getElementById('file-import').addEventListener('change', (e)=>{
+      const file = e.target.files?.[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = function(){
+        try{
+          const arr = JSON.parse(reader.result);
+          if(!Array.isArray(arr)) throw new Error('Formato inválido');
+          save(arr);
+          alert('Importado correctamente ('+arr.length+' trades)');
+          render();
+        }catch(err){
+          alert('Error al importar: '+(err.message||'desconocido'));
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    });
+
+    toggleCustomDates(false);
+    render();
+  </script>
+
+</body>
+</html>
