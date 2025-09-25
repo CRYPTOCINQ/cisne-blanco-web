@@ -2,7 +2,9 @@ name: Deploy static content to Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main"]          # deploy solo al llegar a main
+  pull_request:
+    branches: ["main"]          # en PR corre un build (sin deploy)
   workflow_dispatch:
 
 permissions:
@@ -15,7 +17,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build:                         # ✅ corre en PR y en push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Basic site check
+        run: test -f index.html
+
+  deploy:                        # 🚀 SOLO en push a main
+    if: github.event_name == 'push'
+    needs: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
