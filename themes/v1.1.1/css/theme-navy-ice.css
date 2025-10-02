@@ -1,0 +1,7 @@
+
+/* Navy & Ice (default) */
+:root[data-theme="navy-ice"]{
+  --color-bg:#f6f8fb;--color-surface:#ffffff;--color-muted:#eef2f7;--color-border:#e5e9f0;
+  --color-text:#0f172a;--color-text-muted:#475569;--color-primary:#1e3a8a;--color-primary-contrast:#ffffff;
+  --color-accent:#60a5fa;--color-focus:#2563eb;--color-success:#16a34a;--color-warning:#f59e0b;--color-danger:#dc2626
+}
