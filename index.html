@@ -5,14 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Proyecto Cisne Blanco — Maqueta Base">
 
-  <!-- Favicon y estilos (rutas relativas) -->
+  <!-- Favicon -->
   <link rel="icon" href="./assets/favicon.ico">
+
+  <!-- (Opcional) Preload de fuentes locales -->
+  <link rel="preload" href="./assets/fonts/inter/Inter-Variable.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="./assets/fonts/jetbrains-mono/JetBrainsMono-Variable.ttf" as="font" type="font/ttf" crossorigin>
+
+  <!-- Tipografías globales + tu CSS -->
   <link rel="stylesheet" href="./assets/css/base-typography.css">
   <link rel="stylesheet" href="./css/mini.css">
 
   <title>Cisne Blanco</title>
 
-  <!-- Estilo para el enlace activo del menú -->
+  <!-- Estilo del enlace activo en el menú -->
   <style>
     a[data-page].active {
       background:#000; color:#fff; border-radius:10px; padding:6px 10px;
@@ -27,7 +33,7 @@
         <span class="font-semibold">Cisne Blanco — Maqueta Base</span>
       </div>
       <nav class="flex items-center gap-2 text-sm">
-        <a href="index.html"            data-page="home"      class="px-3 py-1 rounded-lg hover:bg-gray-100">Inicio</a>
+        <a href="index.html"            data-page="home"       class="px-3 py-1 rounded-lg hover:bg-gray-100">Inicio</a>
         <a href="pages/calendario.html" data-page="calendario" class="px-3 py-1 rounded-lg hover:bg-gray-100">Calendario</a>
         <a href="pages/habitos.html"    data-page="habitos"    class="px-3 py-1 rounded-lg hover:bg-gray-100">Hábitos</a>
         <a href="pages/salud.html"      data-page="salud"      class="px-3 py-1 rounded-lg hover:bg-gray-100">Salud</a>
@@ -78,7 +84,7 @@
   </footer>
 
   <script>
-    // Marca activo el link del menú según el archivo actual (robusto para GitHub Pages)
+    // Marca activo el link del menú según el archivo actual (funciona en GitHub Pages)
     (function () {
       const path = location.pathname;
       const file = path.substring(path.lastIndexOf('/') + 1) || 'index.html';
