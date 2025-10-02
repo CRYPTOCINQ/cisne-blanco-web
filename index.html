@@ -3,10 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cisne Blanco — Inicio</title>
   <meta name="description" content="Proyecto Cisne Blanco — Maqueta Base">
-  <link rel="stylesheet" href="css/mini.css">
-  <link rel="icon" href="/assets/favicon.ico">
+
+  <!-- Favicon y estilos (rutas relativas) -->
+  <link rel="icon" href="./assets/favicon.ico">
+  <link rel="stylesheet" href="./assets/css/base-typography.css">
+  <link rel="stylesheet" href="./css/mini.css">
+
+  <title>Cisne Blanco</title>
+
+  <!-- Estilo para el enlace activo del menú -->
+  <style>
+    a[data-page].active {
+      background:#000; color:#fff; border-radius:10px; padding:6px 10px;
+    }
+  </style>
 </head>
 <body>
   <header class="border-b backdrop-blur sticky">
@@ -16,16 +27,17 @@
         <span class="font-semibold">Cisne Blanco — Maqueta Base</span>
       </div>
       <nav class="flex items-center gap-2 text-sm">
-        <a href="index.html" data-page="home" class="px-3 py-1 rounded-lg hover:bg-gray-100">Inicio</a>
+        <a href="index.html"            data-page="home"      class="px-3 py-1 rounded-lg hover:bg-gray-100">Inicio</a>
         <a href="pages/calendario.html" data-page="calendario" class="px-3 py-1 rounded-lg hover:bg-gray-100">Calendario</a>
-        <a href="pages/habitos.html" data-page="habitos" class="px-3 py-1 rounded-lg hover:bg-gray-100">Hábitos</a>
-        <a href="pages/salud.html" data-page="salud" class="px-3 py-1 rounded-lg hover:bg-gray-100">Salud</a>
-        <a href="pages/familia.html" data-page="familia" class="px-3 py-1 rounded-lg hover:bg-gray-100">Familia</a>
-        <a href="pages/social.html" data-page="social" class="px-3 py-1 rounded-lg hover:bg-gray-100">Social</a>
-        <a href="pages/finanzas.html" data-page="finanzas" class="px-3 py-1 rounded-lg hover:bg-gray-100">Finanzas</a>
+        <a href="pages/habitos.html"    data-page="habitos"    class="px-3 py-1 rounded-lg hover:bg-gray-100">Hábitos</a>
+        <a href="pages/salud.html"      data-page="salud"      class="px-3 py-1 rounded-lg hover:bg-gray-100">Salud</a>
+        <a href="pages/familia.html"    data-page="familia"    class="px-3 py-1 rounded-lg hover:bg-gray-100">Familia</a>
+        <a href="pages/social.html"     data-page="social"     class="px-3 py-1 rounded-lg hover:bg-gray-100">Social</a>
+        <a href="pages/finanzas.html"   data-page="finanzas"   class="px-3 py-1 rounded-lg hover:bg-gray-100">Finanzas</a>
       </nav>
     </div>
   </header>
+
   <main class="mx-auto container-pro px-4 pt-8">
     <h1 class="text-2xl font-bold mb-2">Bienvenido, Maximiliano 👋</h1>
     <p class="text-gray-600 mb-8">Base del Proyecto Cisne Blanco. Calendario con creación y <strong>edición</strong> de eventos.</p>
@@ -57,36 +69,31 @@
       </a>
     </div>
   </main>
+
   <footer class="mt-16 border-t">
     <div class="mx-auto container-pro px-4 py-6 text-xs text-gray-500 flex items-center justify-between">
       <span>© 2025 Cisne Blanco</span>
       <span>v2.4 — Editar evento</span>
     </div>
   </footer>
+
   <script>
-    (function() {
+    // Marca activo el link del menú según el archivo actual (robusto para GitHub Pages)
+    (function () {
       const path = location.pathname;
-      const map = {
-        "/": "home",
-        "index.html": "home",
-        "calendario.html": "calendario",
-        "habitos.html": "habitos",
-        "salud.html": "salud",
-        "familia.html": "familia",
-        "social.html": "social",
-        "finanzas.html": "finanzas"
+      const file = path.substring(path.lastIndexOf('/') + 1) || 'index.html';
+      const pageMap = {
+        'index.html': 'home',
+        'calendario.html': 'calendario',
+        'habitos.html': 'habitos',
+        'salud.html': 'salud',
+        'familia.html': 'familia',
+        'social.html': 'social',
+        'finanzas.html': 'finanzas'
       };
-      let key = "home";
-      for (const k in map) {
-        if (path.endsWith(k)) { key = map[k]; break; }
-      }
+      const key = pageMap[file] || 'home';
       document.querySelectorAll('a[data-page]').forEach(a => {
-        if (a.dataset.page === key) {
-          a.style.background = '#000';
-          a.style.color = '#fff';
-          a.style.borderRadius = '10px';
-          a.style.padding = '6px 10px';
-        }
+        a.classList.toggle('active', a.dataset.page === key);
       });
     })();
   </script>
