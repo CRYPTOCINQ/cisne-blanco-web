@@ -1,0 +1,66 @@
+
+/* Onyx & Gold v1.1 */
+:root[data-theme="onyx-gold"]{
+  --color-bg:#0c0d0f;--color-surface:#14161a;--color-muted:#0f1115;--color-border:#2a2f3a;
+  --color-text:#f1f1f3;--color-text-muted:#a8b0bb;--color-primary:#f0c64a;--color-primary-contrast:#151515;
+  --color-accent:#9b87f5;--color-focus:#f5c542;--color-success:#22c55e;--color-warning:#f59e0b;--color-danger:#ef4444
+}
+:root[data-theme="onyx-gold"] .btn-primary{--btn-bg:#f0c64a;--btn-fg:#151515;--btn-bd:#a8831a;--btn-bg-hover:#f4cf62;--btn-bd-hover:#98741a;--btn-bg-active:#e7b935;--btn-bd-active:#8a6719}
+:root[data-theme="onyx-gold"] .btn-secondary{--btn-bg:#20242c;--btn-fg:#f1f1f3;--btn-bd:#343a46;--btn-bg-hover:#262b35;--btn-bd-hover:#3e4553;--btn-bg-active:#1b1f26;--btn-bd-active:#2f3541}
+:root[data-theme="onyx-gold"] .btn-ghost{--btn-bg:transparent;--btn-fg:#f1f1f3;--btn-bd:#343a46;--btn-bg-hover:#1a1e25;--btn-bd-hover:#3e4553;--btn-bg-active:#14181e;--btn-bd-active:#2f3541}
+:root[data-theme="onyx-gold"] .btn-danger{--btn-bg:#f04444;--btn-fg:#151515;--btn-bd:#9f2020;--btn-bg-hover:#ff5757;--btn-bd-hover:#8f1c1c;--btn-bg-active:#e02f2f;--btn-bd-active:#7a1818}
+:root[data-theme="onyx-gold"] .table th{color:#c8ced8}
+:root[data-theme="onyx-gold"] .table tr:hover td{background:#1a1e25}
+:root[data-theme="onyx-gold"] .card{border-color:#2f3541}
+:root[data-theme="onyx-gold"] .kanban .col{border-color:#2f3541;background:#12151a}
+:root[data-theme="onyx-gold"] .kanban .item{border-color:#2f3541}
+:root[data-theme="onyx-gold"] .section{border-color:#2f3541;box-shadow:0 0 0 1px #2f3541,0 10px 30px rgba(0,0,0,.25)}
+
+/* Onyx & Gold v1.1.1 — badges legibles + diferenciación de botones */
+
+:root[data-theme="onyx-gold"] .badge{
+  background:#1a1e25;
+  border-color:#2f3541;
+  color:#e8e8ea;
+}
+:root[data-theme="onyx-gold"] .badge.success{
+  background: color-mix(in hsl, var(--color-success) 20%, #101318);
+  border-color: color-mix(in hsl, var(--color-success) 45%, #20252e);
+  color:#dff7e7;
+}
+:root[data-theme="onyx-gold"] .badge.warn{
+  background: color-mix(in hsl, var(--color-warning) 22%, #101318);
+  border-color: color-mix(in hsl, var(--color-warning) 50%, #20252e);
+  color:#fff2cf;
+}
+:root[data-theme="onyx-gold"] .badge.error{
+  background: color-mix(in hsl, var(--color-danger) 22%, #101318);
+  border-color: color-mix(in hsl, var(--color-danger) 50%, #20252e);
+  color:#ffe1e4;
+}
+
+/* Diferenciación de botones */
+:root[data-theme="onyx-gold"] .btn-secondary{
+  --btn-bg:#242a35;      /* relleno visible */
+  --btn-fg:#f1f1f3;
+  --btn-bd:#3a4250;
+  --btn-bg-hover:#2b3240;
+  --btn-bd-hover:#485163;
+  --btn-bg-active:#1b2028;
+  --btn-bd-active:#2f3745;
+}
+:root[data-theme="onyx-gold"] .btn-ghost{
+  --btn-bg:transparent;   /* sólo borde */
+  --btn-fg:#d5d9e2;
+  --btn-bd:#404959;
+  --btn-bg-hover:#131720;
+  --btn-bd-hover:#4b5568;
+  --btn-bg-active:#0e1218;
+  --btn-bd-active:#3a4250;
+}
+:root[data-theme="onyx-gold"] .btn:disabled{
+  background:#161a20 !important;
+  color:#7f8a9a !important;
+  border-color:#2a2f3a !important;
+  opacity:1 !important;
+}

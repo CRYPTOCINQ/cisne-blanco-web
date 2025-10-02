@@ -1,0 +1,11 @@
+
+/* Ruby & Silver v1.1 */
+:root[data-theme="ruby-silver"]{
+  --color-bg:#fbfbfc;--color-surface:#ffffff;--color-muted:#f3f4f6;--color-border:#e5e7eb;
+  --color-text:#0f172a;--color-text-muted:#475569;--color-primary:#d62a3a;--color-primary-contrast:#ffffff;
+  --color-accent:#9aa4b2;--color-focus:#e11d48;--color-success:#16a34a;--color-warning:#f59e0b;--color-danger:#8f1d2a
+}
+:root[data-theme="ruby-silver"] .btn-primary{--btn-bg:#d62a3a;--btn-fg:#fff;--btn-bd:#9b1e2a;--btn-bg-hover:#e04150;--btn-bd-hover:#8a1b26;--btn-bg-active:#c92434;--btn-bd-active:#7a1822}
+:root[data-theme="ruby-silver"] .btn-secondary{--btn-bg:#e8ecf2;--btn-fg:#0f172a;--btn-bd:#cbd5e1;--btn-bg-hover:#dfe6ee;--btn-bd-hover:#b8c5d4;--btn-bg-active:#d6dee8;--btn-bd-active:#aab8c9}
+:root[data-theme="ruby-silver"] .btn-ghost{--btn-bg:transparent;--btn-fg:#0f172a;--btn-bd:#cbd5e1;--btn-bg-hover:#f8fafc;--btn-bd-hover:#b8c5d4;--btn-bg-active:#f1f5f9;--btn-bd-active:#aab8c9}
+:root[data-theme="ruby-silver"] .btn-danger{--btn-bg:#8f1d2a;--btn-fg:#fff;--btn-bd:#66131b;--btn-bg-hover:#a32434;--btn-bd-hover:#5a1118;--btn-bg-active:#7a1722;--btn-bd-active:#4e0f15}

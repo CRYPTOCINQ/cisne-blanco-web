@@ -1,0 +1,34 @@
+
+<!doctype html><html lang="es" data-theme="navy-ice"><head>
+<link rel="stylesheet" href="../../assets/css/base-typography.css">
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Cisne Blanco — Demo UI (3 temas)</title>
+<link rel="stylesheet" href="css/base.css"/>
+<link rel="stylesheet" href="css/theme-navy-ice.css"/>
+<link rel="stylesheet" href="css/theme-onyx-gold.css"/>
+<link rel="stylesheet" href="css/theme-ruby-silver.css"/>
+<style>.brand .swan{color:var(--color-primary)}</style>
+</head><body>
+<header class="header"><div class="brand">🦢 <span class="swan">Cisne Blanco</span> <span class="muted">UI demo</span></div>
+<div class="actions"><label class="muted" for="themeSelect">Tema</label>
+<select id="themeSelect" class="btn"><option value="navy-ice">Navy & Ice</option><option value="onyx-gold">Onyx & Gold</option><option value="ruby-silver">Ruby & Silver</option></select>
+<button class="btn btn-primary">Acción principal</button><button class="btn btn-secondary">Secundaria</button><button class="btn btn-ghost">Ghost</button></div></header>
+<div class="container"><aside class="sidebar"><nav class="nav"><a class="active" href="#">Calendario</a><a href="#">Hábitos</a><a href="#">Salud</a><a href="#">Familia</a><a href="#">Social</a><a href="#">Finanzas</a></nav></aside>
+<main class="main">
+<section class="section"><div class="row" style="justify-content:space-between;"><h2 style="margin:0">Resumen</h2>
+<div class="row"><span class="badge success">Semana +3.2%</span><span class="badge warn">Pendientes: 4</span></div></div>
+<div class="grid cols-3" style="margin-top:.8rem;">
+<div class="card"><h3>Calendario</h3><div class="calendar"><div class="day"><div class="label">Lun</div></div><div class="day"><div class="label">Mar</div></div><div class="day"><div class="label">Mié</div></div><div class="day"><div class="label">Jue</div></div><div class="day"><div class="label">Vie</div></div><div class="day"><div class="label">Sáb</div></div><div class="day"><div class="label">Dom</div></div></div></div>
+<div class="card"><h3>Hábitos (heatmap)</h3><div class="heatmap"><div class='cell'></div><div class='cell'></div><div class='cell'></div><div class='cell'></div><div class='cell'></div><div class='cell'></div><div class='cell'></div><div class='cell'></div><div class='cell'></div><div class='cell'></div><div class='cell'></div><div class='cell'></div><div class='cell'></div><div class='cell'></div><div class='cell'></div><div class='cell'></div><div class='cell'></div><div class='cell'></div><div class='cell'></div><div class='cell'></div><div class='cell l2'></div><div class='cell l3'></div></div></div>
+<div class="card"><h3>Finanzas (tabla)</h3><table class="table"><thead><tr><th>Fecha</th><th>Ticker</th><th>Dirección</th><th>R:R</th><th>Resultado</th></tr></thead><tbody>
+<tr><td>26/09</td><td>NZDUSD</td><td>Long</td><td>1:3</td><td class="mono">+125</td></tr>
+<tr><td>26/09</td><td>EURUSD</td><td>Short</td><td>1:2</td><td class="mono">-60</td></tr>
+<tr><td>25/09</td><td>USDCHF</td><td>Long</td><td>1:4</td><td class="mono">+210</td></tr>
+</tbody></table></div></div></section>
+<section class="section"><h2 style="margin-top:0">Kanban (Social / Familia / Proyectos)</h2>
+<div class="kanban"><div class="col"><h4>Ideas</h4><div class="item">Salida al parque</div><div class="item">Café con Nico</div></div>
+<div class="col"><h4>Programado</h4><div class="item">Cena con familia — Vie 20:30</div><div class="item">Llamar a proveedores</div></div>
+<div class="col"><h4>Hecho</h4><div class="item">Visita al dentista</div></div></div></section>
+<section class="section"><h2 style="margin-top:0">Botonera</h2>
+<div class="row"><button class="btn btn-primary">Primario</button><button class="btn btn-secondary">Secundario</button><button class="btn btn-ghost">Ghost</button><button class="btn btn-danger">Peligro</button><button class="btn" disabled>Disabled</button></div>
+</section></main></div><script src="js/theme.js"></script></body></html>
