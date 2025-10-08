@@ -1,3 +1,6 @@
-Colocá aquí:
-- inter/Inter-Variable.woff2
-- jetbrains-mono/JetBrainsMono-Variable.woff2
+Colocá aquí las fuentes locales activas (.ttf):
+
+- inter/Inter-Variable.ttf
+- inter/Inter-Italic-Variable.ttf
+- jetbrains-mono/JetBrainsMono-Variable.ttf
+- jetbrains-mono/JetBrainsMono-Italic-Variable.ttf
