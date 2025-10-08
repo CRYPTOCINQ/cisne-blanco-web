@@ -1,71 +1,26 @@
-/* Cisne Blanco — base-typography.css (v1)
- -----------------------------------------------------------------
- Si preferís un fallback online temporal (mientras todavía no copiás
- las fuentes locales), podés pegar esto en cada <head> (QUITAR luego):
-   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
- -----------------------------------------------------------------*/
-
-/* 1) Carga local de fuentes (recomendado, 100% offline) */
-@font-face {
-  font-family: 'Inter';
-  src: url('../fonts/inter/Inter-Variable.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
+/* Inter upright (.ttf) */
+@font-face{
+  font-family:"Inter";
+  src:url("../fonts/inter/Inter-Variable.ttf") format("truetype");
+  font-weight:100 900;
+  font-style:normal;
+  font-display:swap;
 }
 
-@font-face {
-  font-family: 'JetBrains Mono';
-  src: url('../fonts/jetbrains-mono/JetBrainsMono-Variable.woff2') format('woff2');
-  font-weight: 100 800;
-  font-style: normal;
-  font-display: swap;
+/* Inter italic (.ttf) – usalo solo si subiste el archivo italic */
+@font-face{
+  font-family:"Inter";
+  src:url("../fonts/inter/Inter-Italic-Variable.ttf") format("truetype");
+  font-weight:100 900;
+  font-style:italic;
+  font-display:swap;
 }
 
-/* 2) Variables tipográficas */
-:root{
-  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
-
-  /* Escala por defecto (ajustable a gusto) */
-  --text-base: 16px;
-  --leading: 1.6;
-
-  /* Pesos comunes */
-  --w-regular: 400;
-  --w-medium: 500;
-  --w-semibold: 600;
-  --w-bold: 700;
+/* JetBrains Mono (.ttf) */
+@font-face{
+  font-family:"JetBrains Mono";
+  src:url("../fonts/jetbrains-mono/JetBrainsMono-Variable.ttf") format("truetype");
+  font-weight:100 800;
+  font-style:normal;
+  font-display:swap;
 }
-
-/* 3) Aplicación global */
-html{ font-size: var(--text-base); }
-body{
-  font-family: var(--font-sans);
-  line-height: var(--leading);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #111827; /* coincide con tu mini.css */
-}
-
-h1,h2,h3,.h1,.h2,.h3{ font-weight: var(--w-semibold); line-height: 1.25; }
-strong,b{ font-weight: var(--w-bold); }
-
-button,input,select,textarea{ font-family: var(--font-sans); }
-code, pre, kbd, samp{ font-family: var(--font-mono); font-size: .95em; }
-
-/* 4) Tamaños sugeridos (opcional) */
-.h1, h1{ font-size: clamp(1.6rem, 1.2rem + 1.2vw, 2.2rem); }
-.h2, h2{ font-size: clamp(1.3rem, 1.0rem + 0.9vw, 1.8rem); }
-.h3, h3{ font-size: clamp(1.1rem, 0.9rem + 0.6vw, 1.4rem); }
-
-.small, .text-sm{ font-size: .925rem; }
-.muted{ color:#6b7280; }
-
-/* 5) Utilidades */
-.font-sans{ font-family: var(--font-sans); }
-.font-mono{ font-family: var(--font-mono); }
-.w-regular{ font-weight: var(--w-regular); }
-.w-medium{ font-weight: var(--w-medium); }
-.w-semibold{ font-weight: var(--w-semibold); }
-.w-bold{ font-weight: var(--w-bold); }
