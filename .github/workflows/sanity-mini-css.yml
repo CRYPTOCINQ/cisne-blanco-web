@@ -1,1 +1,15 @@
-
+name: sanity-mini-css
+on:
+  pull_request:
+    paths:
+      - "css/mini.css"
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ensure mini.css has enough lines
+        run: |
+          LINES=$(wc -l < css/mini.css)
+          echo "mini.css lines: $LINES"
+          test $LINES -ge 50 || (echo "❌ mini.css demasiado corto (min 50 líneas)"; exit 1)
