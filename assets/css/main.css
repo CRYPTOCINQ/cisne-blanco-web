@@ -5,10 +5,6 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 }
 
-html, body{
-  font-family: var(--font-sans);
-}
-
-code, pre, kbd, samp{
-  font-family: var(--font-mono);
-}
+/* Forzar aplicación por encima de base-typography */
+html, body { font-family: var(--font-sans) !important; }
+code, pre, kbd, samp { font-family: var(--font-mono) !important; }
