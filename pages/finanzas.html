@@ -28,6 +28,7 @@
         <a href="./familia.html" data-page="familia" class="px-3 py-1 rounded-lg hover:bg-gray-100">Familia</a>
         <a href="./social.html" data-page="social" class="px-3 py-1 rounded-lg hover:bg-gray-100">Social</a>
         <a href="./finanzas.html" data-page="finanzas" class="px-3 py-1 rounded-lg hover:bg-gray-100">Finanzas</a>
+        <button id="theme-toggle" class="px-3 py-1 rounded-lg border">Tema</button>
       </nav>
     </div>
   </header>
@@ -37,7 +38,7 @@
     <p class="text-gray-600 mb-8">Privado y offline: todo se guarda en tu navegador (<code>localStorage</code>). Sin dependencias externas.</p>
 
     <!-- Toolbar -->
-    <div class="border rounded-2xl p-4 bg-white mb-4">
+    <div class="card p-4 mb-4">
       <div class="flex flex-wrap items-end gap-2">
         <button id="btn-nuevo" class="px-3 py-2 rounded-lg border">+ Nuevo trade</button>
         <button id="btn-exportar" class="px-3 py-2 rounded-lg border">Exportar JSON</button>
@@ -109,7 +110,7 @@
     </div>
 
     <!-- Tabla -->
-    <div class="border rounded-2xl p-4 bg-white">
+    <div class="card p-4">
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead>
