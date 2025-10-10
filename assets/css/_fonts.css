@@ -1,41 +1,31 @@
 /* Inter (variable: upright + italic) */
-@font-face {
-  font-family: "Inter";
-  src:
-    url("../fonts/inter/Inter-Variable.woff2?v=1201") format("woff2"),
-    url("../fonts/inter/Inter-Variable.ttf?v=1201") format("truetype");
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
+@font-face{
+  font-family:"Inter";
+  src:url("../fonts/inter/Inter-Variable.woff2?v=1201") format("woff2");
+  font-weight:100 900;
+  font-style:normal;
+  font-display:swap;
 }
-
-@font-face {
-  font-family: "Inter";
-  src:
-    url("../fonts/inter/Inter-Italic-Variable.woff2?v=1201") format("woff2"),
-    url("../fonts/inter/Inter-Italic-Variable.ttf?v=1201") format("truetype");
-  font-weight: 100 900;
-  font-style: italic;
-  font-display: swap;
+@font-face{
+  font-family:"Inter";
+  src:url("../fonts/inter/Inter-Italic-Variable.woff2?v=1201") format("woff2");
+  font-weight:100 900;
+  font-style:italic;
+  font-display:swap;
 }
 
 /* JetBrains Mono (variable: upright + italic) */
-@font-face {
-  font-family: "JetBrains Mono";
-  src:
-    url("../fonts/jetbrains-mono/JetBrainsMono-Variable.woff2?v=1201") format("woff2"),
-    url("../fonts/jetbrains-mono/JetBrainsMono-Variable.ttf?v=1201") format("truetype");
-  font-weight: 100 800;
-  font-style: normal;
-  font-display: swap;
+@font-face{
+  font-family:"JetBrains Mono";
+  src:url("../fonts/jetbrains-mono/JetBrainsMono-Variable.woff2?v=1201") format("woff2");
+  font-weight:100 800;
+  font-style:normal;
+  font-display:swap;
 }
-
-@font-face {
-  font-family: "JetBrains Mono";
-  src:
-    url("../fonts/jetbrains-mono/JetBrainsMono-Italic-Variable.woff2?v=1201") format("woff2"),
-    url("../fonts/jetbrains-mono/JetBrainsMono-Italic-Variable.ttf?v=1201") format("truetype");
-  font-weight: 100 800;
-  font-style: italic;
-  font-display: swap;
+@font-face{
+  font-family:"JetBrains Mono";
+  src:url("../fonts/jetbrains-mono/JetBrainsMono-Italic-Variable.woff2?v=1201") format("woff2");
+  font-weight:100 800;
+  font-style:italic;
+  font-display:swap;
 }
