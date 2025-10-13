@@ -145,6 +145,7 @@ code, pre, kbd, samp { font-family: var(--font-mono) !important; }
   --warn: #f59e0b;
   --danger: #ef4444;
 }
+.btn--danger:hover { filter: brightness(1.05); }
 
 /* =========================================================
    THEME — “ruby-silver” (claro con acentos rubí)
