@@ -81,155 +81,103 @@ code, pre, kbd, samp { font-family: var(--font-mono) !important; }
 }
 
 /* =========================================================
-   THEME 2 — “sand” (claro cálido)
+   THEME — “navy-ice” (claro frío, alto contraste en links)
    ========================================================= */
-[data-theme="theme-sand"]{
-  --bg: #fffaf3;
-  --fg: #1f2937;
-  --muted: #6b7280;
+[data-theme="navy-ice"]{
+  /* base */
+  --bg: #f6f8fb;
+  --fg: #0f172a;
+  --muted: #475569;
 
+  /* superficies */
   --card: #ffffff;
-  --card-border: #eadfcf;
+  --card-border: #e5e9f0;
 
-  --surface: #fcf5ea;
-  --surface-border: #eadfcf;
+  --surface: #ffffff;
+  --surface-border: #e5e9f0;
 
-  --accent: #1f2937;
+  /* acciones / enlaces */
+  --accent: #1e3a8a;        /* botón primario */
   --accent-fg: #ffffff;
 
-  --link: #0a66c2;
-  --link-hover: #084b8f;
+  --link: #2563eb;          /* azul accesible */
+  --link-hover: #1d4ed8;
 
-  --header-bg: rgba(255,250,243,.75);
-  --header-border: #eadfcf;
+  /* header translúcido */
+  --header-bg: rgba(246,248,251,.75);
+  --header-border: #e5e9f0;
 
-  --ok: #059669;
-  --warn: #b45309;
-  --danger: #b91c1c;
+  /* estados */
+  --ok: #16a34a;
+  --warn: #f59e0b;
+  --danger: #dc2626;
 }
 
 /* =========================================================
-   THEME 3 — “forest” (oscuro verdoso)
+   THEME — “onyx-gold” (oscuro con acentos dorados)
    ========================================================= */
-[data-theme="theme-forest"]{
-  --bg: #0b1410;
-  --fg: #e6f2ea;
-  --muted: #a5b7ad;
+[data-theme="onyx-gold"]{
+  /* base */
+  --bg: #0c0d0f;
+  --fg: #f1f1f3;
+  --muted: #a8b0bb;
 
-  --card: #112018;
-  --card-border: #1f342a;
+  /* superficies */
+  --card: #14161a;
+  --card-border: #2a2f3a;
 
-  --surface: #0e1a14;
-  --surface-border: #1f342a;
+  --surface: #12151a;
+  --surface-border: #2a2f3a;
 
-  --accent: #e6f2ea;
-  --accent-fg: #0b1410;
+  /* acciones / enlaces */
+  --accent: #f0c64a;        /* botón primario */
+  --accent-fg: #151515;
 
-  --link: #86efac;          /* verde claro */
-  --link-hover: #c7f9d5;
+  --link: #9b87f5;          /* violeta suave para links */
+  --link-hover: #c3b9ff;
 
-  --header-bg: rgba(11,20,16,.75);
-  --header-border: #1f342a;
+  /* header translúcido */
+  --header-bg: rgba(12,13,15,.75);
+  --header-border: #2a2f3a;
 
+  /* estados */
   --ok: #22c55e;
   --warn: #f59e0b;
   --danger: #ef4444;
 }
 
 /* =========================================================
-   THEME 4 — “grape” (oscuro violáceo)
+   THEME — “ruby-silver” (claro con acentos rubí)
    ========================================================= */
-[data-theme="theme-grape"]{
-  --bg: #0e0b17;
-  --fg: #ece7ff;
-  --muted: #c7c1e6;
+[data-theme="ruby-silver"]{
+  /* base */
+  --bg: #f7f7f9;
+  --fg: #1f2937;
+  --muted: #6b7280;
 
-  --card: #171326;
-  --card-border: #2a2444;
+  /* superficies */
+  --card: #ffffff;
+  --card-border: #e5e7eb;
 
-  --surface: #130f20;
-  --surface-border: #2a2444;
+  --surface: #f3f4f6;
+  --surface-border: #e5e7eb;
 
-  --accent: #ece7ff;
-  --accent-fg: #0e0b17;
+  /* acciones / enlaces */
+  --accent: #e11d48;        /* rubí */
+  --accent-fg: #ffffff;
 
-  --link: #a78bfa;          /* violeta claro */
-  --link-hover: #d7c9ff;
+  --link: #e11d48;
+  --link-hover: #be123c;
 
-  --header-bg: rgba(14,11,23,.75);
-  --header-border: #2a2444;
+  /* header translúcido */
+  --header-bg: rgba(255,255,255,.75);
+  --header-border: #e5e7eb;
 
-  --ok: #34d399;
+  /* estados */
+  --ok: #10b981;
   --warn: #f59e0b;
-  --danger: #f87171;
+  --danger: #ef4444;
 }
-
-/* =========================================================
-   (GANCHOS) Tus otros 2 themes
-   Pegá aquí las paletas de tus themes 2 y 3.
-   Solo cambiá las variables, NO toques las clases.
-   Activan con data-theme="theme-2" y "theme-3".
-   ========================================================= */
-
-/* Ejemplo de bloque vacío listo para pegar */
-[data-theme="theme-2"]{
-  /* --bg: ...;  --fg: ...;  etc. */
-}
-
-[data-theme="theme-3"]{
-  /* --bg: ...;  --fg: ...;  etc. */
-}
-
-/* =========================================================
-   Base
-   ========================================================= */
-html, body{
-  background: var(--bg);
-  color: var(--fg);
-}
-
-header{
-  background: var(--header-bg);
-  border-color: var(--header-border);
-}
-
-/* Texto secundario y enlaces */
-.text-gray-600 { color: var(--muted); }
-
-a { color: var(--link); }
-a:hover { color: var(--link-hover); }
-
-/* =========================================================
-   Utilidades reusables
-   ========================================================= */
-.card{
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-}
-
-.surface{
-  background: var(--surface);
-  border: 1px solid var(--surface-border);
-  border-radius: var(--radius);
-}
-
-.btn{
-  display: inline-flex; align-items: center; gap: .5ch;
-  padding: .5rem .75rem;
-  border: 1px solid var(--card-border);
-  border-radius: calc(var(--radius) - 4px);
-  background: var(--card);
-  color: var(--fg);
-}
-.btn:hover{ filter: brightness(0.98); }
-.btn-primary{
-  background: var(--accent);
-  color: var(--accent-fg);
-  border-color: var(--accent);
-}
-.btn-primary:hover{ filter: brightness(1.05); }
 
 /* Suavizar cambio de tema */
 .transition-theme,
