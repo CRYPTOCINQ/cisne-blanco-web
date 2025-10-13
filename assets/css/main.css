@@ -190,3 +190,23 @@ code, pre, kbd, samp { font-family: var(--font-mono) !important; }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme]){ color-scheme: dark; }
 }
+/* ===== Aliases para compatibilidad con HTML existente ===== */
+.btn--primary { 
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+.btn--primary:hover { filter: brightness(1.05); }
+
+.btn--danger {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+}
+.btn--danger:hover { filter: brightness(1.05); }
+
+.btn--sm {
+  padding: .25rem .5rem;
+  font-size: .875rem;
+  border-radius: calc(var(--radius) - 6px);
+}
