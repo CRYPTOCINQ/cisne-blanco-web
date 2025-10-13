@@ -81,150 +81,100 @@ code, pre, kbd, samp { font-family: var(--font-mono) !important; }
 }
 
 /* =========================================================
-   Design tokens v1 — LIGHT (default)
+   THEME — “navy-ice” (claro frío, alto contraste en links)
    ========================================================= */
-:root{
-  /* Radius / shadow / spacing */
-  --radius: 14px;
-  --shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.06);
-  --space-1: .25rem;  /* 4px */
-  --space-2: .5rem;   /* 8px */
-  --space-3: .75rem;  /* 12px */
-  --space-4: 1rem;    /* 16px */
-  --space-6: 1.5rem;  /* 24px */
+[data-theme="navy-ice"]{
+  /* base */
+  --bg: #f6f8fb;
+  --fg: #0f172a;
+  --muted: #475569;
 
-  /* Colores base (light) */
-  --bg: #ffffff;
-  --fg: #111827;
-  --muted: #6b7280;
-
+  /* superficies */
   --card: #ffffff;
-  --card-border: #e5e7eb;
+  --card-border: #e5e9f0;
 
-  --surface: #f8fafc;
-  --surface-border: #e5e7eb;
+  --surface: #ffffff;
+  --surface-border: #e5e9f0;
 
-  --accent: #111827;
+  /* acciones / enlaces */
+  --accent: #1e3a8a;        /* botón primario */
   --accent-fg: #ffffff;
 
-  --link: #0a66c2;
-  --link-hover: #084b8f;
+  --link: #2563eb;          /* azul accesible */
+  --link-hover: #1d4ed8;
 
-  --header-bg: rgba(255,255,255,.75);
-  --header-border: #e5e7eb;
+  /* header translúcido */
+  --header-bg: rgba(246,248,251,.75);
+  --header-border: #e5e9f0;
 
-  --ok: #059669;
-  --warn: #d97706;
-  --danger: #b91c1c;
+  /* estados */
+  --ok: #16a34a;
+  --warn: #f59e0b;
+  --danger: #dc2626;
 }
 
 /* =========================================================
-   Tema DARK — alto contraste
+   THEME — “onyx-gold” (oscuro con acentos dorados)
    ========================================================= */
-[data-theme="dark"]{
-  --bg: #0b1220;
-  --fg: #e6edf3;
-  --muted: #9aa7b5;
+[data-theme="onyx-gold"]{
+  /* base */
+  --bg: #0c0d0f;
+  --fg: #f1f1f3;
+  --muted: #a8b0bb;
 
-  --card: #121a2a;
-  --card-border: #22314a;
+  /* superficies */
+  --card: #14161a;
+  --card-border: #2a2f3a;
 
-  --surface: #0f1a2b;
-  --surface-border: #22314a;
+  --surface: #12151a;
+  --surface-border: #2a2f3a;
 
-  --accent: #e6edf3;
-  --accent-fg: #0b1220;
+  /* acciones / enlaces */
+  --accent: #f0c64a;        /* botón primario */
+  --accent-fg: #151515;
 
-  --link: #8ab4ff;
-  --link-hover: #c2d8ff;
+  --link: #9b87f5;          /* violeta suave para links */
+  --link-hover: #c3b9ff;
 
-  --header-bg: rgba(11,18,32,.75);
-  --header-border: #22314a;
+  /* header translúcido */
+  --header-bg: rgba(12,13,15,.75);
+  --header-border: #2a2f3a;
 
-  --ok: #10b981;
+  /* estados */
+  --ok: #22c55e;
   --warn: #f59e0b;
   --danger: #ef4444;
 }
 
 /* =========================================================
-   Tus 3 themes (pegá tus paletas aquí)
-   - Solo asigná variables; no cambies clases ni estructura.
-   - Si tu tema no define alguno, el sitio usa los valores de :root como fallback.
+   THEME — “ruby-silver” (claro con acentos rubí)
    ========================================================= */
+[data-theme="ruby-silver"]{
+  /* base */
+  --bg: #f7f7f9;
+  --fg: #1f2937;
+  --muted: #6b7280;
 
-/* THEME 2 — NAVY ICE */
-[data-theme="NAVY ICE"]{
- 
-/* Navy & Ice (default) */
-:root[data-theme="navy-ice"]{
-  --color-bg:#f6f8fb;--color-surface:#ffffff;--color-muted:#eef2f7;--color-border:#e5e9f0;
-  --color-text:#0f172a;--color-text-muted:#475569;--color-primary:#1e3a8a;--color-primary-contrast:#ffffff;
-  --color-accent:#60a5fa;--color-focus:#2563eb;--color-success:#16a34a;--color-warning:#f59e0b;--color-danger:#dc2626
-}
+  /* superficies */
+  --card: #ffffff;
+  --card-border: #e5e7eb;
 
-/* THEME 3 — tu nombre */
-[data-theme="theme-3"]{
-  /* pegá aquí las variables */
-}
+  --surface: #f3f4f6;
+  --surface-border: #e5e7eb;
 
-/* THEME 4 — tu nombre */
-[data-theme="theme-4"]{
-  /* pegá aquí las variables */
-}
+  /* acciones / enlaces */
+  --accent: #e11d48;        /* rubí */
+  --accent-fg: #ffffff;
 
-/* =========================================================
-   Base
-   ========================================================= */
-html, body{
-  background: var(--bg);
-  color: var(--fg);
-}
+  --link: #e11d48;
+  --link-hover: #be123c;
 
-/* Si un theme no define header vars, uso fallback de light */
-header{
-  background: var(--header-bg, rgba(255,255,255,.75));
-  border-color: var(--header-border, #e5e7eb);
-}
+  /* header translúcido */
+  --header-bg: rgba(255,255,255,.75);
+  --header-border: #e5e7eb;
 
-.text-gray-600 { color: var(--muted); }
-a { color: var(--link); }
-a:hover { color: var(--link-hover); }
-
-/* Utilidades */
-.card{
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-}
-.surface{
-  background: var(--surface);
-  border: 1px solid var(--surface-border);
-  border-radius: var(--radius);
-}
-.btn{
-  display: inline-flex; align-items: center; gap: .5ch;
-  padding: .5rem .75rem;
-  border: 1px solid var(--card-border);
-  border-radius: calc(var(--radius) - 4px);
-  background: var(--card);
-  color: var(--fg);
-}
-.btn:hover{ filter: brightness(0.98); }
-.btn-primary{
-  background: var(--accent);
-  color: var(--accent-fg);
-  border-color: var(--accent);
-}
-.btn-primary:hover{ filter: brightness(1.05); }
-
-/* Transición suave */
-.transition-theme,
-[data-theme] *{
-  transition: background-color .25s, color .25s, border-color .25s, box-shadow .25s;
-}
-
-/* Respeto preferencia del SO cuando NO hay theme guardado */
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme]){ color-scheme: dark; }
+  /* estados */
+  --ok: #10b981;
+  --warn: #f59e0b;
+  --danger: #ef4444;
 }
