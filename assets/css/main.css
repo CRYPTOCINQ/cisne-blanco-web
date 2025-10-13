@@ -1,5 +1,6 @@
 @import url("./_fonts.css?v=1201");
 
+/* ====== Tipografías ====== */
 :root{
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
@@ -8,9 +9,12 @@
 /* Forzar aplicación por encima de base-typography */
 html, body { font-family: var(--font-sans) !important; }
 code, pre, kbd, samp { font-family: var(--font-mono) !important; }
-/* === Design tokens v1 (light) === */
+
+/* =========================================================
+   Design tokens v1 — LIGHT (default)
+   ========================================================= */
 :root{
-  /* tipografía ya definida arriba */
+  /* Radius / shadow / spacing */
   --radius: 14px;
   --shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.06);
   --space-1: .25rem;  /* 4px */
@@ -19,57 +23,196 @@ code, pre, kbd, samp { font-family: var(--font-mono) !important; }
   --space-4: 1rem;    /* 16px */
   --space-6: 1.5rem;  /* 24px */
 
-  /* colores light */
+  /* Colores base (light) */
   --bg: #ffffff;
-  --fg: #111827;
-  --muted: #6b7280;
+  --fg: #111827;             /* texto principal (slate-900) */
+  --muted: #6b7280;          /* texto secundario */
 
   --card: #ffffff;
-  --card-border: #e5e7eb;
+  --card-border: #e5e7eb;    /* slate-200 */
 
-  --accent: #111827;        /* botones principales */
-  --accent-fg: #ffffff;
-
-  --surface: #f8fafc;       /* fondos suaves */
+  --surface: #f8fafc;        /* fondos suaves */
   --surface-border: #e5e7eb;
 
-  --ok: #059669;            /* verde */
-  --warn: #d97706;          /* ámbar */
-  --danger: #b91c1c;        /* rojo */
+  --accent: #111827;         /* botón primario */
+  --accent-fg: #ffffff;
+
+  /* Navegación/links */
+  --link: #0a66c2;
+  --link-hover: #084b8f;
+
+  /* Header translucido */
+  --header-bg: rgba(255,255,255,.75);
+  --header-border: #e5e7eb;
+
+  /* Estados */
+  --ok: #059669;
+  --warn: #d97706;
+  --danger: #b91c1c;
 }
 
-/* === Tema oscuro (se activará más adelante con data-theme="dark") === */
+/* =========================================================
+   Tema DARK — alto contraste
+   (se activa con data-theme="dark")
+   ========================================================= */
 [data-theme="dark"]{
   --bg: #0b1220;
-  --fg: #e5e7eb;
-  --muted: #9ca3af;
+  --fg: #e6edf3;              /* texto claro */
+  --muted: #9aa7b5;
 
-  --card: #111827;
-  --card-border: #1f2937;
+  --card: #121a2a;
+  --card-border: #22314a;
 
-  --accent: #e5e7eb;
+  --surface: #0f1a2b;
+  --surface-border: #22314a;
+
+  --accent: #e6edf3;          /* botón primario claro */
   --accent-fg: #0b1220;
 
-  --surface: #0f172a;
-  --surface-border: #1f2937;
+  --link: #8ab4ff;
+  --link-hover: #c2d8ff;
+
+  --header-bg: rgba(11,18,32,.75);
+  --header-border: #22314a;
 
   --ok: #10b981;
   --warn: #f59e0b;
   --danger: #ef4444;
 }
 
-/* === Aplicación base === */
+/* =========================================================
+   THEME 2 — “sand” (claro cálido)
+   ========================================================= */
+[data-theme="theme-sand"]{
+  --bg: #fffaf3;
+  --fg: #1f2937;
+  --muted: #6b7280;
+
+  --card: #ffffff;
+  --card-border: #eadfcf;
+
+  --surface: #fcf5ea;
+  --surface-border: #eadfcf;
+
+  --accent: #1f2937;
+  --accent-fg: #ffffff;
+
+  --link: #0a66c2;
+  --link-hover: #084b8f;
+
+  --header-bg: rgba(255,250,243,.75);
+  --header-border: #eadfcf;
+
+  --ok: #059669;
+  --warn: #b45309;
+  --danger: #b91c1c;
+}
+
+/* =========================================================
+   THEME 3 — “forest” (oscuro verdoso)
+   ========================================================= */
+[data-theme="theme-forest"]{
+  --bg: #0b1410;
+  --fg: #e6f2ea;
+  --muted: #a5b7ad;
+
+  --card: #112018;
+  --card-border: #1f342a;
+
+  --surface: #0e1a14;
+  --surface-border: #1f342a;
+
+  --accent: #e6f2ea;
+  --accent-fg: #0b1410;
+
+  --link: #86efac;          /* verde claro */
+  --link-hover: #c7f9d5;
+
+  --header-bg: rgba(11,20,16,.75);
+  --header-border: #1f342a;
+
+  --ok: #22c55e;
+  --warn: #f59e0b;
+  --danger: #ef4444;
+}
+
+/* =========================================================
+   THEME 4 — “grape” (oscuro violáceo)
+   ========================================================= */
+[data-theme="theme-grape"]{
+  --bg: #0e0b17;
+  --fg: #ece7ff;
+  --muted: #c7c1e6;
+
+  --card: #171326;
+  --card-border: #2a2444;
+
+  --surface: #130f20;
+  --surface-border: #2a2444;
+
+  --accent: #ece7ff;
+  --accent-fg: #0e0b17;
+
+  --link: #a78bfa;          /* violeta claro */
+  --link-hover: #d7c9ff;
+
+  --header-bg: rgba(14,11,23,.75);
+  --header-border: #2a2444;
+
+  --ok: #34d399;
+  --warn: #f59e0b;
+  --danger: #f87171;
+}
+
+/* =========================================================
+   (GANCHOS) Tus otros 2 themes
+   Pegá aquí las paletas de tus themes 2 y 3.
+   Solo cambiá las variables, NO toques las clases.
+   Activan con data-theme="theme-2" y "theme-3".
+   ========================================================= */
+
+/* Ejemplo de bloque vacío listo para pegar */
+[data-theme="theme-2"]{
+  /* --bg: ...;  --fg: ...;  etc. */
+}
+
+[data-theme="theme-3"]{
+  /* --bg: ...;  --fg: ...;  etc. */
+}
+
+/* =========================================================
+   Base
+   ========================================================= */
 html, body{
   background: var(--bg);
   color: var(--fg);
 }
 
-/* === Utilidades mínimas reusables === */
+header{
+  background: var(--header-bg);
+  border-color: var(--header-border);
+}
+
+/* Texto secundario y enlaces */
+.text-gray-600 { color: var(--muted); }
+
+a { color: var(--link); }
+a:hover { color: var(--link-hover); }
+
+/* =========================================================
+   Utilidades reusables
+   ========================================================= */
 .card{
   background: var(--card);
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+}
+
+.surface{
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius);
 }
 
 .btn{
@@ -81,7 +224,6 @@ html, body{
   color: var(--fg);
 }
 .btn:hover{ filter: brightness(0.98); }
-
 .btn-primary{
   background: var(--accent);
   color: var(--accent-fg);
@@ -89,16 +231,14 @@ html, body{
 }
 .btn-primary:hover{ filter: brightness(1.05); }
 
-.muted{ color: var(--muted); }
-.surface{
-  background: var(--surface);
-  border: 1px solid var(--surface-border);
-  border-radius: var(--radius);
+/* Suavizar cambio de tema */
+.transition-theme,
+[data-theme] *{
+  transition: background-color .25s, color .25s, border-color .25s, box-shadow .25s;
 }
 
-.transition-theme{ transition: background-color .25s, color .25s, border-color .25s; }
-
-/* Respeto preferencia del SO como default (sin activar aún el toggle) */
+/* Respeto preferencia del SO por defecto
+   (si NO hay valor guardado en localStorage) */
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme]) { color-scheme: dark; }
+  :root:not([data-theme]){ color-scheme: dark; }
 }
