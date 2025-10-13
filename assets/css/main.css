@@ -145,6 +145,7 @@ code, pre, kbd, samp { font-family: var(--font-mono) !important; }
   --warn: #f59e0b;
   --danger: #ef4444;
 }
+.btn--danger:hover { filter: brightness(1.05); }
 
 /* =========================================================
    THEME — “ruby-silver” (claro con acentos rubí)
@@ -178,35 +179,10 @@ code, pre, kbd, samp { font-family: var(--font-mono) !important; }
   --warn: #f59e0b;
   --danger: #ef4444;
 }
-
-/* Suavizar cambio de tema */
-.transition-theme,
-[data-theme] *{
-  transition: background-color .25s, color .25s, border-color .25s, box-shadow .25s;
-}
-
-/* Respeto preferencia del SO por defecto
-   (si NO hay valor guardado en localStorage) */
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme]){ color-scheme: dark; }
-}
-/* ===== Aliases para compatibilidad con HTML existente ===== */
-.btn--primary { 
-  background: var(--accent);
-  color: var(--accent-fg);
-  border-color: var(--accent);
-}
-.btn--primary:hover { filter: brightness(1.05); }
-
-.btn--danger {
-  background: var(--danger);
-  color: #fff;
-  border-color: var(--danger);
-}
-.btn--danger:hover { filter: brightness(1.05); }
-
-.btn--sm {
-  padding: .25rem .5rem;
-  font-size: .875rem;
-  border-radius: calc(var(--radius) - 6px);
+/* Mejora de contraste sutil para temas oscuros */
+[data-theme="dark"] .card,
+[data-theme="onyx-gold"] .card,
+[data-theme="theme-forest"] .card,
+[data-theme="theme-grape"] .card{
+  box-shadow: 0 1px 2px rgba(0,0,0,.2), 0 10px 30px rgba(0,0,0,.35);
 }
