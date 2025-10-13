@@ -81,103 +81,95 @@ code, pre, kbd, samp { font-family: var(--font-mono) !important; }
 }
 
 /* =========================================================
-   THEME 2 — “sand” (claro cálido)
+   Design tokens v1 — LIGHT (default)
    ========================================================= */
-[data-theme="theme-sand"]{
-  --bg: #fffaf3;
-  --fg: #1f2937;
+:root{
+  /* Radius / shadow / spacing */
+  --radius: 14px;
+  --shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.06);
+  --space-1: .25rem;  /* 4px */
+  --space-2: .5rem;   /* 8px */
+  --space-3: .75rem;  /* 12px */
+  --space-4: 1rem;    /* 16px */
+  --space-6: 1.5rem;  /* 24px */
+
+  /* Colores base (light) */
+  --bg: #ffffff;
+  --fg: #111827;
   --muted: #6b7280;
 
   --card: #ffffff;
-  --card-border: #eadfcf;
+  --card-border: #e5e7eb;
 
-  --surface: #fcf5ea;
-  --surface-border: #eadfcf;
+  --surface: #f8fafc;
+  --surface-border: #e5e7eb;
 
-  --accent: #1f2937;
+  --accent: #111827;
   --accent-fg: #ffffff;
 
   --link: #0a66c2;
   --link-hover: #084b8f;
 
-  --header-bg: rgba(255,250,243,.75);
-  --header-border: #eadfcf;
+  --header-bg: rgba(255,255,255,.75);
+  --header-border: #e5e7eb;
 
   --ok: #059669;
-  --warn: #b45309;
+  --warn: #d97706;
   --danger: #b91c1c;
 }
 
 /* =========================================================
-   THEME 3 — “forest” (oscuro verdoso)
+   Tema DARK — alto contraste
    ========================================================= */
-[data-theme="theme-forest"]{
-  --bg: #0b1410;
-  --fg: #e6f2ea;
-  --muted: #a5b7ad;
+[data-theme="dark"]{
+  --bg: #0b1220;
+  --fg: #e6edf3;
+  --muted: #9aa7b5;
 
-  --card: #112018;
-  --card-border: #1f342a;
+  --card: #121a2a;
+  --card-border: #22314a;
 
-  --surface: #0e1a14;
-  --surface-border: #1f342a;
+  --surface: #0f1a2b;
+  --surface-border: #22314a;
 
-  --accent: #e6f2ea;
-  --accent-fg: #0b1410;
+  --accent: #e6edf3;
+  --accent-fg: #0b1220;
 
-  --link: #86efac;          /* verde claro */
-  --link-hover: #c7f9d5;
+  --link: #8ab4ff;
+  --link-hover: #c2d8ff;
 
-  --header-bg: rgba(11,20,16,.75);
-  --header-border: #1f342a;
+  --header-bg: rgba(11,18,32,.75);
+  --header-border: #22314a;
 
-  --ok: #22c55e;
+  --ok: #10b981;
   --warn: #f59e0b;
   --danger: #ef4444;
 }
 
 /* =========================================================
-   THEME 4 — “grape” (oscuro violáceo)
-   ========================================================= */
-[data-theme="theme-grape"]{
-  --bg: #0e0b17;
-  --fg: #ece7ff;
-  --muted: #c7c1e6;
-
-  --card: #171326;
-  --card-border: #2a2444;
-
-  --surface: #130f20;
-  --surface-border: #2a2444;
-
-  --accent: #ece7ff;
-  --accent-fg: #0e0b17;
-
-  --link: #a78bfa;          /* violeta claro */
-  --link-hover: #d7c9ff;
-
-  --header-bg: rgba(14,11,23,.75);
-  --header-border: #2a2444;
-
-  --ok: #34d399;
-  --warn: #f59e0b;
-  --danger: #f87171;
-}
-
-/* =========================================================
-   (GANCHOS) Tus otros 2 themes
-   Pegá aquí las paletas de tus themes 2 y 3.
-   Solo cambiá las variables, NO toques las clases.
-   Activan con data-theme="theme-2" y "theme-3".
+   Tus 3 themes (pegá tus paletas aquí)
+   - Solo asigná variables; no cambies clases ni estructura.
+   - Si tu tema no define alguno, el sitio usa los valores de :root como fallback.
    ========================================================= */
 
-/* Ejemplo de bloque vacío listo para pegar */
-[data-theme="theme-2"]{
-  /* --bg: ...;  --fg: ...;  etc. */
+/* THEME 2 — NAVY ICE */
+[data-theme="NAVY ICE"]{
+ 
+/* Navy & Ice (default) */
+:root[data-theme="navy-ice"]{
+  --color-bg:#f6f8fb;--color-surface:#ffffff;--color-muted:#eef2f7;--color-border:#e5e9f0;
+  --color-text:#0f172a;--color-text-muted:#475569;--color-primary:#1e3a8a;--color-primary-contrast:#ffffff;
+  --color-accent:#60a5fa;--color-focus:#2563eb;--color-success:#16a34a;--color-warning:#f59e0b;--color-danger:#dc2626
 }
 
+/* THEME 3 — tu nombre */
 [data-theme="theme-3"]{
-  /* --bg: ...;  --fg: ...;  etc. */
+  /* pegá aquí las variables */
+}
+
+/* THEME 4 — tu nombre */
+[data-theme="theme-4"]{
+  /* pegá aquí las variables */
 }
 
 /* =========================================================
@@ -188,33 +180,28 @@ html, body{
   color: var(--fg);
 }
 
+/* Si un theme no define header vars, uso fallback de light */
 header{
-  background: var(--header-bg);
-  border-color: var(--header-border);
+  background: var(--header-bg, rgba(255,255,255,.75));
+  border-color: var(--header-border, #e5e7eb);
 }
 
-/* Texto secundario y enlaces */
 .text-gray-600 { color: var(--muted); }
-
 a { color: var(--link); }
 a:hover { color: var(--link-hover); }
 
-/* =========================================================
-   Utilidades reusables
-   ========================================================= */
+/* Utilidades */
 .card{
   background: var(--card);
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
-
 .surface{
   background: var(--surface);
   border: 1px solid var(--surface-border);
   border-radius: var(--radius);
 }
-
 .btn{
   display: inline-flex; align-items: center; gap: .5ch;
   padding: .5rem .75rem;
@@ -231,14 +218,13 @@ a:hover { color: var(--link-hover); }
 }
 .btn-primary:hover{ filter: brightness(1.05); }
 
-/* Suavizar cambio de tema */
+/* Transición suave */
 .transition-theme,
 [data-theme] *{
   transition: background-color .25s, color .25s, border-color .25s, box-shadow .25s;
 }
 
-/* Respeto preferencia del SO por defecto
-   (si NO hay valor guardado en localStorage) */
+/* Respeto preferencia del SO cuando NO hay theme guardado */
 @media (prefers-color-scheme: dark){
   :root:not([data-theme]){ color-scheme: dark; }
 }
