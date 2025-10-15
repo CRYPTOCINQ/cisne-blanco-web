@@ -6,58 +6,46 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 }
 
-/* Forzar aplicación por encima de base-typography */
+/* Fuerzo la tipografía por encima de cualquier base */
 html, body { font-family: var(--font-sans) !important; }
 code, pre, kbd, samp { font-family: var(--font-mono) !important; }
 
 /* =========================================================
-   Design tokens v1 — LIGHT (default)
+   LIGHT (default)
    ========================================================= */
 :root{
-  /* Radius / shadow / spacing */
   --radius: 14px;
   --shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.06);
-  --space-1: .25rem;  /* 4px */
-  --space-2: .5rem;   /* 8px */
-  --space-3: .75rem;  /* 12px */
-  --space-4: 1rem;    /* 16px */
-  --space-6: 1.5rem;  /* 24px */
+  --space-1: .25rem; --space-2: .5rem; --space-3: .75rem; --space-4: 1rem; --space-6: 1.5rem;
 
-  /* Colores base (light) */
   --bg: #ffffff;
-  --fg: #111827;             /* texto principal (slate-900) */
-  --muted: #6b7280;          /* texto secundario */
+  --fg: #111827;
+  --muted: #6b7280;
 
   --card: #ffffff;
-  --card-border: #e5e7eb;    /* slate-200 */
+  --card-border: #e5e7eb;
 
-  --surface: #f8fafc;        /* fondos suaves */
+  --surface: #f8fafc;
   --surface-border: #e5e7eb;
 
-  --accent: #111827;         /* botón primario */
+  --accent: #111827;
   --accent-fg: #ffffff;
 
-  /* Navegación/links */
   --link: #0a66c2;
   --link-hover: #084b8f;
 
-  /* Header translucido */
   --header-bg: rgba(255,255,255,.75);
   --header-border: #e5e7eb;
 
-  /* Estados */
-  --ok: #059669;
-  --warn: #d97706;
-  --danger: #b91c1c;
+  --ok: #059669; --warn: #d97706; --danger: #b91c1c;
 }
 
 /* =========================================================
-   Tema DARK — alto contraste
-   (se activa con data-theme="dark")
+   DARK (alto contraste)
    ========================================================= */
 [data-theme="dark"]{
   --bg: #0b1220;
-  --fg: #e6edf3;              /* texto claro */
+  --fg: #e6edf3;
   --muted: #9aa7b5;
 
   --card: #121a2a;
@@ -66,7 +54,7 @@ code, pre, kbd, samp { font-family: var(--font-mono) !important; }
   --surface: #0f1a2b;
   --surface-border: #22314a;
 
-  --accent: #e6edf3;          /* botón primario claro */
+  --accent: #e6edf3;
   --accent-fg: #0b1220;
 
   --link: #8ab4ff;
@@ -75,114 +63,129 @@ code, pre, kbd, samp { font-family: var(--font-mono) !important; }
   --header-bg: rgba(11,18,32,.75);
   --header-border: #22314a;
 
-  --ok: #10b981;
-  --warn: #f59e0b;
-  --danger: #ef4444;
+  --ok: #10b981; --warn: #f59e0b; --danger: #ef4444;
 }
 
 /* =========================================================
-   THEME — “navy-ice” (claro frío, alto contraste en links)
+   THEME — navy-ice (claro frío, alto contraste en links)
    ========================================================= */
 [data-theme="navy-ice"]{
-  /* base */
   --bg: #f6f8fb;
   --fg: #0f172a;
   --muted: #475569;
 
-  /* superficies */
   --card: #ffffff;
   --card-border: #e5e9f0;
 
   --surface: #ffffff;
   --surface-border: #e5e9f0;
 
-  /* acciones / enlaces */
-  --accent: #1e3a8a;        /* botón primario */
+  --accent: #1e3a8a;
   --accent-fg: #ffffff;
 
-  --link: #2563eb;          /* azul accesible */
+  --link: #2563eb;
   --link-hover: #1d4ed8;
 
-  /* header translúcido */
   --header-bg: rgba(246,248,251,.75);
   --header-border: #e5e9f0;
 
-  /* estados */
-  --ok: #16a34a;
-  --warn: #f59e0b;
-  --danger: #dc2626;
+  --ok: #10b981; --warn: #f59e0b; --danger: #ef4444;
 }
 
 /* =========================================================
-   THEME — “onyx-gold” (oscuro con acentos dorados)
+   THEME — onyx-gold (oscuro neutro con acento dorado)
    ========================================================= */
 [data-theme="onyx-gold"]{
-  /* base */
-  --bg: #0c0d0f;
-  --fg: #f1f1f3;
-  --muted: #a8b0bb;
+  --bg: #0f1115;
+  --fg: #e6e6e6;
+  --muted: #b4b4b4;
 
-  /* superficies */
-  --card: #14161a;
-  --card-border: #2a2f3a;
+  --card: #14161b;
+  --card-border: #22252c;
 
   --surface: #12151a;
-  --surface-border: #2a2f3a;
+  --surface-border: #22252c;
 
-  /* acciones / enlaces */
-  --accent: #f0c64a;        /* botón primario */
-  --accent-fg: #151515;
+  --accent: #d4af37;         /* dorado */
+  --accent-fg: #0f1115;
 
-  --link: #9b87f5;          /* violeta suave para links */
-  --link-hover: #c3b9ff;
+  --link: #f1c84c;
+  --link-hover: #ffe08a;
 
-  /* header translúcido */
-  --header-bg: rgba(12,13,15,.75);
-  --header-border: #2a2f3a;
+  --header-bg: rgba(15,17,21,.75);
+  --header-border: #22252c;
 
-  /* estados */
-  --ok: #22c55e;
-  --warn: #f59e0b;
-  --danger: #ef4444;
+  --ok: #22c55e; --warn: #f59e0b; --danger: #ef4444;
 }
-.btn--danger:hover { filter: brightness(1.05); }
 
 /* =========================================================
-   THEME — “ruby-silver” (claro con acentos rubí)
+   THEME — ruby-silver (oscuro con texto plateado)
    ========================================================= */
 [data-theme="ruby-silver"]{
-  /* base */
-  --bg: #f7f7f9;
-  --fg: #1f2937;
-  --muted: #6b7280;
+  --bg: #140b12;
+  --fg: #e5e7eb;             /* plateado claro */
+  --muted: #cbd5e1;
 
-  /* superficies */
-  --card: #ffffff;
-  --card-border: #e5e7eb;
+  --card: #1b1018;
+  --card-border: #2a1a25;
 
-  --surface: #f3f4f6;
-  --surface-border: #e5e7eb;
+  --surface: #180e15;
+  --surface-border: #2a1a25;
 
-  /* acciones / enlaces */
-  --accent: #e11d48;        /* rubí */
-  --accent-fg: #ffffff;
+  --accent: #e11d48;         /* ruby */
+  --accent-fg: #140b12;
 
-  --link: #e11d48;
-  --link-hover: #be123c;
+  --link: #f472b6;           /* rosa fuerte */
+  --link-hover: #fecdd3;
 
-  /* header translúcido */
-  --header-bg: rgba(255,255,255,.75);
-  --header-border: #e5e7eb;
+  --header-bg: rgba(20,11,18,.75);
+  --header-border: #2a1a25;
 
-  /* estados */
-  --ok: #10b981;
-  --warn: #f59e0b;
-  --danger: #ef4444;
+  --ok: #34d399; --warn: #f59e0b; --danger: #f87171;
 }
-/* Mejora de contraste sutil para temas oscuros */
-[data-theme="dark"] .card,
-[data-theme="onyx-gold"] .card,
-[data-theme="theme-forest"] .card,
-[data-theme="theme-grape"] .card{
-  box-shadow: 0 1px 2px rgba(0,0,0,.2), 0 10px 30px rgba(0,0,0,.35);
+
+/* ===== Base y enlaces (comunes a todos los themes) ===== */
+html, body{ background: var(--bg); color: var(--fg); }
+header{ background: var(--header-bg); border-color: var(--header-border); }
+a{ color: var(--link); } a:hover{ color: var(--link-hover); }
+
+/* (dejá debajo tus utilidades .card, .btn, .surface, .transition-theme, etc.) */
+
+/* === Utilidades mínimas reusables === */
+.card{
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.btn{
+  display: inline-flex; align-items: center; gap: .5ch;
+  padding: .5rem .75rem;
+  border: 1px solid var(--card-border);
+  border-radius: calc(var(--radius) - 4px);
+  background: var(--card);
+  color: var(--fg);
+}
+.btn:hover{ filter: brightness(0.98); }
+
+.btn-primary{
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+.btn-primary:hover{ filter: brightness(1.05); }
+
+.muted{ color: var(--muted); }
+.surface{
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius);
+}
+
+.transition-theme{ transition: background-color .25s, color .25s, border-color .25s; }
+
+/* Respeto preferencia del SO como default (sin activar aún el toggle) */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme]) { color-scheme: dark; }
 }
