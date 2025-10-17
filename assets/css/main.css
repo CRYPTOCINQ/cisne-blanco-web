@@ -325,3 +325,55 @@ a{ color: var(--link); } a:hover{ color: var(--link-hover); }
   color: var(--fg);
   border: 1px solid var(--header-border);
 }
+
+/* === v1.3 ONYX-GOLD — CAP1/2/3 ajustes finos (append-only) === */
+
+/* Subimos el "muted" del tema para igualar el tono del subtítulo (Cap3) */
+[data-theme="onyx-gold"]{
+  --muted: #e7e2cf;
+}
+
+/* CAP1 — Panel de eventos: textos secundarios legibles */
+[data-theme="onyx-gold"] .day-events p,
+[data-theme="onyx-gold"] .day-events .muted {
+  color: var(--muted);
+}
+
+/* CAP3 — Subtítulo justo debajo del H1 */
+[data-theme="onyx-gold"] h1 + p {
+  color: var(--muted);
+}
+
+/* CAP2 — Modal: labels/campos en negro (sin amarillo) */
+[data-theme="onyx-gold"] dialog,
+[data-theme="onyx-gold"] .modal,
+[data-theme="onyx-gold"] .dialog {
+  background: #ffffff;
+  color: #0d0f14;
+}
+[data-theme="onyx-gold"] dialog label,
+[data-theme="onyx-gold"] .modal label,
+[data-theme="onyx-gold"] .dialog label {
+  color: #0d0f14 !important;
+  opacity: 1;                /* por si alguna regla baja opacidad */
+}
+
+/* Campos de formulario dentro del modal */
+[data-theme="onyx-gold"] dialog input,
+[data-theme="onyx-gold"] dialog select,
+[data-theme="onyx-gold"] dialog textarea,
+[data-theme="onyx-gold"] .modal input,
+[data-theme="onyx-gold"] .modal select,
+[data-theme="onyx-gold"] .modal textarea,
+[data-theme="onyx-gold"] .dialog input,
+[data-theme="onyx-gold"] .dialog select,
+[data-theme="onyx-gold"] .dialog textarea {
+  background: #ffffff;
+  color: #0d0f14;
+  border: 1px solid #e5e7eb;
+}
+[data-theme="onyx-gold"] dialog ::placeholder,
+[data-theme="onyx-gold"] .modal ::placeholder,
+[data-theme="onyx-gold"] .dialog ::placeholder {
+  color: #6b7280;
+}
