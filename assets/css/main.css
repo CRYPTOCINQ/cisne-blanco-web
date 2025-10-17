@@ -295,3 +295,33 @@ a{ color: var(--link); } a:hover{ color: var(--link-hover); }
   background:var(--surface); border:1px solid var(--header-border);
   color:var(--fg); border-radius:14px; box-shadow:0 10px 24px rgba(0,0,0,.25);
 }
+
+/* === v1.3 ONYX-GOLD — más contraste en eventos + modal === */
+
+/* 1) Panel “Eventos del día”: subir contraste de textos secundarios */
+[data-theme="onyx-gold"] .day-events .muted,
+[data-theme="onyx-gold"] .day-events p{
+  color: #eae6d7; /* más cercano a --fg para mejor lectura */
+}
+
+/* 2) Modal (editar evento): etiquetas y textos “amarillos” -> negros legibles */
+[data-theme="onyx-gold"] dialog,
+[data-theme="onyx-gold"] .modal,
+[data-theme="onyx-gold"] .dialog{
+  background: #ffffff;          /* mantenemos modal claro */
+  color: #0d0f14;               /* texto base negro */
+}
+[data-theme="onyx-gold"] dialog label,
+[data-theme="onyx-gold"] .modal label,
+[data-theme="onyx-gold"] .dialog label{
+  color: #0d0f14;               /* etiquetas negras (no amarillo) */
+}
+
+/* Botón de cierre y botones dentro del modal: estilo oscuro coherente */
+[data-theme="onyx-gold"] dialog button,
+[data-theme="onyx-gold"] .modal button,
+[data-theme="onyx-gold"] .dialog button{
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--header-border);
+}
