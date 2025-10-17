@@ -377,3 +377,13 @@ a{ color: var(--link); } a:hover{ color: var(--link-hover); }
 [data-theme="onyx-gold"] .dialog ::placeholder {
   color: #6b7280;
 }
+
+/* v1.3 onyx-gold — forzar legibilidad en textos del item de evento */
+[data-theme="onyx-gold"] .day-events :is(p, small, .muted, .meta, .desc, .notes){
+  color: #e7e2cf !important;  /* mismo tono crema del subtítulo */
+  opacity: 1 !important;
+}
+[data-theme="onyx-gold"] .day-events strong,
+[data-theme="onyx-gold"] .day-events b{
+  color: var(--fg);
+}
