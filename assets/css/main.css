@@ -387,3 +387,58 @@ a{ color: var(--link); } a:hover{ color: var(--link-hover); }
 [data-theme="onyx-gold"] .day-events b{
   color: var(--fg);
 }
+/* === v1.3 CONSOLIDACIÓN — tokens semánticos y familia oscura === */
+
+/* 1) Mapeo semántico (no cambia el diseño, sólo da nombres claros) */
+:root{
+  --text: var(--fg);
+  --text-muted: var(--muted);
+  --panel-bg: var(--surface);
+  --panel-border: var(--header-border);
+}
+
+/* 2) Componentes neutros (consumen tokens, sin colores por tema) */
+.card{
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+}
+.muted{ color: var(--text-muted); }
+
+.day-events{ /* panel “Eventos del día” */
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.25);
+}
+.day-events p,
+.day-events .muted{ color: var(--text-muted); }
+
+/* 3) Familia oscura (reglas compartidas: dark, onyx-gold, ruby-silver) */
+:is([data-theme="dark"],[data-theme="onyx-gold"],[data-theme="ruby-silver"]) h1,
+:is([data-theme="dark"],[data-theme="onyx-gold"],[data-theme="ruby-silver"]) h2,
+:is([data-theme="dark"],[data-theme="onyx-gold"],[data-theme="ruby-silver"]) .day-cell{
+  color: var(--text);
+}
+:is([data-theme="dark"],[data-theme="onyx-gold"],[data-theme="ruby-silver"]) .nav a.active{
+  background: var(--panel-bg);
+  color: var(--text);
+  border: 1px solid var(--panel-border);
+}
+
+/* 4) Modal claro coherente en temas oscuros (una sola vez para los 3) */
+:is([data-theme="dark"],[data-theme="onyx-gold"],[data-theme="ruby-silver"]) dialog{
+  background: #fff;
+  color: #0d0f14;
+}
+:is([data-theme="dark"],[data-theme="onyx-gold"],[data-theme="ruby-silver"]) dialog label{
+  color: #0d0f14;
+}
+:is([data-theme="dark"],[data-theme="onyx-gold"],[data-theme="ruby-silver"]) dialog input,
+:is([data-theme="dark"],[data-theme="onyx-gold"],[data-theme="ruby-silver"]) dialog select,
+:is([data-theme="dark"],[data-theme="onyx-gold"],[data-theme="ruby-silver"]) dialog textarea{
+  background: #fff;
+  color: #0d0f14;
+  border: 1px solid #e5e7eb;
+}
