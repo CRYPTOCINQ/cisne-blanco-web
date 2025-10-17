@@ -278,3 +278,20 @@ a{ color: var(--link); } a:hover{ color: var(--link-hover); }
   color: var(--fg);
   border-color: var(--header-border);
 }
+
+/* onyx-gold: contraste + calendario + panel */
+[data-theme="onyx-gold"]{
+  --surface:#191d26; --header-border:#313a4b;
+  --fg:#faf6e8; --muted:#d7cfb6;
+}
+[data-theme="onyx-gold"] .day-cell,
+[data-theme="onyx-gold"] .day-cell *{ color:var(--fg); }
+[data-theme="onyx-gold"] .day-cell{
+  background:var(--surface); border:1px solid var(--header-border);
+}
+
+/* si podés, agregá class="day-events" al contenedor del panel */
+[data-theme="onyx-gold"] .day-events{
+  background:var(--surface); border:1px solid var(--header-border);
+  color:var(--fg); border-radius:14px; box-shadow:0 10px 24px rgba(0,0,0,.25);
+}
