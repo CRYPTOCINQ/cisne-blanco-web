@@ -189,3 +189,92 @@ a{ color: var(--link); } a:hover{ color: var(--link-hover); }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme]) { color-scheme: dark; }
 }
+
+/* === v1.3 CONTRAST HOTFIX (onyx-gold, dark, ruby-silver) === */
+/* Regla base usada por los 3 temas oscuros */
+:root, [data-theme]{
+  --card-radius: 16px;
+}
+[data-theme] .card{
+  background: var(--surface);
+  border: 1px solid var(--header-border);
+  border-radius: var(--card-radius);
+}
+[data-theme] .muted{ color: var(--muted); }
+[data-theme] .nav a.active{
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--header-border);
+}
+[data-theme] .btn{
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--header-border);
+}
+[data-theme] .btn-primary{
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+
+/* —— DARK ——————————————————————————————————————————————— */
+[data-theme="dark"]{
+  /* fondo y texto principales */
+  --bg:            #0d1421;     /* un toque más claro que antes */
+  --fg:            #e9eef6;     /* blanco suave alto contraste */
+  --muted:         #a9b4c3;     /* gris legible */
+  /* superficies y bordes */
+  --surface:       #141c2a;     /* cards/nav */
+  --header-bg:     #0f1826;
+  --header-border: #2c3a52;
+  /* acento (links/botón primario) */
+  --accent:        #4ea1ff;
+  --accent-fg:     #0a0f18;
+  --link:          #9bc8ff;
+}
+/* Calendario: números/mes visibles */
+[data-theme="dark"] h1, 
+[data-theme="dark"] h2,
+[data-theme="dark"] .day-cell{
+  color: var(--fg);
+}
+
+/* —— ONYX & GOLD ———————————————————————————————— */
+[data-theme="onyx-gold"]{
+  --bg:            #0f1115;
+  --fg:            #faf6e8;     /* marfil alto contraste */
+  --muted:         #cfc7ad;
+  --surface:       #161922;
+  --header-bg:     #10131a;
+  --header-border: #2a3040;
+  --accent:        #f0c63b;     /* gold más luminoso */
+  --accent-fg:     #0f1115;     /* texto oscuro sobre gold */
+  --link:          #ffd76a;
+}
+/* botones/links mejor legibles sobre bg oscuro */
+[data-theme="onyx-gold"] .btn,
+[data-theme="onyx-gold"] .nav a{
+  color: var(--fg);
+}
+[data-theme="onyx-gold"] .btn-primary:hover{
+  filter: brightness(1.05);
+}
+
+/* —— RUBY & SILVER ——————————————————————————————— */
+[data-theme="ruby-silver"]{
+  --bg:            #160b10;     /* rubí profundo */
+  --fg:            #f2f4f8;     /* plateado claro */
+  --muted:         #c6cdd6;
+  --surface:       #20131a;
+  --header-bg:     #1a0f15;
+  --header-border: #3a2a33;
+  --accent:        #ff2f55;     /* rubí vivo */
+  --accent-fg:     #ffffff;
+  --link:          #ff7a94;
+}
+/* garantizar contraste en nav activo y celdas */
+[data-theme="ruby-silver"] .nav a.active,
+[data-theme="ruby-silver"] .day-cell{
+  color: var(--fg);
+  border-color: var(--header-border);
+}
