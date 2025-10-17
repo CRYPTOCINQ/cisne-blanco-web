@@ -21,14 +21,14 @@
         <span class="font-semibold">Cisne Blanco — Maqueta Base</span>
       </div>
       <nav class="flex items-center gap-2 text-sm">
-        <a href="../index.html" data-page="home" class="px-3 py-1 rounded-lg hover:bg-gray-100">Inicio</a>
-        <a href="calendario.html" data-page="calendario" class="px-3 py-1 rounded-lg hover:bg-gray-100">Calendario</a>
-        <a href="habitos.html" data-page="habitos" class="px-3 py-1 rounded-lg hover:bg-gray-100">Hábitos</a>
-        <a href="salud.html" data-page="salud" class="px-3 py-1 rounded-lg hover:bg-gray-100">Salud</a>
-        <a href="familia.html" data-page="familia" class="px-3 py-1 rounded-lg hover:bg-gray-100">Familia</a>
-        <a href="social.html" data-page="social" class="px-3 py-1 rounded-lg hover:bg-gray-100">Social</a>
-        <a href="finanzas.html" data-page="finanzas" class="px-3 py-1 rounded-lg hover:bg-gray-100">Finanzas</a>
-        <button id="theme-toggle" class="px-3 py-1 rounded-lg border">Tema</button>
+        <a href="../index.html" data-page="home" class="px-3 py-1 rounded-lg">Inicio</a>
+        <a href="calendario.html" data-page="calendario" class="px-3 py-1 rounded-lg">Calendario</a>
+        <a href="habitos.html" data-page="habitos" class="px-3 py-1 rounded-lg">Hábitos</a>
+        <a href="salud.html" data-page="salud" class="px-3 py-1 rounded-lg">Salud</a>
+        <a href="familia.html" data-page="familia" class="px-3 py-1 rounded-lg">Familia</a>
+        <a href="social.html" data-page="social" class="px-3 py-1 rounded-lg">Social</a>
+        <a href="finanzas.html" data-page="finanzas" class="px-3 py-1 rounded-lg">Finanzas</a>
+        <button id="theme-toggle" class="px-3 py-1 rounded-lg">Tema</button>
       </nav>
     </div>
   </header>
@@ -36,19 +36,19 @@
     <div class="flex items-center justify-between mb-4">
       <div>
         <h1 class="text-2xl font-bold mb-3">Calendario (vista mensual)</h1>
-        <p class="text-gray-600 text-sm">Tus eventos se guardan en este navegador y sólo vos los ves.</p>
+        <p class="muted text-sm">Tus eventos se guardan en este navegador y sólo vos los ves.</p>
       </div>
       <div class="flex gap-2">
         <button id="btnPrev" class="btn">← Anterior</button>
         <button id="btnToday" class="btn">Hoy</button>
         <button id="btnNext" class="btn">Siguiente →</button>
-        <button id="btnAdd" class="btn btn--primary">+ Evento</button>
+        <button id="btnAdd" class="btn btn-primary">+ Evento</button>
       </div>
     </div>
 
     <div class="mb-3 text-lg font-semibold" id="labelMonth">Mes Año</div>
 
-    <div class="grid grid-cols-7 gap-2 text-xs text-gray-600 mb-1">
+    <div class="grid grid-cols-7 gap-2 text-xs muted mb-1">
       <div class="text-center">Lun</div>
       <div class="text-center">Mar</div>
       <div class="text-center">Mié</div>
@@ -65,19 +65,19 @@
       <form method="dialog">
         <div class="p-4 border-b flex items-center justify-between">
           <h3 id="modalTitle" class="font-semibold">Nuevo evento</h3>
-          <button class="text-gray-500 hover:text-black" value="cancel">✕</button>
+          <button class="muted" value="cancel">✕</button>
         </div>
         <div class="p-4 space-y-3">
           <div>
-            <label class="text-sm text-gray-600">Fecha</label>
+            <label class="text-sm muted">Fecha</label>
             <input id="inpDate" type="date" class="mt-1 w-full border rounded-lg px-3 py-2">
           </div>
           <div>
-            <label class="text-sm text-gray-600">Hora (opcional)</label>
+            <label class="text-sm muted">Hora (opcional)</label>
             <input id="inpTime" type="time" class="mt-1 w-full border rounded-lg px-3 py-2">
           </div>
           <div>
-            <label class="text-sm text-gray-600">Etiqueta</label>
+            <label class="text-sm muted">Etiqueta</label>
             <select id="inpTag" class="mt-1 w-full border rounded-lg px-3 py-2">
               <option value="">Sin etiqueta</option>
               <option>Trabajo</option>
@@ -88,11 +88,11 @@
             </select>
           </div>
           <div>
-            <label class="text-sm text-gray-600">Título</label>
+            <label class="text-sm muted">Título</label>
             <input id="inpTitle" type="text" placeholder="Ej. Reunión, Entrenamiento, London Session" class="mt-1 w-full border rounded-lg px-3 py-2">
           </div>
           <div>
-            <label class="text-sm text-gray-600">Notas</label>
+            <label class="text-sm muted">Notas</label>
             <textarea id="inpNotes" rows="3" class="mt-1 w-full border rounded-lg px-3 py-2"></textarea>
           </div>
         </div>
@@ -166,7 +166,7 @@
         const events = data[dayKey] || [];
 
         const cell = document.createElement("button");
-        cell.className = "day-cell p-2 border rounded-xl text-left bg-white";
+        cell.className = "day-cell card p-2 text-left";
         if (!isCurrent) cell.style.opacity = 0.5;
         cell.innerHTML = `
           <div class="flex items-center justify-between">
