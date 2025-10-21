@@ -1,320 +1,199 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cisne Blanco — {Página}</title>
-  <meta name="description" content="Sección {Página} del Proyecto Cisne Blanco">
+<script>
+  // v1.3.2 - Calendario (neutral + tokens)
+  const pad = n => String(n).padStart(2,'0');
+  const toKey = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 
-  <link rel="icon" type="image/png" href="../assets/favicon.png?v=1202">
+  const DB_KEY = "cb_calendar_events_v1";
+  const load = () => JSON.parse(localStorage.getItem(DB_KEY) || "{}");
+  const save = data => localStorage.setItem(DB_KEY, JSON.stringify(data));
 
-  <!-- CSS base -->
-  <link rel="stylesheet" href="../assets/css/base-typography.css?v=14">
-  <link rel="stylesheet" href="../css/mini.css?v=14">
-  <link rel="stylesheet" href="../assets/css/main.css?v=1203">
-</head>
-<body class="transition-theme">
-  <header class="border-b backdrop-blur sticky">
-    <div class="mx-auto container-pro px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="h-9 w-9 rounded-full bg-black text-white flex items-center justify-center font-bold">CB</div>
-        <span class="font-semibold">Cisne Blanco — Maqueta Base</span>
-      </div>
-      <nav class="flex items-center gap-2 text-sm">
-        <a href="../index.html" data-page="home" class="px-3 py-1 rounded-lg">Inicio</a>
-        <a href="calendario.html" data-page="calendario" class="px-3 py-1 rounded-lg">Calendario</a>
-        <a href="habitos.html" data-page="habitos" class="px-3 py-1 rounded-lg">Hábitos</a>
-        <a href="salud.html" data-page="salud" class="px-3 py-1 rounded-lg">Salud</a>
-        <a href="familia.html" data-page="familia" class="px-3 py-1 rounded-lg">Familia</a>
-        <a href="social.html" data-page="social" class="px-3 py-1 rounded-lg">Social</a>
-        <a href="finanzas.html" data-page="finanzas" class="px-3 py-1 rounded-lg">Finanzas</a>
-        <button id="theme-toggle" class="px-3 py-1 rounded-lg">Tema</button>
-      </nav>
-    </div>
-  </header>
-  <main class="container-pro px-4 py-6">
-    <div class="flex items-center justify-between mb-4">
-      <div>
-        <h1 class="text-2xl font-bold mb-3">Calendario (vista mensual)</h1>
-        <p class="muted text-sm">Tus eventos se guardan en este navegador y sólo vos los ves.</p>
-      </div>
-      <div class="flex gap-2">
-        <button id="btnPrev" class="btn">← Anterior</button>
-        <button id="btnToday" class="btn">Hoy</button>
-        <button id="btnNext" class="btn">Siguiente →</button>
-        <button id="btnAdd" class="btn btn-primary">+ Evento</button>
-      </div>
-    </div>
+  let state = {
+    cursor: new Date(),
+    selected: new Date(),
+    editing: null // { key, idx } o null
+  };
 
-    <div class="mb-3 text-lg font-semibold" id="labelMonth">Mes Año</div>
+  const label = document.getElementById("labelMonth");
+  const grid = document.getElementById("grid");
+  const modal = document.getElementById("modal");
+  const modalTitle = document.getElementById("modalTitle");
+  const inpDate = document.getElementById("inpDate");
+  const inpTime = document.getElementById("inpTime");
+  const inpTitle = document.getElementById("inpTitle");
+  const inpTag = document.getElementById("inpTag");
+  const inpNotes = document.getElementById("inpNotes");
+  const listDay = document.getElementById("listDay");
+  const btnClearDay = document.getElementById("btnClearDay");
+  const btnSave = document.getElementById("btnSave");
 
-    <div class="grid grid-cols-7 gap-2 text-xs muted mb-1">
-      <div class="text-center">Lun</div>
-      <div class="text-center">Mar</div>
-      <div class="text-center">Mié</div>
-      <div class="text-center">Jue</div>
-      <div class="text-center">Vie</div>
-      <div class="text-center">Sáb</div>
-      <div class="text-center">Dom</div>
-    </div>
+  function render() {
+    const y = state.cursor.getFullYear();
+    const m = state.cursor.getMonth();
+    const first = new Date(y, m, 1);
+    const start = new Date(first);
+    const dow = (first.getDay() + 6) % 7; // Lunes=0
+    start.setDate(first.getDate() - dow);
+    const monthName = state.cursor.toLocaleString('es-AR', { month:'long' });
+    label.textContent = monthName.charAt(0).toUpperCase()+monthName.slice(1) + " " + y;
 
-    <div id="grid" class="grid grid-cols-7 gap-2"></div>
+    grid.innerHTML = "";
+    const data = load();
 
-    <!-- Modal -->
-    <dialog id="modal" class="rounded-xl p-0" style="width:420px;max-width:92vw">
-      <form method="dialog">
-        <div class="p-4 border-b flex items-center justify-between">
-          <h3 id="modalTitle" class="font-semibold">Nuevo evento</h3>
-          <button class="muted" value="cancel">✕</button>
+    for (let i=0; i<42; i++) {
+      const d = new Date(start);
+      d.setDate(start.getDate()+i);
+      const isCurrent = d.getMonth() === m;
+      const isToday = toKey(d) === toKey(new Date());
+      const dayKey = toKey(d);
+      const events = data[dayKey] || [];
+
+      const cell = document.createElement("button");
+      cell.className = "day-cell card p-2 text-left";
+      if (!isCurrent) cell.classList.add('dimmed-day');
+      cell.innerHTML = `
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-semibold">${d.getDate()}</span>
+          ${isToday ? '<span class="text-xs px-1.5 py-0.5 rounded bg-black text-white">hoy</span>' : ''}
         </div>
-        <div class="p-4 space-y-3">
-          <div>
-            <label class="text-sm muted">Fecha</label>
-            <input id="inpDate" type="date" class="mt-1 w-full border rounded-lg px-3 py-2">
-          </div>
-          <div>
-            <label class="text-sm muted">Hora (opcional)</label>
-            <input id="inpTime" type="time" class="mt-1 w-full border rounded-lg px-3 py-2">
-          </div>
-          <div>
-            <label class="text-sm muted">Etiqueta</label>
-            <select id="inpTag" class="mt-1 w-full border rounded-lg px-3 py-2">
-              <option value="">Sin etiqueta</option>
-              <option>Trabajo</option>
-              <option>Familia</option>
-              <option>Salud</option>
-              <option>Social</option>
-              <option>Trading</option>
-            </select>
-          </div>
-          <div>
-            <label class="text-sm muted">Título</label>
-            <input id="inpTitle" type="text" placeholder="Ej. Reunión, Entrenamiento, London Session" class="mt-1 w-full border rounded-lg px-3 py-2">
-          </div>
-          <div>
-            <label class="text-sm muted">Notas</label>
-            <textarea id="inpNotes" rows="3" class="mt-1 w-full border rounded-lg px-3 py-2"></textarea>
-          </div>
+        <div class="mt-2 space-y-1 text-xs">
+          ${events.slice(0,3).map(e => `
+            <div class="flex items-center gap-2">
+              <span style="display:inline-block;width:8px;height:8px;border-radius:9999px;background:${tagColor(e.tag)}"></span>
+              <span class="truncate">${e.time ? e.time+' — ' : ''}${e.title}</span>
+            </div>
+          `).join('')}
+          ${events.length>3 ? '<div class="muted">+'+(events.length-3)+' más</div>' : ''}
         </div>
-        <div class="p-3 border-t bg-gray-50 flex items-center justify-end gap-2">
-          <button class="btn" value="cancel">Cancelar</button>
-          <button id="btnSave" class="btn btn--primary" value="default">Guardar</button>
+      `;
+      cell.addEventListener('click', () => { state.selected = d; renderDay(); });
+      grid.appendChild(cell);
+    }
+    renderDay();
+  }
+
+  function renderDay() {
+    const data = load();
+    const key = toKey(state.selected);
+    const events = data[key]||[];
+    listDay.innerHTML = "";
+    if (!events.length) {
+      listDay.innerHTML = '<div class="muted">No hay eventos para este día.</div>';
+      return;
+    }
+    events.forEach((e, idx) => {
+      const item = document.createElement('div');
+      item.className = "card p-3 flex items-start justify-between";
+      item.innerHTML = `
+        <div>
+          <div class="text-sm font-semibold">${e.time ? e.time+' — ' : ''}${e.title}</div>
+          <div class="text-xs muted">${e.tag || 'Sin etiqueta'}</div>
+          ${e.notes ? `<div class="mt-1 text-xs muted">${e.notes}</div>` : ''}
         </div>
-      </form>
-    </dialog>
+        <div class="action-row flex gap-2">
+          <button class="btn btn-sm" data-action="edit">Editar</button>
+          <button class="btn btn-sm" data-action="delete">Borrar</button>
+        </div>
+      `;
+      item.querySelector('[data-action="edit"]').addEventListener('click', () => editEvent(key, idx));
+      item.querySelector('[data-action="delete"]').addEventListener('click', () => removeEvent(key, idx));
+      listDay.appendChild(item);
+    });
+  }
 
-    <!-- Panel lateral para el día seleccionado -->
-   <aside class="day-events card mt-6 p-4">
-     <div class="flex items-center justify-between mb-2">
-       <h3 class="font-semibold">Eventos del día seleccionado</h3>
-       <button id="btnClearDay" class="btn btn-sm">Borrar todos</button>
-     </div>
-     <div id="listDay" class="space-y-2 text-sm"></div>
-   </aside>
-
-    <div class="mt-6">
-      <a href="../index.html" class="inline-flex items-center px-4 py-2 border rounded-lg hover:bg-gray-100">← Volver al inicio</a>
-    </div>
-  </main>
-
-  <script>
-    const pad = n => String(n).padStart(2,'0');
-    const toKey = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-
-    const DB_KEY = "cb_calendar_events_v1";
-    const load = () => JSON.parse(localStorage.getItem(DB_KEY) || "{}");
-    const save = data => localStorage.setItem(DB_KEY, JSON.stringify(data));
-
-    let state = {
-      cursor: new Date(),
-      selected: new Date(),
-      editing: null // { key, idx } o null
-    };
-
-    const label = document.getElementById("labelMonth");
-    const grid = document.getElementById("grid");
-    const modal = document.getElementById("modal");
-    const modalTitle = document.getElementById("modalTitle");
-    const inpDate = document.getElementById("inpDate");
-    const inpTime = document.getElementById("inpTime");
-    const inpTitle = document.getElementById("inpTitle");
-    const inpTag = document.getElementById("inpTag");
-    const inpNotes = document.getElementById("inpNotes");
-    const listDay = document.getElementById("listDay");
-    const btnClearDay = document.getElementById("btnClearDay");
-    const btnSave = document.getElementById("btnSave");
-
-    function render() {
-      const y = state.cursor.getFullYear();
-      const m = state.cursor.getMonth();
-      const first = new Date(y, m, 1);
-      const start = new Date(first);
-      const dow = (first.getDay() + 6) % 7; // Lunes=0
-      start.setDate(first.getDate() - dow);
-      const monthName = state.cursor.toLocaleString('es-AR', { month:'long' });
-      label.textContent = monthName.charAt(0).toUpperCase()+monthName.slice(1) + " " + y;
-
-      grid.innerHTML = "";
-      const data = load();
-
-      for (let i=0; i<42; i++) {
-        const d = new Date(start);
-        d.setDate(start.getDate()+i);
-        const isCurrent = d.getMonth() === m;
-        const isToday = toKey(d) === toKey(new Date());
-        const dayKey = toKey(d);
-        const events = data[dayKey] || [];
-
-        const cell = document.createElement("button");
-        cell.className = "day-cell card p-2 text-left";
-        if (!isCurrent) cell.style.opacity = 0.5;
-        cell.innerHTML = `
-          <div class="flex items-center justify-between">
-            <span class="text-sm font-semibold">${d.getDate()}</span>
-            ${isToday ? '<span class="text-xs px-1.5 py-0.5 rounded bg-black text-white">hoy</span>' : ''}
-          </div>
-          <div class="mt-2 space-y-1 text-xs">
-            ${events.slice(0,3).map(e => `
-              <div class="flex items-center gap-2">
-                <span style="display:inline-block;width:8px;height:8px;border-radius:9999px;background:${tagColor(e.tag)}"></span>
-                <span class="truncate">${e.time ? e.time+' — ' : ''}${e.title}</span>
-              </div>
-            `).join('')}
-            ${events.length>3 ? '<div class="text-gray-400">+'+(events.length-3)+' más</div>' : ''}
-          </div>
-        `;
-        cell.addEventListener('click', () => { state.selected = d; renderDay(); });
-        grid.appendChild(cell);
-      }
-      renderDay();
+  function tagColor(tag) {
+    switch(tag) {
+      case 'Trabajo': return '#1f2937';
+      case 'Familia': return '#2563eb';
+      case 'Salud': return '#10b981';
+      case 'Social': return '#f59e0b';
+      case 'Trading': return '#ef4444';
+      default: return '#9ca3af';
     }
+  }
 
-    function renderDay() {
-      const data = load();
-      const key = toKey(state.selected);
-      const events = data[key]||[];
-      listDay.innerHTML = "";
-      if (!events.length) {
-        listDay.innerHTML = '<div class="text-gray-500">No hay eventos para este día.</div>';
-        return;
-      }
-      events.forEach((e, idx) => {
-        const item = document.createElement('div');
-        item.className = "p-3 border rounded-lg flex items-start justify-between";
-        item.innerHTML = `
-          <div>
-            <div class="text-sm font-semibold">${e.time ? e.time+' — ' : ''}${e.title}</div>
-            <div class="text-xs text-gray-500">${e.tag || 'Sin etiqueta'}</div>
-            ${e.notes ? `<div class="mt-1 text-xs text-gray-600">${e.notes}</div>` : ''}
-          </div>
-          <div class="action-row">
-            <button class="btn btn--sm" data-action="edit">Editar</button>
-            <button class="btn btn--sm" data-action="delete">Borrar</button>
-          </div>
-        `;
-        item.querySelector('[data-action="edit"]').addEventListener('click', () => editEvent(key, idx));
-        item.querySelector('[data-action="delete"]').addEventListener('click', () => removeEvent(key, idx));
-        listDay.appendChild(item);
-      });
+  function removeEvent(key, idx) {
+    const data = load();
+    (data[key] = data[key] || []).splice(idx,1);
+    save(data);
+    render();
+  }
+
+  function editEvent(key, idx) {
+    const data = load();
+    const ev = (data[key]||[])[idx];
+    if (!ev) return;
+    state.editing = { key, idx };
+    modalTitle.textContent = "Editar evento";
+    inpDate.value = key;
+    inpTime.value = ev.time || "";
+    inpTag.value = ev.tag || "";
+    inpTitle.value = ev.title || "";
+    inpNotes.value = ev.notes || "";
+    if (modal.showModal) modal.showModal();
+    btnSave.textContent = "Actualizar";
+  }
+
+  // Navegación
+  document.getElementById('btnPrev').onclick = () => { state.cursor.setMonth(state.cursor.getMonth()-1); render(); };
+  document.getElementById('btnNext').onclick = () => { state.cursor.setMonth(state.cursor.getMonth()+1); render(); };
+  document.getElementById('btnToday').onclick = () => { state.cursor = new Date(); state.selected = new Date(); render(); };
+
+  // Nuevo evento
+  document.getElementById('btnAdd').onclick = () => {
+    state.editing = null;
+    modalTitle.textContent = "Nuevo evento";
+    btnSave.textContent = "Guardar";
+    inpDate.value = toKey(state.selected);
+    inpTime.value = "";
+    inpTitle.value = "";
+    inpTag.value = "";
+    inpNotes.value = "";
+    if (modal.showModal) modal.showModal();
+  };
+
+  // Guardar (crear/actualizar)
+  document.getElementById('btnSave').onclick = (evClick) => {
+    evClick.preventDefault();
+    const date = inpDate.value;
+    const time = inpTime.value;
+    const title = inpTitle.value.trim();
+    const tag = inpTag.value;
+    const notes = inpNotes.value.trim();
+    if (!date || !title) { alert("Completá fecha y título."); return; }
+    const data = load();
+
+    if (state.editing) {
+      const { key, idx } = state.editing;
+      const original = (data[key]||[])[idx];
+      if (!original) { state.editing = null; if (modal.close) modal.close(); render(); return; }
+      (data[key] = data[key] || []).splice(idx,1);            // quitar del día original
+      (data[date] = data[date] || []).push({ time, title, tag, notes }); // agregar al nuevo día
+      save(data);
+      state.selected = new Date(date);
+      state.editing = null;
+    } else {
+      (data[date] = data[date] || []).push({ time, title, tag, notes });
+      save(data);
+      state.selected = new Date(date);
     }
+    if (modal.close) modal.close();
+    render();
+  };
 
-    function tagColor(tag) {
-      switch(tag) {
-        case 'Trabajo': return '#1f2937';
-        case 'Familia': return '#2563eb';
-        case 'Salud': return '#10b981';
-        case 'Social': return '#f59e0b';
-        case 'Trading': return '#ef4444';
-        default: return '#9ca3af';
-      }
-    }
-
-    function removeEvent(key, idx) {
-      const data = load();
-      (data[key] = data[key] || []).splice(idx,1);
+  // Borrar todos del día
+  btnClearDay.onclick = () => {
+    const key = toKey(state.selected);
+    const data = load();
+    if (!data[key] || !data[key].length) return;
+    if (confirm("¿Borrar todos los eventos de este día?")) {
+      delete data[key];
       save(data);
       render();
     }
+  };
 
-    function editEvent(key, idx) {
-      const data = load();
-      const ev = (data[key]||[])[idx];
-      if (!ev) return;
-      state.editing = { key, idx };
-      modalTitle.textContent = "Editar evento";
-      inpDate.value = key;
-      inpTime.value = ev.time || "";
-      inpTag.value = ev.tag || "";
-      inpTitle.value = ev.title || "";
-      inpNotes.value = ev.notes || "";
-      if (modal.showModal) modal.showModal();
-      btnSave.textContent = "Actualizar";
-    }
-
-    // Navegación
-    document.getElementById('btnPrev').onclick = () => { state.cursor.setMonth(state.cursor.getMonth()-1); render(); };
-    document.getElementById('btnNext').onclick = () => { state.cursor.setMonth(state.cursor.getMonth()+1); render(); };
-    document.getElementById('btnToday').onclick = () => { state.cursor = new Date(); state.selected = new Date(); render(); };
-
-    // Nuevo evento
-    document.getElementById('btnAdd').onclick = () => {
-      state.editing = null;
-      modalTitle.textContent = "Nuevo evento";
-      btnSave.textContent = "Guardar";
-      inpDate.value = toKey(state.selected);
-      inpTime.value = "";
-      inpTitle.value = "";
-      inpTag.value = "";
-      inpNotes.value = "";
-      if (modal.showModal) modal.showModal();
-    };
-
-    // Guardar (crear/actualizar)
-    document.getElementById('btnSave').onclick = (evClick) => {
-      evClick.preventDefault();
-      const date = inpDate.value;
-      const time = inpTime.value;
-      const title = inpTitle.value.trim();
-      const tag = inpTag.value;
-      const notes = inpNotes.value.trim();
-      if (!date || !title) { alert("Completá fecha y título."); return; }
-      const data = load();
-
-      if (state.editing) {
-        const { key, idx } = state.editing;
-        // Si cambió la fecha, movemos el evento de un día a otro.
-        const original = (data[key]||[])[idx];
-        if (!original) { state.editing = null; if (modal.close) modal.close(); render(); return; }
-        // Quitamos del día original
-        (data[key] = data[key] || []).splice(idx,1);
-        // Empujamos al nuevo día
-        (data[date] = data[date] || []).push({ time, title, tag, notes });
-        save(data);
-        state.selected = new Date(date);
-        state.editing = null;
-      } else {
-        (data[date] = data[date] || []).push({ time, title, tag, notes });
-        save(data);
-        state.selected = new Date(date);
-      }
-      if (modal.close) modal.close();
-      render();
-    };
-
-    // Borrar todos del día
-    btnClearDay.onclick = () => {
-      const key = toKey(state.selected);
-      const data = load();
-      if (!data[key] || !data[key].length) return;
-      if (confirm("¿Borrar todos los eventos de este día?")) {
-        delete data[key];
-        save(data);
-        render();
-      }
-    };
-
-    render();
-  </script>
+  render();
+</script>
   <footer class="mt-16 border-t">
     <div class="mx-auto container-pro px-4 py-6 text-xs text-gray-500 flex items-center justify-between">
       <span>© 2025 Cisne Blanco</span>
