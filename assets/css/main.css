@@ -1,23 +1,23 @@
 @import url("./_fonts.css?v=1201");
 
-/* ====== Tipografías ====== */
+/* ================== Tipografías ================== */
 :root{
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 }
-
-/* Fuerzo la tipografía por encima de cualquier base */
 html, body { font-family: var(--font-sans) !important; }
 code, pre, kbd, samp { font-family: var(--font-mono) !important; }
 
-/* =========================================================
-   LIGHT (default)
-   ========================================================= */
+/* =================================================
+   THEME: AUTO (light – default)
+   ================================================= */
 :root{
+  /* radii, sombras, spacing */
   --radius: 14px;
   --shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.06);
   --space-1: .25rem; --space-2: .5rem; --space-3: .75rem; --space-4: 1rem; --space-6: 1.5rem;
 
+  /* tokens base */
   --bg: #ffffff;
   --fg: #111827;
   --muted: #6b7280;
@@ -40,125 +40,53 @@ code, pre, kbd, samp { font-family: var(--font-mono) !important; }
   --ok: #059669; --warn: #d97706; --danger: #b91c1c;
 }
 
-/* =========================================================
-   DARK (alto contraste)
-   ========================================================= */
-[data-theme="dark"]{
-  --bg: #0b1220;
-  --fg: #e6edf3;
-  --muted: #9aa7b5;
-
-  --card: #121a2a;
-  --card-border: #22314a;
-
-  --surface: #0f1a2b;
-  --surface-border: #22314a;
-
-  --accent: #e6edf3;
-  --accent-fg: #0b1220;
-
-  --link: #8ab4ff;
-  --link-hover: #c2d8ff;
-
-  --header-bg: rgba(11,18,32,.75);
-  --header-border: #22314a;
-
-  --ok: #10b981; --warn: #f59e0b; --danger: #ef4444;
-}
-
-/* =========================================================
-   THEME — navy-ice (claro frío, alto contraste en links)
-   ========================================================= */
+/* =================================================
+   THEME: NAVY-ICE (tema alterno)
+   ================================================= */
 [data-theme="navy-ice"]{
-  --bg: #f6f8fb;
-  --fg: #0f172a;
-  --muted: #475569;
+  --bg: #0f1b2d;
+  --fg: #e9f2ff;
+  --muted: #b0c2de;
 
-  --card: #ffffff;
-  --card-border: #e5e9f0;
+  --card: #142239;
+  --card-border: #20324b;
 
-  --surface: #ffffff;
-  --surface-border: #e5e9f0;
+  --surface: #0f1b2d;
+  --surface-border: #20324b;
 
-  --accent: #1e3a8a;
-  --accent-fg: #ffffff;
+  --accent: #58a6ff;
+  --accent-fg: #081018;
 
-  --link: #2563eb;
-  --link-hover: #1d4ed8;
+  --link: #9bc8ff;
+  --link-hover: #cbe2ff;
 
-  --header-bg: rgba(246,248,251,.75);
-  --header-border: #e5e9f0;
-
-  --ok: #10b981; --warn: #f59e0b; --danger: #ef4444;
-}
-
-/* =========================================================
-   THEME — onyx-gold (oscuro neutro con acento dorado)
-   ========================================================= */
-[data-theme="onyx-gold"]{
-  --bg: #0f1115;
-  --fg: #e6e6e6;
-  --muted: #b4b4b4;
-
-  --card: #14161b;
-  --card-border: #22252c;
-
-  --surface: #12151a;
-  --surface-border: #22252c;
-
-  --accent: #d4af37;         /* dorado */
-  --accent-fg: #0f1115;
-
-  --link: #f1c84c;
-  --link-hover: #ffe08a;
-
-  --header-bg: rgba(15,17,21,.75);
-  --header-border: #22252c;
+  --header-bg: rgba(15,27,45,.75);
+  --header-border: #20324b;
 
   --ok: #22c55e; --warn: #f59e0b; --danger: #ef4444;
 }
 
-/* =========================================================
-   THEME — ruby-silver (oscuro con texto plateado)
-   ========================================================= */
-[data-theme="ruby-silver"]{
-  --bg: #140b12;
-  --fg: #e5e7eb;             /* plateado claro */
-  --muted: #cbd5e1;
-
-  --card: #1b1018;
-  --card-border: #2a1a25;
-
-  --surface: #180e15;
-  --surface-border: #2a1a25;
-
-  --accent: #e11d48;         /* ruby */
-  --accent-fg: #140b12;
-
-  --link: #f472b6;           /* rosa fuerte */
-  --link-hover: #fecdd3;
-
-  --header-bg: rgba(20,11,18,.75);
-  --header-border: #2a1a25;
-
-  --ok: #34d399; --warn: #f59e0b; --danger: #f87171;
-}
-
-/* ===== Base y enlaces (comunes a todos los themes) ===== */
+/* ================== Base común ================== */
 html, body{ background: var(--bg); color: var(--fg); }
-header{ background: var(--header-bg); border-color: var(--header-border); }
+header{ background: var(--header-bg); border-bottom: 1px solid var(--header-border); }
 a{ color: var(--link); } a:hover{ color: var(--link-hover); }
+.transition-theme{ transition: background-color .25s, color .25s, border-color .25s, box-shadow .25s; }
 
-/* (dejá debajo tus utilidades .card, .btn, .surface, .transition-theme, etc.) */
-
-/* === Utilidades mínimas reusables === */
+/* ================== Componentes neutros ================== */
 .card{
   background: var(--card);
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
+.surface{
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius);
+}
+.muted{ color: var(--muted); }
 
+/* Botones */
 .btn{
   display: inline-flex; align-items: center; gap: .5ch;
   padding: .5rem .75rem;
@@ -168,277 +96,38 @@ a{ color: var(--link); } a:hover{ color: var(--link-hover); }
   color: var(--fg);
 }
 .btn:hover{ filter: brightness(0.98); }
-
 .btn-primary{
   background: var(--accent);
   color: var(--accent-fg);
   border-color: var(--accent);
 }
 .btn-primary:hover{ filter: brightness(1.05); }
+/* alias de compatibilidad v1.2 */
+.btn--sm{ padding: .375rem .625rem; font-size: .875rem; }  /* compat */
+.btn-sm{  padding: .375rem .625rem; font-size: .875rem; }
+.btn--primary{ background: var(--accent); color: var(--accent-fg); border-color: var(--accent); } /* compat */
 
-.muted{ color: var(--muted); }
-.surface{
-  background: var(--surface);
-  border: 1px solid var(--surface-border);
-  border-radius: var(--radius);
+/* Navegación activa */
+.nav a.active{
+  background: var(--card);
+  color: var(--fg);
+  border: 1px solid var(--card-border);
+  border-radius: calc(var(--radius) - 6px);
+  padding: .25rem .5rem;
 }
 
-.transition-theme{ transition: background-color .25s, color .25s, border-color .25s; }
+/* Panel de “Eventos del día” y calendario (si se usan estas clases) */
+.day-events{ background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); box-shadow: 0 10px 24px rgba(0,0,0,.08); }
+.day-events .muted, .day-events p{ color: var(--muted); }
+.day-cell{ background: var(--card); border:1px solid var(--card-border); border-radius: var(--radius); }
 
-/* Respeto preferencia del SO como default (sin activar aún el toggle) */
+/* ================== Accesibilidad ================== */
+:focus-visible{ outline: 2px solid var(--link); outline-offset: 2px; }
+
+/* ================== Sistema ================== */
+/* Respeto preferencia del SO como default del esquema de color (no afecta navy-ice) */
 @media (prefers-color-scheme: dark){
   :root:not([data-theme]) { color-scheme: dark; }
 }
 
-/* === v1.3 CONTRAST HOTFIX (onyx-gold, dark, ruby-silver) === */
-/* Regla base usada por los 3 temas oscuros */
-:root, [data-theme]{
-  --card-radius: 16px;
-}
-[data-theme] .card{
-  background: var(--surface);
-  border: 1px solid var(--header-border);
-  border-radius: var(--card-radius);
-}
-[data-theme] .muted{ color: var(--muted); }
-[data-theme] .nav a.active{
-  background: var(--surface);
-  color: var(--fg);
-  border: 1px solid var(--header-border);
-}
-[data-theme] .btn{
-  background: var(--surface);
-  color: var(--fg);
-  border: 1px solid var(--header-border);
-}
-[data-theme] .btn-primary{
-  background: var(--accent);
-  color: var(--accent-fg);
-  border-color: var(--accent);
-}
-
-/* —— DARK ——————————————————————————————————————————————— */
-[data-theme="dark"]{
-  /* fondo y texto principales */
-  --bg:            #0d1421;     /* un toque más claro que antes */
-  --fg:            #e9eef6;     /* blanco suave alto contraste */
-  --muted:         #a9b4c3;     /* gris legible */
-  /* superficies y bordes */
-  --surface:       #141c2a;     /* cards/nav */
-  --header-bg:     #0f1826;
-  --header-border: #2c3a52;
-  /* acento (links/botón primario) */
-  --accent:        #4ea1ff;
-  --accent-fg:     #0a0f18;
-  --link:          #9bc8ff;
-}
-/* Calendario: números/mes visibles */
-[data-theme="dark"] h1, 
-[data-theme="dark"] h2,
-[data-theme="dark"] .day-cell{
-  color: var(--fg);
-}
-
-/* —— ONYX & GOLD ———————————————————————————————— */
-[data-theme="onyx-gold"]{
-  --bg:            #0f1115;
-  --fg:            #faf6e8;     /* marfil alto contraste */
-  --muted:         #cfc7ad;
-  --surface:       #161922;
-  --header-bg:     #10131a;
-  --header-border: #2a3040;
-  --accent:        #f0c63b;     /* gold más luminoso */
-  --accent-fg:     #0f1115;     /* texto oscuro sobre gold */
-  --link:          #ffd76a;
-}
-/* botones/links mejor legibles sobre bg oscuro */
-[data-theme="onyx-gold"] .btn,
-[data-theme="onyx-gold"] .nav a{
-  color: var(--fg);
-}
-[data-theme="onyx-gold"] .btn-primary:hover{
-  filter: brightness(1.05);
-}
-
-/* —— RUBY & SILVER ——————————————————————————————— */
-[data-theme="ruby-silver"]{
-  --bg:            #160b10;     /* rubí profundo */
-  --fg:            #f2f4f8;     /* plateado claro */
-  --muted:         #c6cdd6;
-  --surface:       #20131a;
-  --header-bg:     #1a0f15;
-  --header-border: #3a2a33;
-  --accent:        #ff2f55;     /* rubí vivo */
-  --accent-fg:     #ffffff;
-  --link:          #ff7a94;
-}
-/* garantizar contraste en nav activo y celdas */
-[data-theme="ruby-silver"] .nav a.active,
-[data-theme="ruby-silver"] .day-cell{
-  color: var(--fg);
-  border-color: var(--header-border);
-}
-
-/* onyx-gold: contraste + calendario + panel */
-[data-theme="onyx-gold"]{
-  --surface:#191d26; --header-border:#313a4b;
-  --fg:#faf6e8; --muted:#d7cfb6;
-}
-[data-theme="onyx-gold"] .day-cell,
-[data-theme="onyx-gold"] .day-cell *{ color:var(--fg); }
-[data-theme="onyx-gold"] .day-cell{
-  background:var(--surface); border:1px solid var(--header-border);
-}
-
-/* si podés, agregá class="day-events" al contenedor del panel */
-[data-theme="onyx-gold"] .day-events{
-  background:var(--surface); border:1px solid var(--header-border);
-  color:var(--fg); border-radius:14px; box-shadow:0 10px 24px rgba(0,0,0,.25);
-}
-
-/* === v1.3 ONYX-GOLD — más contraste en eventos + modal === */
-
-/* 1) Panel “Eventos del día”: subir contraste de textos secundarios */
-[data-theme="onyx-gold"] .day-events .muted,
-[data-theme="onyx-gold"] .day-events p{
-  color: #eae6d7; /* más cercano a --fg para mejor lectura */
-}
-
-/* 2) Modal (editar evento): etiquetas y textos “amarillos” -> negros legibles */
-[data-theme="onyx-gold"] dialog,
-[data-theme="onyx-gold"] .modal,
-[data-theme="onyx-gold"] .dialog{
-  background: #ffffff;          /* mantenemos modal claro */
-  color: #0d0f14;               /* texto base negro */
-}
-[data-theme="onyx-gold"] dialog label,
-[data-theme="onyx-gold"] .modal label,
-[data-theme="onyx-gold"] .dialog label{
-  color: #0d0f14;               /* etiquetas negras (no amarillo) */
-}
-
-/* Botón de cierre y botones dentro del modal: estilo oscuro coherente */
-[data-theme="onyx-gold"] dialog button,
-[data-theme="onyx-gold"] .modal button,
-[data-theme="onyx-gold"] .dialog button{
-  background: var(--surface);
-  color: var(--fg);
-  border: 1px solid var(--header-border);
-}
-
-/* === v1.3 ONYX-GOLD — CAP1/2/3 ajustes finos (append-only) === */
-
-/* Subimos el "muted" del tema para igualar el tono del subtítulo (Cap3) */
-[data-theme="onyx-gold"]{
-  --muted: #e7e2cf;
-}
-
-/* CAP1 — Panel de eventos: textos secundarios legibles */
-[data-theme="onyx-gold"] .day-events p,
-[data-theme="onyx-gold"] .day-events .muted {
-  color: var(--muted);
-}
-
-/* CAP3 — Subtítulo justo debajo del H1 */
-[data-theme="onyx-gold"] h1 + p {
-  color: var(--muted);
-}
-
-/* CAP2 — Modal: labels/campos en negro (sin amarillo) */
-[data-theme="onyx-gold"] dialog,
-[data-theme="onyx-gold"] .modal,
-[data-theme="onyx-gold"] .dialog {
-  background: #ffffff;
-  color: #0d0f14;
-}
-[data-theme="onyx-gold"] dialog label,
-[data-theme="onyx-gold"] .modal label,
-[data-theme="onyx-gold"] .dialog label {
-  color: #0d0f14 !important;
-  opacity: 1;                /* por si alguna regla baja opacidad */
-}
-
-/* Campos de formulario dentro del modal */
-[data-theme="onyx-gold"] dialog input,
-[data-theme="onyx-gold"] dialog select,
-[data-theme="onyx-gold"] dialog textarea,
-[data-theme="onyx-gold"] .modal input,
-[data-theme="onyx-gold"] .modal select,
-[data-theme="onyx-gold"] .modal textarea,
-[data-theme="onyx-gold"] .dialog input,
-[data-theme="onyx-gold"] .dialog select,
-[data-theme="onyx-gold"] .dialog textarea {
-  background: #ffffff;
-  color: #0d0f14;
-  border: 1px solid #e5e7eb;
-}
-[data-theme="onyx-gold"] dialog ::placeholder,
-[data-theme="onyx-gold"] .modal ::placeholder,
-[data-theme="onyx-gold"] .dialog ::placeholder {
-  color: #6b7280;
-}
-
-/* v1.3 onyx-gold — forzar legibilidad en textos del item de evento */
-[data-theme="onyx-gold"] .day-events :is(p, small, .muted, .meta, .desc, .notes){
-  color: #e7e2cf !important;  /* mismo tono crema del subtítulo */
-  opacity: 1 !important;
-}
-[data-theme="onyx-gold"] .day-events strong,
-[data-theme="onyx-gold"] .day-events b{
-  color: var(--fg);
-}
-/* === v1.3 CONSOLIDACIÓN — tokens semánticos y familia oscura === */
-
-/* 1) Mapeo semántico (no cambia el diseño, sólo da nombres claros) */
-:root{
-  --text: var(--fg);
-  --text-muted: var(--muted);
-  --panel-bg: var(--surface);
-  --panel-border: var(--header-border);
-}
-
-/* 2) Componentes neutros (consumen tokens, sin colores por tema) */
-.card{
-  background: var(--panel-bg);
-  border: 1px solid var(--panel-border);
-  border-radius: 14px;
-}
-.muted{ color: var(--text-muted); }
-
-.day-events{ /* panel “Eventos del día” */
-  background: var(--panel-bg);
-  border: 1px solid var(--panel-border);
-  color: var(--text);
-  border-radius: 14px;
-  box-shadow: 0 10px 24px rgba(0,0,0,.25);
-}
-.day-events p,
-.day-events .muted{ color: var(--text-muted); }
-
-/* 3) Familia oscura (reglas compartidas: dark, onyx-gold, ruby-silver) */
-:is([data-theme="dark"],[data-theme="onyx-gold"],[data-theme="ruby-silver"]) h1,
-:is([data-theme="dark"],[data-theme="onyx-gold"],[data-theme="ruby-silver"]) h2,
-:is([data-theme="dark"],[data-theme="onyx-gold"],[data-theme="ruby-silver"]) .day-cell{
-  color: var(--text);
-}
-:is([data-theme="dark"],[data-theme="onyx-gold"],[data-theme="ruby-silver"]) .nav a.active{
-  background: var(--panel-bg);
-  color: var(--text);
-  border: 1px solid var(--panel-border);
-}
-
-/* 4) Modal claro coherente en temas oscuros (una sola vez para los 3) */
-:is([data-theme="dark"],[data-theme="onyx-gold"],[data-theme="ruby-silver"]) dialog{
-  background: #fff;
-  color: #0d0f14;
-}
-:is([data-theme="dark"],[data-theme="onyx-gold"],[data-theme="ruby-silver"]) dialog label{
-  color: #0d0f14;
-}
-:is([data-theme="dark"],[data-theme="onyx-gold"],[data-theme="ruby-silver"]) dialog input,
-:is([data-theme="dark"],[data-theme="onyx-gold"],[data-theme="ruby-silver"]) dialog select,
-:is([data-theme="dark"],[data-theme="onyx-gold"],[data-theme="ruby-silver"]) dialog textarea{
-  background: #fff;
-  color: #0d0f14;
-  border: 1px solid #e5e7eb;
-}
+/* ================== Fin ================== */
