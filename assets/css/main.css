@@ -130,4 +130,35 @@ a{ color: var(--link); } a:hover{ color: var(--link-hover); }
   :root:not([data-theme]) { color-scheme: dark; }
 }
 
+/* v1.3.1 NAVY-ICE — contraste de texto y bordes */
+[data-theme="navy-ice"]{
+  --fg:            #ffffff;   /* texto principal más claro */
+  --muted:         #d6e3f7;   /* texto secundario legible */
+  --card-border:   #3a5170;   /* borde más visible */
+  --surface-border:#3a5170;   /* idem en superficies */
+}
+
+/* Calendario: números y contenido bien visibles */
+[data-theme="navy-ice"] .day-cell,
+[data-theme="navy-ice"] .day-cell *{
+  color: var(--fg);
+}
+
+/* Panel de eventos: párrafos y “Trading” más claros */
+[data-theme="navy-ice"] .day-events p,
+[data-theme="navy-ice"] .day-events .muted{
+  color: var(--muted);
+}
+[data-theme="navy-ice"] .day-events strong{
+  color: var(--fg);
+}
+
+/* Bordes más marcados en celdas, tarjetas y botones */
+[data-theme="navy-ice"] .day-cell,
+[data-theme="navy-ice"] .card,
+[data-theme="navy-ice"] .btn,
+[data-theme="navy-ice"] .day-events{
+  border-color: var(--card-border);
+}
+
 /* ================== Fin ================== */
