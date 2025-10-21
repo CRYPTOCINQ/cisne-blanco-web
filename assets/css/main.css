@@ -161,4 +161,7 @@ a{ color: var(--link); } a:hover{ color: var(--link-hover); }
   border-color: var(--card-border);
 }
 
+/* v1.3.3 calendario: días fuera del mes actual (más legibles) */
+.day-cell.dimmed-day { opacity: .75; }
+
 /* ================== Fin ================== */
