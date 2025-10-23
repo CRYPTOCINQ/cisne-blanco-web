@@ -203,7 +203,7 @@ dialog {
   color: var(--text);
   border: 1px solid var(--card-border);
   border-radius: 16px;
-  max-width: 720px;
+  max-width: 840px; /* ↑ antes 720px */
   width: 100%;
 }
 dialog::backdrop { background: rgba(0,0,0,.45); backdrop-filter: blur(2px); }
@@ -220,6 +220,7 @@ dialog .input, dialog input, dialog select, dialog textarea {
   border-radius: 12px;
   padding: .6rem .75rem;
   line-height: 1.35;
+  box-sizing: border-box; /* evita desbordes */
 }
 dialog textarea { resize: vertical; min-height: 110px; font-family: inherit; }
 
@@ -229,14 +230,36 @@ dialog textarea { resize: vertical; min-height: 110px; font-family: inherit; }
 /* Grid del formulario: 2 col responsive sin superposición */
 .modal-grid {
   display: grid;
-  gap: .75rem;
+  gap: 1rem; /* ↑ antes .75rem */
   grid-template-columns: repeat(2, minmax(0,1fr));
 }
 @media (max-width: 680px){
   .modal-grid { grid-template-columns: 1fr; }
+  dialog { max-width: 96vw; }
 }
 
 /* Botonera inferior */
 .modal-actions { display:flex; gap:.5rem; justify-content:flex-end; padding: 1rem; }
+
+/* === Contraste de íconos nativos date/time en navy-ice === */
+[data-theme="navy-ice"] input[type="date"],
+[data-theme="navy-ice"] input[type="time"],
+[data-theme="navy-ice"] select{
+  color-scheme: dark; /* mejora controles nativos en oscuro */
+}
+
+/* WebKit (Chrome/Edge/Opera/Safari) */
+[data-theme="navy-ice"] input[type="date"]::-webkit-calendar-picker-indicator,
+[data-theme="navy-ice"] input[type="time"]::-webkit-calendar-picker-indicator{
+  filter: invert(1) brightness(1.8) contrast(1.2);
+  opacity: .9;
+}
+
+/* Espacio para el ícono y evitar que tape el texto */
+dialog input[type="date"],
+dialog input[type="time"]{
+  padding-right: 2.25rem;
+  box-sizing: border-box;
+}
 
 /* ================== Fin ================== */
