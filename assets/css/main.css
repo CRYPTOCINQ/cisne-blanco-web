@@ -186,4 +186,57 @@ a{ color: var(--link); } a:hover{ color: var(--link-hover); }
 .px-1\.5 { padding-left:.375rem; padding-right:.375rem; }
 .py-0\.5 { padding-top:.125rem; padding-bottom:.125rem; }
 
+/* ===== Topbar unificada ===== */
+.topbar { background: var(--nav); border-bottom: 1px solid var(--card-border); }
+.topbar-inner { max-width: 1200px; margin: 0 auto; padding: .5rem 1rem; display: grid; grid-template-columns: 1fr auto auto; gap: 1rem; align-items: center; }
+.brand { display:flex; align-items:center; gap:.5rem; text-decoration:none; }
+.brand-dot { display:inline-grid; place-items:center; width:28px; height:28px; border-radius:999px; background:#000; color:#fff; font-weight:700; font-size:.85rem; }
+.brand-title { color: var(--text); font-weight:600; }
+.tabs { display:flex; gap:.75rem; flex-wrap:wrap; }
+.tabs a { padding:.25rem .5rem; border-radius:999px; text-decoration:none; color: var(--link,#2563eb); border:1px solid transparent; }
+.tabs a.active { background: #000; color:#fff; border-color:#000; }
+.theme-pill { margin-left:.5rem; padding:.25rem .75rem; border-radius:999px; border:1px solid var(--card-border); background: var(--card); color: var(--text); }
+
+/* ===== Dialog / Modal calendario ===== */
+dialog {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  max-width: 720px;
+  width: 100%;
+}
+dialog::backdrop { background: rgba(0,0,0,.45); backdrop-filter: blur(2px); }
+
+/* Tipografía unificada dentro del modal */
+dialog, dialog * { font-family: inherit; color: var(--text); }
+
+/* Inputs coherentes con la UI */
+dialog .input, dialog input, dialog select, dialog textarea {
+  width: 100%;
+  background: var(--surface, #0b1320); /* fallback correcto */
+  color: var(--text);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: .6rem .75rem;
+  line-height: 1.35;
+}
+dialog textarea { resize: vertical; min-height: 110px; font-family: inherit; }
+
+/* Título del modal */
+#modalTitle { font-weight: 700; font-size: 1.125rem; color: var(--text); }
+
+/* Grid del formulario: 2 col responsive sin superposición */
+.modal-grid {
+  display: grid;
+  gap: .75rem;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+}
+@media (max-width: 680px){
+  .modal-grid { grid-template-columns: 1fr; }
+}
+
+/* Botonera inferior */
+.modal-actions { display:flex; gap:.5rem; justify-content:flex-end; padding: 1rem; }
+
 /* ================== Fin ================== */
