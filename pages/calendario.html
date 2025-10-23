@@ -9,17 +9,28 @@
 </head>
 <body class="transition-theme">
 
-  <header>
-    <nav class="nav" style="display:flex;gap:.75rem;align-items:center;padding:.75rem 1rem;">
+  <header class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="brand">
+      <span class="brand-dot">CB</span>
+      <span class="brand-title">Cisne Blanco — Maqueta Base</span>
+    </a>
+
+    <nav class="tabs">
       <a href="../index.html">Inicio</a>
       <a class="active" href="./calendario.html">Calendario</a>
       <a href="./habitos.html">Hábitos</a>
-      <div style="margin-left:auto">
-        <!-- Toggle tema (usa la misma lógica global: localStorage key 'theme') -->
-        <button id="themeToggle" class="btn">Tema: <span id="themeLabel">auto</span></button>
-      </div>
+      <a href="./salud.html">Salud</a>
+      <a href="./familia.html">Familia</a>
+      <a href="./social.html">Social</a>
+      <a href="./finanzas.html">Finanzas</a>
     </nav>
-  </header>
+
+    <button id="themeToggle" class="theme-pill">
+      Tema: <span id="themeLabel">auto</span>
+    </button>
+  </div>
+</header>
 
   <main style="max-width:1100px;margin:1.25rem auto;padding:0 1rem;">
     <!-- Barra superior -->
@@ -302,5 +313,49 @@
     render();
   });
   </script>
+  <!-- === Modal calendario (estándar) === -->
+<dialog id="modal" class="card" style="padding:0;">
+  <form method="dialog" style="padding:1rem 1rem 0 1rem;">
+    <h3 id="modalTitle" style="margin:0 0 .75rem 0;">Nuevo evento</h3>
+
+    <div class="modal-grid">
+      <div>
+        <label class="muted" for="inpDate">Fecha</label>
+        <input id="inpDate" type="date" class="input">
+      </div>
+      <div>
+        <label class="muted" for="inpTime">Hora</label>
+        <input id="inpTime" type="time" class="input">
+      </div>
+
+      <div style="grid-column:1/-1;">
+        <label class="muted" for="inpTitle">Título</label>
+        <input id="inpTitle" type="text" class="input" placeholder="Ej: Reunión">
+      </div>
+
+      <div>
+        <label class="muted" for="inpTag">Etiqueta</label>
+        <select id="inpTag" class="input">
+          <option value="">Sin etiqueta</option>
+          <option>Trabajo</option>
+          <option>Familia</option>
+          <option>Salud</option>
+          <option>Social</option>
+          <option>Trading</option>
+        </select>
+      </div>
+
+      <div style="grid-column:1/-1;">
+        <label class="muted" for="inpNotes">Notas</label>
+        <textarea id="inpNotes" rows="4" class="input" placeholder="Notas adicionales..."></textarea>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button id="btnSave" class="btn btn-primary">Guardar</button>
+      <button value="cancel" class="btn">Cerrar</button>
+    </div>
+  </form>
+</dialog>
 </body>
 </html>
