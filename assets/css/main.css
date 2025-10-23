@@ -164,4 +164,26 @@ a{ color: var(--link); } a:hover{ color: var(--link-hover); }
 /* v1.3.3 calendario: días fuera del mes actual (más legibles) */
 .day-cell.dimmed-day { opacity: .75; }
 
+/* === utilidades mínimas para calendario === */
+.p-2 { padding: .5rem; }
+.p-3 { padding: .75rem; }
+.text-left { text-align: left; }
+.text-sm { font-size: .875rem; }
+.text-xs { font-size: .75rem; }
+.font-semibold { font-weight: 600; }
+.mt-1 { margin-top: .25rem; }
+.mt-2 { margin-top: .5rem; }
+.space-y-1 > * + * { margin-top: .25rem; }
+.flex { display:flex; }
+.items-center { align-items:center; }
+.items-start { align-items:flex-start; }
+.justify-between { justify-content: space-between; }
+.gap-2 { gap: .5rem; }
+.truncate { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.rounded { border-radius: var(--radius); }
+.bg-black { background:#000; }
+.text-white { color:#fff; }
+.px-1\.5 { padding-left:.375rem; padding-right:.375rem; }
+.py-0\.5 { padding-top:.125rem; padding-bottom:.125rem; }
+
 /* ================== Fin ================== */
