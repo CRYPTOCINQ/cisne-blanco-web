@@ -1,271 +1,306 @@
-<script>
-  // v1.3.2 - Calendario (neutral + tokens)
-  const pad = n => String(n).padStart(2,'0');
-  const toKey = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cisne Blanco — Calendario</title>
+  <link rel="icon" href="../assets/favicon.ico" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=1401" />
+</head>
+<body class="transition-theme">
 
-  const DB_KEY = "cb_calendar_events_v1";
-  const load = () => JSON.parse(localStorage.getItem(DB_KEY) || "{}");
-  const save = data => localStorage.setItem(DB_KEY, JSON.stringify(data));
+  <header>
+    <nav class="nav" style="display:flex;gap:.75rem;align-items:center;padding:.75rem 1rem;">
+      <a href="../index.html">Inicio</a>
+      <a class="active" href="./calendario.html">Calendario</a>
+      <a href="./habitos.html">Hábitos</a>
+      <div style="margin-left:auto">
+        <!-- Toggle tema (usa la misma lógica global: localStorage key 'theme') -->
+        <button id="themeToggle" class="btn">Tema: <span id="themeLabel">auto</span></button>
+      </div>
+    </nav>
+  </header>
 
-  let state = {
-    cursor: new Date(),
-    selected: new Date(),
-    editing: null // { key, idx } o null
-  };
+  <main style="max-width:1100px;margin:1.25rem auto;padding:0 1rem;">
+    <!-- Barra superior -->
+    <section class="card" style="padding:1rem;display:flex;gap:.75rem;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <button id="btnPrev" class="btn">←</button>
+        <button id="btnNext" class="btn">→</button>
+        <button id="btnToday" class="btn">Hoy</button>
+      </div>
+      <h1 id="labelMonth" style="margin:0;font-size:1.25rem;"></h1>
+      <div>
+        <button id="btnAdd" class="btn btn-primary">+ Evento</button>
+      </div>
+    </section>
 
-  const label = document.getElementById("labelMonth");
-  const grid = document.getElementById("grid");
-  const modal = document.getElementById("modal");
-  const modalTitle = document.getElementById("modalTitle");
-  const inpDate = document.getElementById("inpDate");
-  const inpTime = document.getElementById("inpTime");
-  const inpTitle = document.getElementById("inpTitle");
-  const inpTag = document.getElementById("inpTag");
-  const inpNotes = document.getElementById("inpNotes");
-  const listDay = document.getElementById("listDay");
-  const btnClearDay = document.getElementById("btnClearDay");
-  const btnSave = document.getElementById("btnSave");
+    <!-- Grilla del mes -->
+    <section class="surface" style="margin-top:1rem;padding:1rem;">
+      <!-- encabezado de días -->
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:.5rem;margin-bottom:.5rem;">
+        <div class="muted">Lun</div><div class="muted">Mar</div><div class="muted">Mié</div>
+        <div class="muted">Jue</div><div class="muted">Vie</div><div class="muted">Sáb</div><div class="muted">Dom</div>
+      </div>
+      <!-- celdas -->
+      <div id="grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:.5rem;"></div>
+    </section>
 
-  function render() {
-    const y = state.cursor.getFullYear();
-    const m = state.cursor.getMonth();
-    const first = new Date(y, m, 1);
-    const start = new Date(first);
-    const dow = (first.getDay() + 6) % 7; // Lunes=0
-    start.setDate(first.getDate() - dow);
-    const monthName = state.cursor.toLocaleString('es-AR', { month:'long' });
-    label.textContent = monthName.charAt(0).toUpperCase()+monthName.slice(1) + " " + y;
+    <!-- Panel de eventos del día -->
+    <section class="day-events" style="margin-top:1rem;padding:1rem;">
+      <h2 style="margin-top:0;">Eventos del día</h2>
+      <div id="listDay"></div>
+      <div style="margin-top:1rem;display:flex;gap:.5rem;">
+        <button id="btnClearDay" class="btn">Borrar todos</button>
+      </div>
+    </section>
+  </main>
 
-    grid.innerHTML = "";
-    const data = load();
-
-    for (let i=0; i<42; i++) {
-      const d = new Date(start);
-      d.setDate(start.getDate()+i);
-      const isCurrent = d.getMonth() === m;
-      const isToday = toKey(d) === toKey(new Date());
-      const dayKey = toKey(d);
-      const events = data[dayKey] || [];
-
-      const cell = document.createElement("button");
-      cell.className = "day-cell card p-2 text-left";
-      if (!isCurrent) cell.classList.add('dimmed-day');
-      cell.innerHTML = `
-        <div class="flex items-center justify-between">
-          <span class="text-sm font-semibold">${d.getDate()}</span>
-          ${isToday ? '<span class="text-xs px-1.5 py-0.5 rounded bg-black text-white">hoy</span>' : ''}
-        </div>
-        <div class="mt-2 space-y-1 text-xs">
-          ${events.slice(0,3).map(e => `
-            <div class="flex items-center gap-2">
-              <span style="display:inline-block;width:8px;height:8px;border-radius:9999px;background:${tagColor(e.tag)}"></span>
-              <span class="truncate">${e.time ? e.time+' — ' : ''}${e.title}</span>
-            </div>
-          `).join('')}
-          ${events.length>3 ? '<div class="muted">+'+(events.length-3)+' más</div>' : ''}
-        </div>
-      `;
-      cell.addEventListener('click', () => { state.selected = d; renderDay(); });
-      grid.appendChild(cell);
-    }
-    renderDay();
-  }
-
-  function renderDay() {
-    const data = load();
-    const key = toKey(state.selected);
-    const events = data[key]||[];
-    listDay.innerHTML = "";
-    if (!events.length) {
-      listDay.innerHTML = '<div class="muted">No hay eventos para este día.</div>';
-      return;
-    }
-    events.forEach((e, idx) => {
-      const item = document.createElement('div');
-      item.className = "card p-3 flex items-start justify-between";
-      item.innerHTML = `
+  <!-- Modal nativo -->
+  <dialog id="modal" class="card" style="padding:0;max-width:520px;width:100%;">
+    <form method="dialog" style="padding:1rem 1rem 0 1rem;">
+      <h3 id="modalTitle" style="margin:0 0 .75rem 0;">Nuevo evento</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
         <div>
-          <div class="text-sm font-semibold">${e.time ? e.time+' — ' : ''}${e.title}</div>
-          <div class="text-xs muted">${e.tag || 'Sin etiqueta'}</div>
-          ${e.notes ? `<div class="mt-1 text-xs muted">${e.notes}</div>` : ''}
+          <label class="muted" for="inpDate">Fecha</label>
+          <input id="inpDate" type="date" class="input" style="width:100%;padding:.5rem;border:1px solid var(--card-border);border-radius:10px;">
         </div>
-        <div class="action-row flex gap-2">
-          <button class="btn btn-sm" data-action="edit">Editar</button>
-          <button class="btn btn-sm" data-action="delete">Borrar</button>
+        <div>
+          <label class="muted" for="inpTime">Hora</label>
+          <input id="inpTime" type="time" class="input" style="width:100%;padding:.5rem;border:1px solid var(--card-border);border-radius:10px;">
         </div>
-      `;
-      item.querySelector('[data-action="edit"]').addEventListener('click', () => editEvent(key, idx));
-      item.querySelector('[data-action="delete"]').addEventListener('click', () => removeEvent(key, idx));
-      listDay.appendChild(item);
-    });
-  }
+        <div style="grid-column:1/-1;">
+          <label class="muted" for="inpTitle">Título</label>
+          <input id="inpTitle" type="text" placeholder="Ej: Reunión" class="input" style="width:100%;padding:.5rem;border:1px solid var(--card-border);border-radius:10px;">
+        </div>
+        <div>
+          <label class="muted" for="inpTag">Etiqueta</label>
+          <select id="inpTag" class="input" style="width:100%;padding:.5rem;border:1px solid var(--card-border);border-radius:10px;">
+            <option value="">Sin etiqueta</option>
+            <option>Trabajo</option>
+            <option>Familia</option>
+            <option>Salud</option>
+            <option>Social</option>
+            <option>Trading</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1;">
+          <label class="muted" for="inpNotes">Notas</label>
+          <textarea id="inpNotes" rows="3" class="input" style="width:100%;padding:.5rem;border:1px solid var(--card-border);border-radius:10px;"></textarea>
+        </div>
+      </div>
+      <div style="display:flex;gap:.5rem;justify-content:flex-end;padding:1rem;">
+        <button id="btnSave" class="btn btn-primary">Guardar</button>
+        <button value="cancel" class="btn">Cerrar</button>
+      </div>
+    </form>
+  </dialog>
 
-  function tagColor(tag) {
-    switch(tag) {
-      case 'Trabajo': return '#1f2937';
-      case 'Familia': return '#2563eb';
-      case 'Salud': return '#10b981';
-      case 'Social': return '#f59e0b';
-      case 'Trading': return '#ef4444';
-      default: return '#9ca3af';
+  <!-- Toggle simple (mismo storage key 'theme') -->
+  <script>
+    (function(){
+      const root = document.documentElement;
+      const KEY = "theme"; // 'auto' | 'navy-ice'
+      const btn = document.getElementById('themeToggle');
+      const lab = document.getElementById('themeLabel');
+      function apply(val){
+        if (val === 'navy-ice') root.setAttribute('data-theme','navy-ice');
+        else root.removeAttribute('data-theme');
+        if (lab) lab.textContent = (val || 'auto');
+      }
+      const saved = localStorage.getItem(KEY) || 'auto';
+      apply(saved);
+      if (btn) btn.onclick = () => {
+        const next = (localStorage.getItem(KEY) === 'navy-ice') ? 'auto' : 'navy-ice';
+        localStorage.setItem(KEY, next);
+        apply(next);
+      };
+    })();
+  </script>
+
+  <!-- Calendario (tu v1.3.3 intacto) -->
+  <script>
+  /* === Pegar aquí exactamente el script que subiste (v1.3.3) === */
+  document.addEventListener('DOMContentLoaded', () => {
+    const pad = n => String(n).padStart(2,'0');
+    const toKey = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    const $ = id => document.getElementById(id);
+    const label = $("labelMonth");
+    const grid = $("grid");
+    const modal = $("modal");
+    const modalTitle = $("modalTitle");
+    const inpDate = $("inpDate");
+    const inpTime = $("inpTime");
+    const inpTitle = $("inpTitle");
+    const inpTag = $("inpTag");
+    const inpNotes = $("inpNotes");
+    const listDay = $("listDay");
+    const btnPrev = $("btnPrev");
+    const btnNext = $("btnNext");
+    const btnToday = $("btnToday");
+    const btnAdd = $("btnAdd");
+    const btnSave = $("btnSave");
+    const btnClearDay = $("btnClearDay");
+    const required = [label, grid, listDay, btnPrev, btnNext, btnToday, btnAdd, btnSave, btnClearDay];
+    if (required.some(n => !n)) { console.warn("[calendar] Falta algún nodo requerido; init abortado"); return; }
+    const DB_KEY = "cb_calendar_events_v1";
+    const load = () => JSON.parse(localStorage.getItem(DB_KEY) || "{}");
+    const save = data => localStorage.setItem(DB_KEY, JSON.stringify(data));
+    let state = { cursor: new Date(), selected: new Date(), editing: null };
+    function tagColor(tag) {
+      switch(tag) {
+        case 'Trabajo': return '#1f2937';
+        case 'Familia': return '#2563eb';
+        case 'Salud':   return '#10b981';
+        case 'Social':  return '#f59e0b';
+        case 'Trading': return '#ef4444';
+        default:        return '#9ca3af';
+      }
     }
-  }
-
-  function removeEvent(key, idx) {
-    const data = load();
-    (data[key] = data[key] || []).splice(idx,1);
-    save(data);
-    render();
-  }
-
-  function editEvent(key, idx) {
-    const data = load();
-    const ev = (data[key]||[])[idx];
-    if (!ev) return;
-    state.editing = { key, idx };
-    modalTitle.textContent = "Editar evento";
-    inpDate.value = key;
-    inpTime.value = ev.time || "";
-    inpTag.value = ev.tag || "";
-    inpTitle.value = ev.title || "";
-    inpNotes.value = ev.notes || "";
-    if (modal.showModal) modal.showModal();
-    btnSave.textContent = "Actualizar";
-  }
-
-  // Navegación
-  document.getElementById('btnPrev').onclick = () => { state.cursor.setMonth(state.cursor.getMonth()-1); render(); };
-  document.getElementById('btnNext').onclick = () => { state.cursor.setMonth(state.cursor.getMonth()+1); render(); };
-  document.getElementById('btnToday').onclick = () => { state.cursor = new Date(); state.selected = new Date(); render(); };
-
-  // Nuevo evento
-  document.getElementById('btnAdd').onclick = () => {
-    state.editing = null;
-    modalTitle.textContent = "Nuevo evento";
-    btnSave.textContent = "Guardar";
-    inpDate.value = toKey(state.selected);
-    inpTime.value = "";
-    inpTitle.value = "";
-    inpTag.value = "";
-    inpNotes.value = "";
-    if (modal.showModal) modal.showModal();
-  };
-
-  // Guardar (crear/actualizar)
-  document.getElementById('btnSave').onclick = (evClick) => {
-    evClick.preventDefault();
-    const date = inpDate.value;
-    const time = inpTime.value;
-    const title = inpTitle.value.trim();
-    const tag = inpTag.value;
-    const notes = inpNotes.value.trim();
-    if (!date || !title) { alert("Completá fecha y título."); return; }
-    const data = load();
-
-    if (state.editing) {
-      const { key, idx } = state.editing;
-      const original = (data[key]||[])[idx];
-      if (!original) { state.editing = null; if (modal.close) modal.close(); render(); return; }
-      (data[key] = data[key] || []).splice(idx,1);            // quitar del día original
-      (data[date] = data[date] || []).push({ time, title, tag, notes }); // agregar al nuevo día
-      save(data);
-      state.selected = new Date(date);
-      state.editing = null;
-    } else {
-      (data[date] = data[date] || []).push({ time, title, tag, notes });
-      save(data);
-      state.selected = new Date(date);
+    function render(){
+      const y = state.cursor.getFullYear();
+      const m = state.cursor.getMonth();
+      const first = new Date(y, m, 1);
+      const start = new Date(first);
+      const dow = (first.getDay()+6)%7;
+      start.setDate(first.getDate()-dow);
+      const monthName = state.cursor.toLocaleString('es-AR', { month:'long' });
+      label.textContent = monthName.charAt(0).toUpperCase()+monthName.slice(1) + " " + y;
+      grid.innerHTML = "";
+      const data = load();
+      for (let i=0; i<42; i++) {
+        const d = new Date(start); d.setDate(start.getDate()+i);
+        const isCurrent = d.getMonth() === m;
+        const isToday   = toKey(d) === toKey(new Date());
+        const dayKey    = toKey(d);
+        const events    = data[dayKey] || [];
+        const cell = document.createElement("button");
+        cell.className = "day-cell card p-2 text-left";
+        if (!isCurrent) cell.classList.add("dimmed-day");
+        cell.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold">${d.getDate()}</span>
+            ${isToday ? '<span class="text-xs px-1.5 py-0.5 rounded bg-black text-white">hoy</span>' : ''}
+          </div>
+          <div class="mt-2 space-y-1 text-xs">
+            ${events.slice(0,3).map(e => `
+              <div class="flex items-center gap-2">
+                <span style="display:inline-block;width:8px;height:8px;border-radius:9999px;background:${tagColor(e.tag)}"></span>
+                <span class="truncate">${e.time ? e.time+' — ' : ''}${e.title}</span>
+              </div>
+            `).join('')}
+            ${events.length>3 ? '<div class="muted">+'+(events.length-3)+' más</div>' : ''}
+          </div>
+        `;
+        cell.addEventListener("click", () => { state.selected = d; renderDay(); });
+        grid.appendChild(cell);
+      }
+      renderDay();
     }
-    if (modal.close) modal.close();
-    render();
-  };
-
-  // Borrar todos del día
-  btnClearDay.onclick = () => {
-    const key = toKey(state.selected);
-    const data = load();
-    if (!data[key] || !data[key].length) return;
-    if (confirm("¿Borrar todos los eventos de este día?")) {
-      delete data[key];
+    function renderDay(){
+      const data = load();
+      const key = toKey(state.selected);
+      const events = data[key] || [];
+      listDay.innerHTML = events.length
+        ? ''
+        : '<div class="muted">No hay eventos para este día.</div>';
+      events.forEach((e, idx) => {
+        const item = document.createElement("div");
+        item.className = "card p-3 flex items-start justify-between";
+        item.innerHTML = `
+          <div>
+            <div class="text-sm font-semibold">${e.time ? e.time+' — ' : ''}${e.title}</div>
+            <div class="text-xs muted">${e.tag || 'Sin etiqueta'}</div>
+            ${e.notes ? `<div class="mt-1 text-xs muted">${e.notes}</div>` : ''}
+          </div>
+          <div class="action-row flex gap-2">
+            <button class="btn btn-sm" data-action="edit">Editar</button>
+            <button class="btn btn-sm" data-action="delete">Borrar</button>
+          </div>
+        `;
+        item.querySelector('[data-action="edit"]').addEventListener('click', () => editEvent(key, idx));
+        item.querySelector('[data-action="delete"]').addEventListener('click', () => removeEvent(key, idx));
+        listDay.appendChild(item);
+      });
+    }
+    function removeEvent(key, idx){
+      const data = load();
+      (data[key] = data[key] || []).splice(idx,1);
       save(data);
       render();
     }
-  };
-
-  render();
-</script>
-  <footer class="mt-16 border-t">
-    <div class="mx-auto container-pro px-4 py-6 text-xs text-gray-500 flex items-center justify-between">
-      <span>© 2025 Cisne Blanco</span>
-      <span>v2.4 — Editar evento</span>
-    </div>
-  </footer>
-  <script>
-    (function() {
-      const path = location.pathname;
-      const map = {
-        "/": "home",
-        "index.html": "home",
-        "calendario.html": "calendario",
-        "habitos.html": "habitos",
-        "salud.html": "salud",
-        "familia.html": "familia",
-        "social.html": "social",
-        "finanzas.html": "finanzas"
-      };
-      let key = "home";
-      for (const k in map) {
-        if (path.endsWith(k)) { key = map[k]; break; }
+    function editEvent(key, idx){
+      const data = load();
+      const ev = (data[key]||[])[idx];
+      if (!ev) return;
+      state.editing = { key, idx };
+      const modalTitle = document.getElementById('modalTitle');
+      const inpDate = document.getElementById('inpDate');
+      const inpTime = document.getElementById('inpTime');
+      const inpTitle = document.getElementById('inpTitle');
+      const inpTag = document.getElementById('inpTag');
+      const inpNotes = document.getElementById('inpNotes');
+      const btnSave = document.getElementById('btnSave');
+      if (modalTitle) modalTitle.textContent = "Editar evento";
+      if (inpDate)  inpDate.value  = key;
+      if (inpTime)  inpTime.value  = ev.time || "";
+      if (inpTag)   inpTag.value   = ev.tag || "";
+      if (inpTitle) inpTitle.value = ev.title || "";
+      if (inpNotes) inpNotes.value = ev.notes || "";
+      const modal = document.getElementById('modal');
+      if (modal && modal.showModal) modal.showModal();
+      if (btnSave) btnSave.textContent = "Actualizar";
+    }
+    // listeners
+    btnPrev.onclick  = () => { state.cursor.setMonth(state.cursor.getMonth()-1); render(); };
+    btnNext.onclick  = () => { state.cursor.setMonth(state.cursor.getMonth()+1); render(); };
+    btnToday.onclick = () => { state.cursor = new Date(); state.selected = new Date(); render(); };
+    btnAdd.onclick = () => {
+      state.editing = null;
+      modalTitle.textContent = "Nuevo evento";
+      btnSave.textContent = "Guardar";
+      inpDate.value  = toKey(state.selected);
+      inpTime.value  = "";
+      inpTitle.value = "";
+      inpTag.value   = "";
+      inpNotes.value = "";
+      if (modal?.showModal) modal.showModal();
+    };
+    btnSave.onclick = (evClick) => {
+      evClick.preventDefault();
+      const date  = inpDate?.value;
+      const time  = inpTime?.value;
+      const title = (inpTitle?.value || "").trim();
+      const tag   = inpTag?.value;
+      const notes = (inpNotes?.value || "").trim();
+      if (!date || !title) { alert("Completá fecha y título."); return; }
+      const data = load();
+      if (state.editing) {
+        const { key, idx } = state.editing;
+        (data[key] = data[key] || []).splice(idx,1);
+        (data[date] = data[date] || []).push({ time, title, tag, notes });
+        state.selected = new Date(date);
+        state.editing = null;
+      } else {
+        (data[date] = data[date] || []).push({ time, title, tag, notes });
+        state.selected = new Date(date);
       }
-      document.querySelectorAll('a[data-page]').forEach(a => {
-        if (a.dataset.page === key) {
-          a.style.background = '#000';
-          a.style.color = '#fff';
-          a.style.borderRadius = '10px';
-          a.style.padding = '6px 10px';
-        }
-      });
-    })();
-  </script>
-<!-- v1.3 Toggle unificado: auto → dark → navy-ice → onyx-gold → ruby-silver -->
-<script>
-(function(){
-  const THEMES = ["","dark","navy-ice","onyx-gold","ruby-silver"]; // '' = auto
-  const LABELS = {
-    "":            "Tema: auto",
-    "dark":        "Tema: dark",
-    "navy-ice":    "Tema: navy-ice",
-    "onyx-gold":   "Tema: onyx-gold",
-    "ruby-silver": "Tema: ruby-silver"
-  };
-  const KEY  = "theme";
-  const root = document.documentElement;
-  const btn  = document.getElementById("theme-toggle");
-  if (!btn) { console.warn("[theme] falta #theme-toggle"); return; }
-
-  // Aplicar preferencia guardada o sistema
-  let saved = null;
-  try { saved = localStorage.getItem(KEY); } catch(e) {}
-  if (saved !== null) {
-    if (saved) root.dataset.theme = saved; else root.removeAttribute("data-theme");
-  } else if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
-    root.dataset.theme = "dark";
-    saved = "dark";
-  }
-
-  // Etiqueta inicial
-  const current = root.dataset.theme || "";
-  btn.textContent = LABELS[current];
-
-  // Ciclo de temas
-  btn.addEventListener("click", () => {
-    const cur  = root.dataset.theme || "";
-    const next = THEMES[(THEMES.indexOf(cur) + 1) % THEMES.length];
-    if (next) root.dataset.theme = next; else root.removeAttribute("data-theme");
-    try { localStorage.setItem(KEY, next); } catch(e) {}
-    btn.textContent = LABELS[next];
+      save(data);
+      if (modal?.close) modal.close();
+      render();
+    };
+    btnClearDay.onclick = () => {
+      const key = toKey(state.selected);
+      const data = load();
+      if (!data[key]?.length) return;
+      if (confirm("¿Borrar todos los eventos de este día?")) {
+        delete data[key];
+        save(data);
+        render();
+      }
+    };
+    render();
   });
-})();
-</script>
+  </script>
 </body>
 </html>
