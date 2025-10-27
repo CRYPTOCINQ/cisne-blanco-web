@@ -237,6 +237,7 @@ dialog textarea { resize: vertical; min-height: 110px; font-family: inherit; }
   .modal-grid { grid-template-columns: 1fr; }
   dialog { max-width: 96vw; }
 }
+dialog textarea { resize: vertical; min-height: 110px; font-family: inherit; }
 
 /* Botonera inferior */
 .modal-actions { display:flex; gap:.5rem; justify-content:flex-end; padding: 1rem; }
