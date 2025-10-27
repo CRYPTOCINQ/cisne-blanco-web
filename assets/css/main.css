@@ -20,6 +20,7 @@ code, pre, kbd, samp { font-family: var(--font-mono) !important; }
   /* tokens base */
   --bg: #ffffff;
   --fg: #111827;
+  --text: var(--fg);
   --muted: #6b7280;
 
   --card: #ffffff;
@@ -46,6 +47,7 @@ code, pre, kbd, samp { font-family: var(--font-mono) !important; }
 [data-theme="navy-ice"]{
   --bg: #0f1b2d;
   --fg: #e9f2ff;
+  --text: var(--fg);
   --muted: #b0c2de;
 
   --card: #142239;
