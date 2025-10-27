@@ -237,6 +237,7 @@ dialog textarea { resize: vertical; min-height: 110px; font-family: inherit; }
   .modal-grid { grid-template-columns: 1fr; }
   dialog { max-width: 96vw; }
 }
+dialog textarea { resize: vertical; min-height: 110px; font-family: inherit; }
 
 /* Botonera inferior */
 .modal-actions { display:flex; gap:.5rem; justify-content:flex-end; padding: 1rem; }
@@ -324,7 +325,6 @@ dialog input[type="time"]{
   flex: 0 0 8px !important;
   /* el color lo define el inline style existente (background: tagColor), no lo tocamos */
 }
-.muted{ color: var(--muted); }
 
 /* Previene que alguna regla rara los estire en alto/ancho */
 .day-cell .mt-2 .flex > span:first-child::before,
