@@ -300,6 +300,12 @@ dialog input[type="time"]{
   justify-content: flex-start;
   overflow: hidden;            /* evita que el texto “empuje” la fila */
 }
+.surface{
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius);
+}
+.muted{ color: var(--muted); }
 
 /* 3) Contenedor de eventos dentro de la celda: recorte suave (3 líneas máx) */
 .day-cell .mt-2{
