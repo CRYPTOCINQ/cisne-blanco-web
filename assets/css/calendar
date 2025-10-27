@@ -83,3 +83,50 @@ dialog input[type="date"], dialog input[type="time"]{ padding-right:2.25rem; box
   flex-direction: column;
   justify-content: flex-start;
 }
+
+/* === FIX DEFINITIVO: filas fijas y sombreado consistente === */
+
+/* 1) El grid usa filas fijas y NO se dejan crecer por contenido */
+#grid{
+  display: grid;                 /* ya estaba inline, lo reafirmo */
+  grid-auto-rows: 84px;          /* alto fijo de cada fila */
+  align-items: stretch;
+}
+#grid > *{
+  min-height: 0 !important;      /* clave para que el contenido no fuerce la fila */
+  overflow: hidden !important;    /* si algo se pasa, se corta */
+}
+
+/* 2) La celda ocupa el 100% de la pista y no puede “empujar” al grid */
+.day-cell{
+  height: 100% !important;
+  min-height: 0 !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden !important;
+  position: relative;             /* necesario para el overlay */
+}
+
+/* 3) El bloque de eventos queda acotado (3 líneas aprox) */
+.day-cell .mt-2{
+  overflow: hidden !important;
+  max-height: 3.2rem;             /* ~3 líneas de .text-xs */
+}
+.day-cell .mt-2 *{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 4) Sombreado de días fuera del mes (overlay) */
+.day-cell.dimmed-day::after{
+  content:"";
+  position:absolute; inset:0;
+  border-radius: inherit;
+  background: rgba(0,0,0,.045);       /* tema claro */
+  pointer-events: none;
+}
+[data-theme="navy-ice"] .day-cell.dimmed-day::after{
+  background: rgba(255,255,255,.06);  /* navy-ice */
+}
