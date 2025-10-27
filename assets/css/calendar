@@ -64,4 +64,22 @@ dialog textarea{ resize:vertical; min-height:110px; font-family:inherit; }
     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='%23E9F2FF'><path d='M12 1a11 11 0 1 0 11 11A11.013 11.013 0 0 0 12 1zm0 20a9 9 0 1 1 9-9 9.01 9.01 0 0 1-9 9zm.5-14h-2v6l5.25 3.15 1-1.65-4.25-2.5z'/></svg>");
   opacity:1; filter:none;
 }
-dialog input[type="date"], dialog input[type="time"]{ padding-right:2.25rem; box-sizing:border-box; }
+dialog input[type="date"], dialog input[type="time"]{ padding-right:2.25rem; box-sizing:border-box; 
+}
+
+/* === Calendario: fila fija sin estirarse por contenido (hotfix min-size) === */
+#grid{
+  grid-auto-rows: 84px;       /* ya lo tenías, lo reafirmo aquí por claridad */
+  align-items: stretch;       /* que ocupe toda la fila */
+}
+#grid > *{
+  min-height: 0;              /* ¡clave! permite que la fila no crezca por el contenido */
+}
+.day-cell{
+  height: 100%;
+  min-height: 0;              /* idem por si algún user-agent fuerza min-size */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
