@@ -314,4 +314,19 @@ dialog input[type="time"]{
   text-overflow: ellipsis;
 }
 
+/* === Calendario: bullets de eventos uniformes (redondos) === */
+/* Solo afecta a los bullets que están en las líneas de eventos dentro de la celda */
+.day-cell .mt-2 .flex > span:first-child{
+  display: inline-block !important;
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 9999px !important;
+  flex: 0 0 8px !important;
+  /* el color lo define el inline style existente (background: tagColor), no lo tocamos */
+}
+
+/* Previene que alguna regla rara los estire en alto/ancho */
+.day-cell .mt-2 .flex > span:first-child::before,
+.day-cell .mt-2 .flex > span:first-child::after{ content:none !important; }
+
 /* ================== Fin ================== */
