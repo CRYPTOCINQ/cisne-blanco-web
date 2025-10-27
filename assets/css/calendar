@@ -1,0 +1,67 @@
+/* ==== Calendario (scope only for pages/calendario.html) ==== */
+
+/* Grid: filas de altura fija */
+#grid { grid-auto-rows: 84px; }
+
+/* Celdas base + clamp de contenido */
+.day-cell{ position: relative; overflow: hidden; height:100%;
+  display:flex; flex-direction:column; justify-content:flex-start;
+  background: var(--card); border:1px solid var(--card-border); border-radius: var(--radius);
+}
+.day-cell .mt-2{ overflow:hidden; max-height:3.2rem; }
+.day-cell .mt-2 *{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* Días fuera del mes: sombreado sutil */
+.day-cell.dimmed-day::after{
+  content:""; position:absolute; inset:0; border-radius:inherit;
+  background: rgba(0,0,0,.045); pointer-events:none;
+}
+[data-theme="navy-ice"] .day-cell.dimmed-day::after{
+  background: rgba(255,255,255,.06);
+}
+.day-cell.dimmed-day{ border-color: color-mix(in srgb, var(--card-border) 85%, transparent); }
+
+/* Bullets uniformes (redondos) */
+.day-cell .mt-2 .flex > span:first-child{
+  display:inline-block !important; width:8px !important; height:8px !important;
+  border-radius:9999px !important; flex:0 0 8px !important;
+}
+
+/* Panel “Eventos del día” (solo si se usa) */
+.day-events{ background:var(--card); border:1px solid var(--card-border); border-radius:var(--radius);
+  box-shadow:0 10px 24px rgba(0,0,0,.08);
+}
+[data-theme="navy-ice"] .day-events p,
+[data-theme="navy-ice"] .day-events .muted{ color: var(--muted); }
+
+/* ===== Modal del Calendario (solo aquí) ===== */
+dialog {
+  background: var(--card); color: var(--text);
+  border:1px solid var(--card-border); border-radius:16px;
+  max-width: 840px; width:100%;
+}
+dialog::backdrop { background: rgba(0,0,0,.45); backdrop-filter: blur(2px); }
+dialog, dialog * { font-family: inherit; color: var(--text); }
+dialog .input, dialog input, dialog select, dialog textarea{
+  width:100%; background: var(--surface, #0b1320);
+  color: var(--text); border:1px solid var(--card-border);
+  border-radius:12px; padding:.6rem .75rem; line-height:1.35; box-sizing:border-box;
+}
+dialog textarea{ resize:vertical; min-height:110px; font-family:inherit; }
+#modalTitle{ font-weight:700; font-size:1.125rem; color:var(--text); }
+.modal-grid{ display:grid; gap:1rem; grid-template-columns: repeat(2, minmax(0,1fr)); }
+@media (max-width:680px){ .modal-grid{ grid-template-columns:1fr; } dialog{ max-width:96vw; } }
+.modal-actions{ display:flex; gap:.5rem; justify-content:flex-end; padding:1rem; }
+
+/* Íconos claros en navy-ice SOLO dentro del modal (WebKit) */
+[data-theme="navy-ice"] dialog input[type="date"]::-webkit-calendar-picker-indicator{
+  background:center/16px 16px no-repeat
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='%23E9F2FF'><path d='M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1zm12 8H5v9h14v-9zM7 6H5v2h14V6h-2V5a1 1 0 1 0-2 0v1H9V5a1 1 0 1 0-2 0v1z'/></svg>");
+  opacity:1; filter:none;
+}
+[data-theme="navy-ice"] dialog input[type="time"]::-webkit-calendar-picker-indicator{
+  background:center/16px 16px no-repeat
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='%23E9F2FF'><path d='M12 1a11 11 0 1 0 11 11A11.013 11.013 0 0 0 12 1zm0 20a9 9 0 1 1 9-9 9.01 9.01 0 0 1-9 9zm.5-14h-2v6l5.25 3.15 1-1.65-4.25-2.5z'/></svg>");
+  opacity:1; filter:none;
+}
+dialog input[type="date"], dialog input[type="time"]{ padding-right:2.25rem; box-sizing:border-box; }
