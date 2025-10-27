@@ -287,4 +287,31 @@ dialog input[type="time"]{
   box-sizing: border-box;
 }
 
+/* === Calendario: celdas con altura fija y contenido controlado === */
+
+/* 1) Filas del grid con altura fija (ajustá el valor si querés más/menos alto) */
+#grid { grid-auto-rows: 84px; }  /* tip: 84–92px queda muy bien */
+
+/* 2) La celda ocupa toda la fila, sin crecer por contenido */
+.day-cell{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;            /* evita que el texto “empuje” la fila */
+}
+
+/* 3) Contenedor de eventos dentro de la celda: recorte suave (3 líneas máx) */
+.day-cell .mt-2{
+  overflow: hidden;
+  max-height: 3.2rem;          /* ~3 filas de .text-xs con espacios */
+}
+
+/* Por si algún texto no trae .truncate, aseguramos corte */
+.day-cell .mt-2 *{ 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* ================== Fin ================== */
