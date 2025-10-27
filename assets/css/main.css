@@ -327,6 +327,30 @@ dialog input[type="time"]{
 
 /* Previene que alguna regla rara los estire en alto/ancho */
 .day-cell .mt-2 .flex > span:first-child::before,
-.day-cell .mt-2 .flex > span:first-child::after{ content:none !important; }
+.day-cell .mt-2 .flex > span:first-child::after{ content:none !important;
+}
+
+/* === Calendario: sombreado sutil para días fuera del mes === */
+/* Preparamos las celdas para recibir un overlay sin afectar el contenido */
+.day-cell{ position: relative; overflow: hidden; }
+
+/* Overlay sutil (tema AUTO/light) */
+.day-cell.dimmed-day::after{
+  content:"";
+  position:absolute; inset:0;
+  border-radius: inherit;
+  background: rgba(0,0,0,.045);  /* ~4.5% de sombra */
+  pointer-events: none;          /* no bloquea clics */
+}
+
+/* Overlay sutil (tema NAVY-ICE) */
+[data-theme="navy-ice"] .day-cell.dimmed-day::after{
+  background: rgba(255,255,255,.06); /* leve velo claro sobre fondo oscuro */
+}
+
+/* Opcional: borde un pelín más suave para diferenciarlos */
+.day-cell.dimmed-day{
+  border-color: color-mix(in srgb, var(--card-border) 85%, transparent);
+}
 
 /* ================== Fin ================== */
