@@ -20,6 +20,7 @@ code, pre, kbd, samp { font-family: var(--font-mono) !important; }
   /* tokens base */
   --bg: #ffffff;
   --fg: #111827;
+  --text: var(--fg);
   --muted: #6b7280;
 
   --card: #ffffff;
@@ -46,6 +47,7 @@ code, pre, kbd, samp { font-family: var(--font-mono) !important; }
 [data-theme="navy-ice"]{
   --bg: #0f1b2d;
   --fg: #e9f2ff;
+  --text: var(--fg);
   --muted: #b0c2de;
 
   --card: #142239;
@@ -63,17 +65,8 @@ code, pre, kbd, samp { font-family: var(--font-mono) !important; }
   --header-bg: rgba(15,27,45,.75);
   --header-border: #20324b;
 
-/* Grid del formulario: 2 col responsive sin superposición */
-.modal-grid {
-  display: grid;
-  gap: 1rem; /* ↑ antes .75rem */
-  grid-template-columns: repeat(2, minmax(0,1fr));
+  --ok: #22c55e; --warn: #f59e0b; --danger: #ef4444;
 }
-@media (max-width: 680px){
-  .modal-grid { grid-template-columns: 1fr; }
-  dialog { max-width: 96vw; }
-}
-dialog textarea { resize: vertical; min-height: 110px; font-family: inherit; }
 
 /* ================== Base común ================== */
 html, body{ background: var(--bg); color: var(--fg); }
