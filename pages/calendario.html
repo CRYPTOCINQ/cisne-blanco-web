@@ -189,58 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // === RENDER INICIAL ===
   render();
 
-  // === v1.6: botón “Link a…” editable desde interfaz ===
-  const externalLinkBtn = document.getElementById("btnExternalLink");
-  const btnSetLink = document.getElementById("btnSetLink");
-
-  // Cargar link guardado (si existe)
-  const savedLink = localStorage.getItem("cb_custom_link");
-  if (externalLinkBtn && savedLink) {
-    externalLinkBtn.setAttribute("data-link", savedLink);
-  }
-
-  // Mostrar favicon y activar clic
-  function updateFaviconAndClick() {
-    const link = externalLinkBtn?.getAttribute("data-link")?.trim();
-    if (!link) return;
-    try {
-      const domain = new URL(link).hostname;
-      const favicon = document.createElement("img");
-      favicon.src = `https://www.google.com/s2/favicons?domain=${domain}`;
-      favicon.alt = "icon";
-      favicon.style.width = "16px";
-      favicon.style.height = "16px";
-      favicon.style.marginRight = "6px";
-      favicon.style.verticalAlign = "middle";
-      externalLinkBtn.innerHTML = "🔗 Link a...";
-      externalLinkBtn.prepend(favicon);
-      externalLinkBtn.onclick = () => window.open(link, "_blank");
-    } catch (err) {
-      console.warn("[CB] Error cargando favicon dinámico:", err);
-    }
-  }
-
-  if (externalLinkBtn) updateFaviconAndClick();
-
-  // Editar link desde interfaz
-  if (btnSetLink) {
-    btnSetLink.addEventListener("click", () => {
-      const current = localStorage.getItem("cb_custom_link") || "";
-      const nuevo = prompt("Ingresá el enlace que quieras usar:", current);
-      if (!nuevo) return;
-      try {
-        const test = new URL(nuevo);
-        localStorage.setItem("cb_custom_link", test.href);
-        externalLinkBtn.setAttribute("data-link", test.href);
-        updateFaviconAndClick();
-        alert("✅ Enlace actualizado correctamente.");
-      } catch {
-        alert("⚠️ El enlace ingresado no es válido.");
-      }
-    });
-  }
-
-  // === v1.8: Exportar eventos con selector visual ===
+  // === v1.7: Exportar eventos (Excel / Word) ===
   const btnExport = document.getElementById("btnExport");
   if (btnExport) {
     btnExport.addEventListener("click", async () => {
@@ -250,6 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // Crear tabla de datos
       const rows = [["Fecha", "Hora", "Título", "Etiqueta", "Notas"]];
       for (const [fecha, eventos] of Object.entries(data)) {
         for (const e of eventos) {
@@ -257,66 +207,48 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      const modal = document.createElement("dialog");
-      modal.innerHTML = `
-        <form method="dialog" style="padding:1rem;min-width:250px;">
-          <h3 style="margin-top:0;">Elegí formato de exportación</h3>
-          <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem;">
-            <button value="xlsx" class="btn btn-primary">💾 Excel (.xlsx)</button>
-            <button value="docx" class="btn">📄 Word (.docx)</button>
-            <button value="cancel" class="btn btn-sm" style="margin-top:.5rem;">Cancelar</button>
-          </div>
-        </form>
-      `;
-      document.body.appendChild(modal);
-      modal.showModal();
+      // Preguntar formato
+      const formato = prompt("Ingresá el formato a exportar: xlsx o docx", "xlsx");
+      if (!formato) return;
 
-      modal.addEventListener("close", async () => {
-        const formato = modal.returnValue;
-        modal.remove();
-        if (!formato || formato === "cancel") return;
-
-        if (formato === "xlsx") {
-          const wb = XLSX.utils.book_new();
-          const ws = XLSX.utils.aoa_to_sheet(rows);
-          XLSX.utils.book_append_sheet(wb, ws, "Eventos");
-          XLSX.writeFile(wb, "CisneBlanco_Calendario.xlsx");
-        } else if (formato === "docx") {
-          const doc = new window.docx.Document({
-            sections: [{
-              properties: {},
-              children: [
-                new window.docx.Paragraph({
-                  text: "Cisne Blanco — Calendario de Eventos",
-                  heading: window.docx.HeadingLevel.HEADING_1,
-                }),
-                new window.docx.Paragraph({
-                  text: `Exportado el ${new Date().toLocaleString("es-AR")}`,
-                  spacing: { after: 200 },
-                }),
-                new window.docx.Table({
-                  rows: rows.map((r, i) =>
-                    new window.docx.TableRow({
-                      children: r.map(cell =>
-                        new window.docx.TableCell({
-                          children: [new window.docx.Paragraph(cell.toString())],
-                          shading: i === 0 ? { fill: "DCE6F1" } : undefined,
-                        })
-                      ),
-                    })
-                  ),
-                }),
-              ],
-            }],
-          });
-          const blob = await window.docx.Packer.toBlob(doc);
-          const link = document.createElement("a");
-          link.href = URL.createObjectURL(blob);
-          link.download = "CisneBlanco_Calendario.docx";
-          link.click();
-        }
-      });
+      if (formato.toLowerCase() === "xlsx") {
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        XLSX.utils.book_append_sheet(wb, ws, "Eventos");
+        XLSX.writeFile(wb, "CisneBlanco_Calendario.xlsx");
+      } else if (formato.toLowerCase() === "docx") {
+        const doc = new window.docx.Document({
+          sections: [{
+            properties: {},
+            children: [
+              new window.docx.Paragraph({
+                text: "Cisne Blanco — Calendario de Eventos",
+                heading: window.docx.HeadingLevel.HEADING_1,
+              }),
+              new window.docx.Table({
+                rows: rows.map((r, i) =>
+                  new window.docx.TableRow({
+                    children: r.map(cell =>
+                      new window.docx.TableCell({
+                        children: [new window.docx.Paragraph(cell.toString())],
+                        shading: i === 0 ? { fill: "DCE6F1" } : undefined,
+                      })
+                    ),
+                  })
+                ),
+              }),
+            ],
+          }],
+        });
+        const blob = await window.docx.Packer.toBlob(doc);
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "CisneBlanco_Calendario.docx";
+        link.click();
+      } else {
+        alert("Formato no reconocido. Usá xlsx o docx.");
+      }
     });
   }
-}); // ← cierre correcto del bloque principal
+});
 </script>
