@@ -40,7 +40,8 @@
       <button id="btnPrev" class="btn">←</button>
       <button id="btnNext" class="btn">→</button>
       <button id="btnToday" class="btn">Hoy</button>
-      <button id="btnExternalLink" class="btn" data-link="https://calendar.google.com/calendar/u/0/r">🔗 Link a...</button>
+      <button id="btnExternalLink" class="btn" data-link="">🔗 Link a...</button>
+      <button id="btnSetLink" class="btn btn-sm">Editar link</button>
     </div>
     <h1 id="labelMonth" style="margin:0;font-size:1.25rem;"></h1>
     <div>
@@ -280,12 +281,22 @@ document.addEventListener('DOMContentLoaded', () => {
   // === RENDER INICIAL ===
   render();
 
-  // === v1.5.2: botón “Link a…” editable vía data-link, con favicon dinámico ===
+  // === v1.6: botón “Link a…” editable desde interfaz ===
   const externalLinkBtn = document.getElementById("btnExternalLink");
-  const externalLinkURL = externalLinkBtn?.getAttribute("data-link")?.trim();
-  if (externalLinkBtn && externalLinkURL) {
+  const btnSetLink = document.getElementById("btnSetLink");
+
+  // Cargar link guardado (si existe)
+  const savedLink = localStorage.getItem("cb_custom_link");
+  if (externalLinkBtn && savedLink) {
+    externalLinkBtn.setAttribute("data-link", savedLink);
+  }
+
+  // Mostrar favicon y activar clic
+  function updateFaviconAndClick() {
+    const link = externalLinkBtn?.getAttribute("data-link")?.trim();
+    if (!link) return;
     try {
-      const domain = new URL(externalLinkURL).hostname;
+      const domain = new URL(link).hostname;
       const favicon = document.createElement("img");
       favicon.src = `https://www.google.com/s2/favicons?domain=${domain}`;
       favicon.alt = "icon";
@@ -293,11 +304,32 @@ document.addEventListener('DOMContentLoaded', () => {
       favicon.style.height = "16px";
       favicon.style.marginRight = "6px";
       favicon.style.verticalAlign = "middle";
+      externalLinkBtn.innerHTML = "🔗 Link a...";
       externalLinkBtn.prepend(favicon);
-      externalLinkBtn.addEventListener("click", () => window.open(externalLinkURL, "_blank"));
+      externalLinkBtn.onclick = () => window.open(link, "_blank");
     } catch (err) {
       console.warn("[CB] Error cargando favicon dinámico:", err);
     }
+  }
+
+  if (externalLinkBtn) updateFaviconAndClick();
+
+  // Editar link desde interfaz
+  if (btnSetLink) {
+    btnSetLink.addEventListener("click", () => {
+      const current = localStorage.getItem("cb_custom_link") || "";
+      const nuevo = prompt("Ingresá el enlace que quieras usar:", current);
+      if (!nuevo) return;
+      try {
+        const test = new URL(nuevo);
+        localStorage.setItem("cb_custom_link", test.href);
+        externalLinkBtn.setAttribute("data-link", test.href);
+        updateFaviconAndClick();
+        alert("✅ Enlace actualizado correctamente.");
+      } catch {
+        alert("⚠️ El enlace ingresado no es válido.");
+      }
+    });
   }
 });
 </script>
