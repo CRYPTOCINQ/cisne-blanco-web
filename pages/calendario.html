@@ -279,23 +279,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
   render();
 
-  /* v1.5.1 edit — Botón de enlace personalizable con favicon dinámico y data-link */
+  /* v1.5.2 edit — Botón de enlace editable y favicon dinámico */
+document.addEventListener("DOMContentLoaded", () => {
   const externalLinkBtn = document.getElementById("btnExternalLink");
-  const externalLinkURL = externalLinkBtn?.dataset.link || null;
-  if (externalLinkBtn && externalLinkURL) {
-    try {
-      const favicon = document.createElement("img");
-      favicon.src = `https://www.google.com/s2/favicons?domain=${new URL(externalLinkURL).hostname}`;
-      favicon.alt = "icon";
-      favicon.style.width = "16px";
-      favicon.style.height = "16px";
-      favicon.style.marginRight = "6px";
-      favicon.style.verticalAlign = "middle";
-      externalLinkBtn.prepend(favicon);
-      externalLinkBtn.addEventListener("click", () => window.open(externalLinkURL, "_blank"));
-    } catch (err) {
-      console.warn("[CB] Error cargando favicon dinámico:", err);
-    }
+  if (!externalLinkBtn) return;
+
+  // Lee el link directamente desde el atributo data-link (editable desde HTML)
+  const externalLinkURL = externalLinkBtn.getAttribute("data-link")?.trim();
+  if (!externalLinkURL) return;
+
+  try {
+    const domain = new URL(externalLinkURL).hostname;
+    const favicon = document.createElement("img");
+    favicon.src = `https://www.google.com/s2/favicons?domain=${domain}`;
+    favicon.alt = "icon";
+    favicon.style.width = "16px";
+    favicon.style.height = "16px";
+    favicon.style.marginRight = "6px";
+    favicon.style.verticalAlign = "middle";
+    externalLinkBtn.prepend(favicon);
+
+    externalLinkBtn.addEventListener("click", () => window.open(externalLinkURL, "_blank"));
+  } catch (err) {
+    console.warn("[CB] Error cargando favicon dinámico:", err);
   }
 });
 </script>
