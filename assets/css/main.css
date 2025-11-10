@@ -355,4 +355,11 @@ dialog input[type="time"]{
   border-color: color-mix(in srgb, var(--card-border) 85%, transparent);
 }
 
+/* v1.5 edit — Mejora hover NavyIce */
+[data-theme="NavyIce"] .btn:hover,
+[data-theme="NavyIce"] .btn-primary:hover {
+  filter: brightness(1.08);
+  transition: all 0.2s ease-in-out;
+}
+
 /* ================== Fin ================== */
