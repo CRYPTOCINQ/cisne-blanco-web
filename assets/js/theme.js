@@ -1,10 +1,10 @@
-/* v1.5 edit — Cisne Blanco WEB
-   Simplificado: solo temas Auto y NavyIce
+/* v1.5.1 — Cisne Blanco WEB
+   Simplificado: solo temas Auto y NavyIce (coherente con CSS [data-theme="navy-ice"])
    Mantiene compatibilidad con localStorage["theme"]
 */
 
 (function () {
-  const THEMES = ["auto", "NavyIce"];
+  const THEMES = ["auto", "navy-ice"]; // corregido: minúsculas con guion
   const root = document.documentElement;
   const storageKey = "theme";
 
@@ -19,8 +19,8 @@
   };
 
   function applyTheme(value) {
-    if (value === "NavyIce") {
-      root.setAttribute("data-theme", "NavyIce");
+    if (value === "navy-ice") {
+      root.setAttribute("data-theme", "navy-ice"); // corregido: coincide con CSS
     } else {
       root.removeAttribute("data-theme");
     }
