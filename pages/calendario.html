@@ -42,6 +42,7 @@
       <button id="btnToday" class="btn">Hoy</button>
       <button id="btnExternalLink" class="btn" data-link="">🔗 Link a...</button>
       <button id="btnSetLink" class="btn btn-sm">Editar link</button>
+      <button id="btnExport" class="btn btn-sm">Descargar eventos</button>
     </div>
     <h1 id="labelMonth" style="margin:0;font-size:1.25rem;"></h1>
     <div>
@@ -331,6 +332,69 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+  // === v1.7: Exportar eventos (Excel / Word) ===
+const btnExport = document.getElementById("btnExport");
+if (btnExport) {
+  btnExport.addEventListener("click", async () => {
+    const data = JSON.parse(localStorage.getItem("cb_calendar_events_v1") || "{}");
+    if (!Object.keys(data).length) {
+      alert("⚠️ No hay eventos para exportar.");
+      return;
+    }
+
+    // Crear tabla de datos
+    const rows = [["Fecha", "Hora", "Título", "Etiqueta", "Notas"]];
+    for (const [fecha, eventos] of Object.entries(data)) {
+      for (const e of eventos) {
+        rows.push([fecha, e.time || "-", e.title || "-", e.tag || "-", e.notes || "-"]);
+      }
+    }
+
+    // Preguntar formato
+    const formato = prompt("Ingresá el formato a exportar: xlsx o docx", "xlsx");
+    if (!formato) return;
+
+    if (formato.toLowerCase() === "xlsx") {
+      // Generar archivo Excel
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      XLSX.utils.book_append_sheet(wb, ws, "Eventos");
+      XLSX.writeFile(wb, "CisneBlanco_Calendario.xlsx");
+    } else if (formato.toLowerCase() === "docx") {
+      // Generar archivo Word
+      const doc = new window.docx.Document({
+        sections: [{
+          properties: {},
+          children: [
+            new window.docx.Paragraph({
+              text: "Cisne Blanco — Calendario de Eventos",
+              heading: window.docx.HeadingLevel.HEADING_1,
+            }),
+            new window.docx.Table({
+              rows: rows.map((r, i) =>
+                new window.docx.TableRow({
+                  children: r.map(cell =>
+                    new window.docx.TableCell({
+                      children: [new window.docx.Paragraph(cell.toString())],
+                      shading: i === 0 ? { fill: "DCE6F1" } : undefined,
+                    })
+                  ),
+                })
+              ),
+            }),
+          ],
+        }],
+      });
+      const blob = await window.docx.Packer.toBlob(doc);
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "CisneBlanco_Calendario.docx";
+      link.click();
+    } else {
+      alert("Formato no reconocido. Usá xlsx o docx.");
+    }
+  });
+}
 });
 </script>
 
@@ -380,5 +444,8 @@ document.addEventListener('DOMContentLoaded', () => {
 </dialog>
 
 <script src="../assets/js/theme.js"></script>
+<!-- Librerías para exportación -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.0.0/build/index.min.js"></script>
 </body>
 </html>
