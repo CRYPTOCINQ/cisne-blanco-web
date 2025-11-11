@@ -6,7 +6,8 @@
   <title>Cisne Blanco — Calendario</title>
   <link rel="icon" href="../assets/favicon.ico" />
   <link rel="stylesheet" href="../assets/css/main.css?v=1401.1" />
-  </head>
+</head>
+
 <body class="transition-theme">
 
 <header class="topbar">
@@ -39,6 +40,9 @@
       <button id="btnPrev" class="btn">←</button>
       <button id="btnNext" class="btn">→</button>
       <button id="btnToday" class="btn">Hoy</button>
+      <button id="btnExternalLink" class="btn" data-link="">🔗 Link a...</button>
+      <button id="btnSetLink" class="btn btn-sm">Editar link</button>
+      <button id="btnExport" class="btn btn-sm">Descargar eventos</button>
     </div>
     <h1 id="labelMonth" style="margin:0;font-size:1.25rem;"></h1>
     <div>
@@ -48,12 +52,10 @@
 
   <!-- Grilla del mes -->
   <section class="surface" style="margin-top:1rem;padding:1rem;">
-    <!-- encabezado de días -->
     <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:.5rem;margin-bottom:.5rem;">
       <div class="muted">Lun</div><div class="muted">Mar</div><div class="muted">Mié</div>
       <div class="muted">Jue</div><div class="muted">Vie</div><div class="muted">Sáb</div><div class="muted">Dom</div>
     </div>
-    <!-- celdas -->
     <div id="grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:.5rem;"></div>
   </section>
 
@@ -67,256 +69,254 @@
   </section>
 </main>
 
-<!-- Toggle simple (mismo storage key 'theme') -->
+<!-- Toggle simple (coherente con theme.js) -->
 <script>
-  (function(){
-    const root = document.documentElement;
-    const KEY = "theme"; // 'auto' | 'navy-ice'
-    const btn = document.getElementById('themeToggle');
-    const lab = document.getElementById('themeLabel');
-    function apply(val){
-      if (val === 'navy-ice') root.setAttribute('data-theme','navy-ice');
-      else root.removeAttribute('data-theme');
-      if (lab) lab.textContent = (val || 'auto');
-    }
-    const saved = localStorage.getItem(KEY) || 'auto';
-    apply(saved);
-    if (btn) btn.onclick = () => {
-      const next = (localStorage.getItem(KEY) === 'navy-ice') ? 'auto' : 'navy-ice';
-      localStorage.setItem(KEY, next);
-      apply(next);
-    };
-  })();
+(function(){
+  const root=document.documentElement;
+  const KEY="theme";
+  const btn=document.getElementById('themeToggle');
+  const lab=document.getElementById('themeLabel');
+  function apply(val){
+    if(val==='navy-ice') root.setAttribute('data-theme','navy-ice');
+    else root.removeAttribute('data-theme');
+    if(lab) lab.textContent=(val||'auto');
+  }
+  const saved=localStorage.getItem(KEY)||'auto';
+  apply(saved);
+  if(btn) btn.onclick=()=>{
+    const next=(localStorage.getItem(KEY)==='navy-ice')?'auto':'navy-ice';
+    localStorage.setItem(KEY,next); apply(next);
+  };
+})();
 </script>
 
-<!-- Calendario (v1.3.3) -->
+<!-- Calendario completo v1.7 -->
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const pad = n => String(n).padStart(2,'0');
-  const toKey = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-  const $ = id => document.getElementById(id);
-  const label = $("labelMonth");
-  const grid = $("grid");
-  const modal = $("modal");
-  const modalTitle = $("modalTitle");
-  const inpDate = $("inpDate");
-  const inpTime = $("inpTime");
-  const inpTitle = $("inpTitle");
-  const inpTag = $("inpTag");
-  const inpNotes = $("inpNotes");
-  const listDay = $("listDay");
-  const btnPrev = $("btnPrev");
-  const btnNext = $("btnNext");
-  const btnToday = $("btnToday");
-  const btnAdd = $("btnAdd");
-  const btnSave = $("btnSave");
-  const btnClearDay = $("btnClearDay");
-  const required = [label, grid, listDay, btnPrev, btnNext, btnToday, btnAdd, btnSave, btnClearDay];
-  if (required.some(n => !n)) { console.warn("[calendar] Falta algún nodo requerido; init abortado"); return; }
-  const DB_KEY = "cb_calendar_events_v1";
-  const load = () => JSON.parse(localStorage.getItem(DB_KEY) || "{}");
-  const save = data => localStorage.setItem(DB_KEY, JSON.stringify(data));
-  let state = { cursor: new Date(), selected: new Date(), editing: null };
-  function tagColor(tag) {
-    switch(tag) {
-      case 'Trabajo': return '#1f2937';
-      case 'Familia': return '#2563eb';
-      case 'Salud':   return '#10b981';
-      case 'Social':  return '#f59e0b';
-      case 'Trading': return '#ef4444';
-      default:        return '#9ca3af';
-    }
-  }
+document.addEventListener('DOMContentLoaded',()=>{
+  const pad=n=>String(n).padStart(2,'0');
+  const toKey=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const $=id=>document.getElementById(id);
+  const DB_KEY="cb_calendar_events_v1";
+  const load=()=>JSON.parse(localStorage.getItem(DB_KEY)||"{}");
+  const save=data=>localStorage.setItem(DB_KEY,JSON.stringify(data));
+
+  const label=$("labelMonth"), grid=$("grid"), listDay=$("listDay");
+  const btnPrev=$("btnPrev"), btnNext=$("btnNext"), btnToday=$("btnToday");
+  const btnAdd=$("btnAdd"), btnSave=$("btnSave"), btnClearDay=$("btnClearDay");
+  const modal=$("modal"), modalTitle=$("modalTitle");
+  const inpDate=$("inpDate"), inpTime=$("inpTime"), inpTitle=$("inpTitle");
+  const inpTag=$("inpTag"), inpNotes=$("inpNotes");
+
+  let state={cursor:new Date(),selected:new Date(),editing:null};
+
+  const tagColor=tag=>({
+    Trabajo:'#1f2937',Familia:'#2563eb',Salud:'#10b981',Social:'#f59e0b',Trading:'#ef4444'
+  }[tag]||'#9ca3af');
+
   function render(){
-    const y = state.cursor.getFullYear();
-    const m = state.cursor.getMonth();
-    const first = new Date(y, m, 1);
-    const start = new Date(first);
-    const dow = (first.getDay()+6)%7;
-    start.setDate(first.getDate()-dow);
-    const monthName = state.cursor.toLocaleString('es-AR', { month:'long' });
-    label.textContent = monthName.charAt(0).toUpperCase()+monthName.slice(1) + " " + y;
-    grid.innerHTML = "";
-    const data = load();
-    for (let i=0; i<42; i++) {
-      const d = new Date(start); d.setDate(start.getDate()+i);
-      const isCurrent = d.getMonth() === m;
-      const isToday   = toKey(d) === toKey(new Date());
-      const dayKey    = toKey(d);
-      const events    = data[dayKey] || [];
-      const cell = document.createElement("button");
-      cell.className = "day-cell card p-2 text-left";
-      if (!isCurrent) cell.classList.add("dimmed-day");
-      cell.innerHTML = `
+    const y=state.cursor.getFullYear(), m=state.cursor.getMonth();
+    const first=new Date(y,m,1); const start=new Date(first);
+    const dow=(first.getDay()+6)%7; start.setDate(first.getDate()-dow);
+    const monthName=state.cursor.toLocaleString('es-AR',{month:'long'});
+    label.textContent=monthName.charAt(0).toUpperCase()+monthName.slice(1)+" "+y;
+    grid.innerHTML=""; const data=load();
+
+    for(let i=0;i<42;i++){
+      const d=new Date(start); d.setDate(start.getDate()+i);
+      const isCurrent=d.getMonth()===m, isToday=toKey(d)===toKey(new Date());
+      const key=toKey(d), events=data[key]||[];
+      const cell=document.createElement("button");
+      cell.className="day-cell card p-2 text-left";
+      if(!isCurrent) cell.classList.add("dimmed-day");
+      cell.innerHTML=`
         <div class="flex items-center justify-between">
           <span class="text-sm font-semibold">${d.getDate()}</span>
-          ${isToday ? '<span class="text-xs px-1.5 py-0.5 rounded bg-black text-white">hoy</span>' : ''}
+          ${isToday?'<span class="text-xs px-1.5 py-0.5 rounded bg-black text-white">hoy</span>':''}
         </div>
         <div class="mt-2 space-y-1 text-xs">
-          ${events.slice(0,3).map(e => `
+          ${events.slice(0,3).map(e=>`
             <div class="flex items-center gap-2">
               <span style="display:inline-block;width:8px;height:8px;border-radius:9999px;background:${tagColor(e.tag)}"></span>
-              <span class="truncate">${e.time ? e.time+' — ' : ''}${e.title}</span>
-            </div>
-          `).join('')}
-          ${events.length>3 ? '<div class="muted">+'+(events.length-3)+' más</div>' : ''}
-        </div>
-      `;
-      cell.addEventListener("click", () => { state.selected = d; renderDay(); });
+              <span class="truncate">${e.time?e.time+' — ':''}${e.title}</span>
+            </div>`).join('')}
+          ${events.length>3?`<div class="muted">+${events.length-3} más</div>`:''}
+        </div>`;
+      cell.onclick=()=>{state.selected=d;renderDay();};
       grid.appendChild(cell);
     }
     renderDay();
   }
+
   function renderDay(){
-    const data = load();
-    const key = toKey(state.selected);
-    const events = data[key] || [];
-    listDay.innerHTML = events.length
-      ? ''
-      : '<div class="muted">No hay eventos para este día.</div>';
-    events.forEach((e, idx) => {
-      const item = document.createElement("div");
-      item.className = "card p-3 flex items-start justify-between";
-      item.innerHTML = `
+    const data=load(), key=toKey(state.selected), events=data[key]||[];
+    listDay.innerHTML=events.length?'':'<div class="muted">No hay eventos para este día.</div>';
+    events.forEach((e,idx)=>{
+      const item=document.createElement("div");
+      item.className="card p-3 flex items-start justify-between";
+      item.innerHTML=`
         <div>
-          <div class="text-sm font-semibold">${e.time ? e.time+' — ' : ''}${e.title}</div>
-          <div class="text-xs muted">${e.tag || 'Sin etiqueta'}</div>
-          ${e.notes ? `<div class="mt-1 text-xs muted">${e.notes}</div>` : ''}
+          <div class="text-sm font-semibold">${e.time?e.time+' — ':''}${e.title}</div>
+          <div class="text-xs muted">${e.tag||'Sin etiqueta'}</div>
+          ${e.notes?`<div class="mt-1 text-xs muted">${e.notes}</div>`:''}
         </div>
         <div class="action-row flex gap-2">
           <button class="btn btn-sm" data-action="edit">Editar</button>
           <button class="btn btn-sm" data-action="delete">Borrar</button>
-        </div>
-      `;
-      item.querySelector('[data-action="edit"]').addEventListener('click', () => editEvent(key, idx));
-      item.querySelector('[data-action="delete"]').addEventListener('click', () => removeEvent(key, idx));
+        </div>`;
+      item.querySelector('[data-action="edit"]').onclick=()=>editEvent(key,idx);
+      item.querySelector('[data-action="delete"]').onclick=()=>removeEvent(key,idx);
       listDay.appendChild(item);
     });
   }
-  function removeEvent(key, idx){
-    const data = load();
-    (data[key] = data[key] || []).splice(idx,1);
-    save(data);
-    render();
+
+  const removeEvent=(key,idx)=>{const data=load();(data[key]=data[key]||[]).splice(idx,1);save(data);render();};
+  const editEvent=(key,idx)=>{
+    const data=load(), ev=(data[key]||[])[idx]; if(!ev)return;
+    state.editing={key,idx}; modalTitle.textContent="Editar evento";
+    inpDate.value=key; inpTime.value=ev.time||""; inpTitle.value=ev.title||"";
+    inpTag.value=ev.tag||""; inpNotes.value=ev.notes||"";
+    modal.showModal(); btnSave.textContent="Actualizar";
+  };
+
+  btnPrev.onclick=()=>{state.cursor.setMonth(state.cursor.getMonth()-1);render();};
+  btnNext.onclick=()=>{state.cursor.setMonth(state.cursor.getMonth()+1);render();};
+  btnToday.onclick=()=>{state.cursor=new Date();state.selected=new Date();render();};
+  btnAdd.onclick=()=>{
+    state.editing=null; modalTitle.textContent="Nuevo evento"; btnSave.textContent="Guardar";
+    inpDate.value=toKey(state.selected); inpTime.value=""; inpTitle.value=""; inpTag.value=""; inpNotes.value="";
+    modal.showModal();
+  };
+  btnSave.onclick=(ev)=>{
+    ev.preventDefault();
+    const date=inpDate.value, time=inpTime.value, title=(inpTitle.value||"").trim(),
+          tag=inpTag.value, notes=(inpNotes.value||"").trim();
+    if(!date||!title){alert("Completá fecha y título.");return;}
+    const data=load();
+    if(state.editing){
+      const {key,idx}=state.editing; (data[key]=data[key]||[]).splice(idx,1);
+      (data[date]=data[date]||[]).push({time,title,tag,notes});
+      state.selected=new Date(date); state.editing=null;
+    } else (data[date]=data[date]||[]).push({time,title,tag,notes});
+    save(data); modal.close(); render();
+  };
+  btnClearDay.onclick=()=>{
+    const key=toKey(state.selected), data=load();
+    if(!data[key]?.length)return;
+    if(confirm("¿Borrar todos los eventos de este día?")){delete data[key];save(data);render();}
+  };
+
+  // === Link editable + favicon ===
+  const externalLinkBtn=document.getElementById("btnExternalLink");
+  const btnSetLink=document.getElementById("btnSetLink");
+  const savedLink=localStorage.getItem("cb_custom_link");
+  if(savedLink && externalLinkBtn) externalLinkBtn.dataset.link=savedLink;
+
+  if(btnSetLink){
+    btnSetLink.onclick=()=>{
+      const current=localStorage.getItem("cb_custom_link")||"";
+      const nuevo=prompt("Ingresá el enlace que quieras usar:",current);
+      if(!nuevo)return;
+      try{
+        const test=new URL(nuevo);
+        localStorage.setItem("cb_custom_link",test.href);
+        alert("✅ Enlace actualizado. Recargá la página para aplicarlo.");
+      }catch{alert("⚠️ El enlace ingresado no es válido.");}
+    };
   }
-  function editEvent(key, idx){
-    const data = load();
-    const ev = (data[key]||[])[idx];
-    if (!ev) return;
-    state.editing = { key, idx };
-    const modalTitle = document.getElementById('modalTitle');
-    const inpDate = document.getElementById('inpDate');
-    const inpTime = document.getElementById('inpTime');
-    const inpTitle = document.getElementById('inpTitle');
-    const inpTag = document.getElementById('inpTag');
-    const inpNotes = document.getElementById('inpNotes');
-    const btnSave = document.getElementById('btnSave');
-    if (modalTitle) modalTitle.textContent = "Editar evento";
-    if (inpDate)  inpDate.value  = key;
-    if (inpTime)  inpTime.value  = ev.time || "";
-    if (inpTag)   inpTag.value   = ev.tag || "";
-    if (inpTitle) inpTitle.value = ev.title || "";
-    if (inpNotes) inpNotes.value = ev.notes || "";
-    const modal = document.getElementById('modal');
-    if (modal && modal.showModal) modal.showModal();
-    if (btnSave) btnSave.textContent = "Actualizar";
+
+  if(externalLinkBtn){
+    const url=externalLinkBtn.dataset.link?.trim();
+    if(url){
+      try{
+        const domain=new URL(url).hostname;
+        const favicon=document.createElement("img");
+        favicon.src=`https://www.google.com/s2/favicons?domain=${domain}`;
+        favicon.alt="icon";
+        Object.assign(favicon.style,{width:"16px",height:"16px",marginRight:"6px",verticalAlign:"middle"});
+        externalLinkBtn.prepend(favicon);
+        externalLinkBtn.onclick=()=>window.open(url,"_blank");
+      }catch(err){console.warn("[CB] Error favicon:",err);}
+    }
   }
-  // listeners
-  btnPrev.onclick  = () => { state.cursor.setMonth(state.cursor.getMonth()-1); render(); };
-  btnNext.onclick  = () => { state.cursor.setMonth(state.cursor.getMonth()+1); render(); };
-  btnToday.onclick = () => { state.cursor = new Date(); state.selected = new Date(); render(); };
-  btnAdd.onclick = () => {
-    state.editing = null;
-    modalTitle.textContent = "Nuevo evento";
-    btnSave.textContent = "Guardar";
-    inpDate.value  = toKey(state.selected);
-    inpTime.value  = "";
-    inpTitle.value = "";
-    inpTag.value   = "";
-    inpNotes.value = "";
-    if (modal?.showModal) modal.showModal();
-  };
-  btnSave.onclick = (evClick) => {
-    evClick.preventDefault();
-    const date  = inpDate?.value;
-    const time  = inpTime?.value;
-    const title = (inpTitle?.value || "").trim();
-    const tag   = inpTag?.value;
-    const notes = (inpNotes?.value || "").trim();
-    if (!date || !title) { alert("Completá fecha y título."); return; }
-    const data = load();
-    if (state.editing) {
-      const { key, idx } = state.editing;
-      (data[key] = data[key] || []).splice(idx,1);
-      (data[date] = data[date] || []).push({ time, title, tag, notes });
-      state.selected = new Date(date);
-      state.editing = null;
-    } else {
-      (data[date] = data[date] || []).push({ time, title, tag, notes });
-      state.selected = new Date(date);
-    }
-    save(data);
-    if (modal?.close) modal.close();
-    render();
-  };
-  btnClearDay.onclick = () => {
-    const key = toKey(state.selected);
-    const data = load();
-    if (!data[key]?.length) return;
-    if (confirm("¿Borrar todos los eventos de este día?")) {
-      delete data[key];
-      save(data);
-      render();
-    }
-  };
+
+  // === Exportación Excel / Word ===
+  const btnExport=document.getElementById("btnExport");
+  if(btnExport){
+    btnExport.onclick=async()=>{
+      const data=JSON.parse(localStorage.getItem(DB_KEY)||"{}");
+      if(!Object.keys(data).length){alert("⚠️ No hay eventos para exportar.");return;}
+      const rows=[["Fecha","Hora","Título","Etiqueta","Notas"]];
+      for(const[fecha,evs]of Object.entries(data))
+        for(const e of evs) rows.push([fecha,e.time||"-",e.title||"-",e.tag||"-",e.notes||"-"]);
+
+      const formato=prompt("Ingresá el formato a exportar: xlsx o docx","xlsx");
+      if(!formato)return;
+
+      if(formato.toLowerCase()==="xlsx"){
+        const wb=XLSX.utils.book_new(), ws=XLSX.utils.aoa_to_sheet(rows);
+        XLSX.utils.book_append_sheet(wb,ws,"Eventos");
+        XLSX.writeFile(wb,"CisneBlanco_Calendario.xlsx");
+      } else if(formato.toLowerCase()==="docx"){
+        const doc=new window.docx.Document({
+          sections:[{children:[
+            new window.docx.Paragraph({
+              text:`Cisne Blanco — Calendario de Eventos (${new Date().toLocaleString()})`,
+              heading:window.docx.HeadingLevel.HEADING_1,
+            }),
+            new window.docx.Table({
+              rows:rows.map((r,i)=>new window.docx.TableRow({
+                children:r.map(c=>new window.docx.TableCell({
+                  children:[new window.docx.Paragraph(c.toString())],
+                  shading:i===0?{fill:"DCE6F1"}:undefined,
+                }))
+              }))
+            })
+          ]}]
+        });
+        const blob=await window.docx.Packer.toBlob(doc);
+        const link=document.createElement("a");
+        link.href=URL.createObjectURL(blob);
+        link.download="CisneBlanco_Calendario.docx";
+        link.click();
+      } else alert("Formato no reconocido. Usá xlsx o docx.");
+    };
+  }
+
   render();
 });
 </script>
 
-<!-- === Modal calendario (estándar) === -->
+<!-- Modal calendario -->
 <dialog id="modal" class="card" style="padding:0;">
   <form method="dialog" style="padding:1rem 1rem 0 1rem;">
     <h3 id="modalTitle" style="margin:0 0 .75rem 0;">Nuevo evento</h3>
-
     <div class="modal-grid">
-      <div>
-        <label class="muted" for="inpDate">Fecha</label>
-        <input id="inpDate" type="date" class="input">
-      </div>
-      <div>
-        <label class="muted" for="inpTime">Hora</label>
-        <input id="inpTime" type="time" class="input">
-      </div>
-
-      <div style="grid-column:1/-1;">
-        <label class="muted" for="inpTitle">Título</label>
-        <input id="inpTitle" type="text" class="input" placeholder="Ej: Reunión">
-      </div>
-
-      <div>
-        <label class="muted" for="inpTag">Etiqueta</label>
+      <div><label class="muted" for="inpDate">Fecha</label><input id="inpDate" type="date" class="input"></div>
+      <div><label class="muted" for="inpTime">Hora</label><input id="inpTime" type="time" class="input"></div>
+      <div style="grid-column:1/-1;"><label class="muted" for="inpTitle">Título</label><input id="inpTitle" type="text" class="input" placeholder="Ej: Reunión"></div>
+      <div><label class="muted" for="inpTag">Etiqueta</label>
         <select id="inpTag" class="input">
           <option value="">Sin etiqueta</option>
-          <option>Trabajo</option>
-          <option>Familia</option>
-          <option>Salud</option>
-          <option>Social</option>
-          <option>Trading</option>
+          <option>Trabajo</option><option>Familia</option><option>Salud</option>
+          <option>Social</option><option>Trading</option>
         </select>
       </div>
-
       <div style="grid-column:1/-1;">
         <label class="muted" for="inpNotes">Notas</label>
         <textarea id="inpNotes" rows="4" class="input" placeholder="Notas adicionales..."></textarea>
       </div>
     </div>
-
     <div class="modal-actions">
       <button id="btnSave" class="btn btn-primary">Guardar</button>
       <button value="cancel" class="btn">Cerrar</button>
     </div>
   </form>
 </dialog>
+
+<!-- Librerías -->
+<script src="../assets/js/theme.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.0.0/build/index.min.js"></script>
 
 </body>
 </html>
