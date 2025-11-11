@@ -1,628 +1,469 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cisne Blanco — Finanzas</title>
-  <meta name="description" content="Sección Finanzas del Proyecto Cisne Blanco">
-
-  <link rel="icon" type="image/png" href="../assets/favicon.png?v=1202">
-
-  <!-- CSS base -->
-  <link rel="stylesheet" href="../assets/css/base-typography.css?v=14">
-  <link rel="stylesheet" href="../css/mini.css?v=14">
-  <link rel="stylesheet" href="../assets/css/main.css?v=1203">
+  <link rel="icon" href="../assets/favicon.ico" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=1401.1" />
 </head>
+
 <body class="transition-theme">
-  <header class="border-b backdrop-blur sticky">
-    <div class="mx-auto container-pro px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="h-9 w-9 rounded-full bg-black text-white flex items-center justify-center font-bold">CB</div>
-        <span class="font-semibold">Cisne Blanco — Maqueta Base</span>
+
+<!-- ========= Topbar (idéntico a Calendario, pestaña activa en Finanzas) ========= -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="brand">
+      <span class="brand-dot">CB</span>
+      <span class="brand-title">Cisne Blanco — Maqueta Base</span>
+    </a>
+
+    <nav class="tabs">
+      <a href="../index.html">Inicio</a>
+      <a href="./calendario.html">Calendario</a>
+      <a href="./habitos.html">Hábitos</a>
+      <a href="./salud.html">Salud</a>
+      <a href="./familia.html">Familia</a>
+      <a href="./social.html">Social</a>
+      <a class="active" href="./finanzas.html">Finanzas</a>
+    </nav>
+
+    <button id="themeToggle" class="theme-pill">
+      Tema: <span id="themeLabel">auto</span>
+    </button>
+  </div>
+</header>
+
+<main style="max-width:1100px;margin:1.25rem auto;padding:0 1rem;">
+
+  <!-- ========= Panel superior: totales dinámicos ========= -->
+  <section class="surface" style="padding:1rem;">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;">
+      <div class="card p-3" id="cardSaldo">
+        <div class="muted text-sm">💰 Saldo total</div>
+        <div id="saldoTotal" style="font-size:1.75rem;font-weight:700;margin-top:.25rem;">0</div>
       </div>
-      <nav class="flex items-center gap-2 text-sm">
-        <a href="../index.html" data-page="home" class="px-3 py-1 rounded-lg hover:bg-gray-100">Inicio</a>
-        <a href="./calendario.html" data-page="calendario" class="px-3 py-1 rounded-lg hover:bg-gray-100">Calendario</a>
-        <a href="./habitos.html" data-page="habitos" class="px-3 py-1 rounded-lg hover:bg-gray-100">Hábitos</a>
-        <a href="./salud.html" data-page="salud" class="px-3 py-1 rounded-lg hover:bg-gray-100">Salud</a>
-        <a href="./familia.html" data-page="familia" class="px-3 py-1 rounded-lg hover:bg-gray-100">Familia</a>
-        <a href="./social.html" data-page="social" class="px-3 py-1 rounded-lg hover:bg-gray-100">Social</a>
-        <a href="./finanzas.html" data-page="finanzas" class="px-3 py-1 rounded-lg hover:bg-gray-100">Finanzas</a>
-        <button id="theme-toggle" class="px-3 py-1 rounded-lg border">Tema</button>
-      </nav>
-    </div>
-  </header>
-
-  <main class="container-pro px-4 py-6">
-    <h1 class="text-2xl font-bold mb-3">Finanzas — Bitácora de operaciones</h1>
-    <p class="text-gray-600 mb-8">Privado y offline: todo se guarda en tu navegador (<code>localStorage</code>). Sin dependencias externas.</p>
-
-    <!-- Toolbar -->
-    <div class="card p-4 mb-4">
-      <div class="flex flex-wrap items-end gap-2">
-        <button id="btn-nuevo" class="px-3 py-2 rounded-lg border">+ Nuevo trade</button>
-        <button id="btn-exportar" class="px-3 py-2 rounded-lg border">Exportar JSON</button>
-        <input id="file-import" type="file" accept="application/json" style="display:none">
-        <button id="btn-importar" class="px-3 py-2 rounded-lg border">Importar JSON</button>
-
-        <div class="ml-auto flex flex-wrap items-end gap-2">
-          <label class="text-sm">
-            <span class="block text-gray-600">Período</span>
-            <select id="filtro-periodo" class="px-2 py-1 rounded-lg border">
-              <option value="semana">Semana actual</option>
-              <option value="mes">Mes actual</option>
-              <option value="todo">Todo</option>
-              <option value="custom">Personalizado</option>
-            </select>
-          </label>
-          <label id="lbl-desde" class="text-sm hidden">
-            <span class="block text-gray-600">Desde</span>
-            <input id="f-desde" type="date" class="px-2 py-1 rounded-lg border">
-          </label>
-          <label id="lbl-hasta" class="text-sm hidden">
-            <span class="block text-gray-600">Hasta</span>
-            <input id="f-hasta" type="date" class="px-2 py-1 rounded-lg border">
-          </label>
-          <label class="text-sm">
-            <span class="block text-gray-600">Ticker</span>
-            <input id="f-ticker" type="text" placeholder="AAPL, BTCUSD..." class="px-2 py-1 rounded-lg border">
-          </label>
-          <label class="text-sm">
-            <span class="block text-gray-600">Dirección</span>
-            <select id="f-side" class="px-2 py-1 rounded-lg border">
-              <option value="all">Todas</option>
-              <option value="long">Long / Compra</option>
-              <option value="short">Short / Venta</option>
-            </select>
-          </label>
-          <label class="text-sm">
-            <span class="block text-gray-600">Estado</span>
-            <select id="f-status" class="px-2 py-1 rounded-lg border">
-              <option value="all">Todos</option>
-              <option value="open">Abierto</option>
-              <option value="closed">Cerrado</option>
-            </select>
-          </label>
-        </div>
+      <div class="card p-3">
+        <div class="muted text-sm">🟢 Ingresos</div>
+        <div id="totalIngresos" style="font-size:1.5rem;font-weight:700;margin-top:.25rem;">0</div>
+      </div>
+      <div class="card p-3">
+        <div class="muted text-sm">🔴 Egresos</div>
+        <div id="totalEgresos" style="font-size:1.5rem;font-weight:700;margin-top:.25rem;">0</div>
       </div>
     </div>
 
-    <!-- KPIs -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4" id="kpis">
-      <div class="border rounded-2xl p-4 bg-white flex items-center justify-between">
-        <span class="text-gray-600 text-sm"># trades (filtro)</span><strong id="kpi-count">—</strong>
+    <!-- Controles -->
+    <div style="display:flex;gap:.5rem;align-items:center;justify-content:space-between;margin-top:.75rem;">
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <button id="btnAdd" class="btn btn-primary">+ Movimiento</button>
+        <button id="btnExport" class="btn">Exportar (Excel / PDF)</button>
       </div>
-      <div class="border rounded-2xl p-4 bg-white flex items-center justify-between">
-        <span class="text-gray-600 text-sm">Winrate %</span><strong id="kpi-winrate">—</strong>
-      </div>
-      <div class="border rounded-2xl p-4 bg-white flex items-center justify-between">
-        <span class="text-gray-600 text-sm">R medio</span><strong id="kpi-r-avg">—</strong>
-      </div>
-      <div class="border rounded-2xl p-4 bg-white flex items-center justify-between">
-        <span class="text-gray-600 text-sm">R total</span><strong id="kpi-r-sum">—</strong>
-      </div>
-      <div class="border rounded-2xl p-4 bg-white flex items-center justify-between">
-        <span class="text-gray-600 text-sm">Profit factor</span><strong id="kpi-pf">—</strong>
-      </div>
-      <div class="border rounded-2xl p-4 bg-white flex items-center justify-between">
-        <span class="text-gray-600 text-sm">$ promedio/trade</span><strong id="kpi-avg-pnl">—</strong>
+
+      <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
+        <select id="filtroCategoria" class="input" style="min-width:160px;padding:.4rem .5rem;border:1px solid var(--card-border);border-radius:10px;background:var(--card);color:var(--fg);">
+          <option value="">Todas las categorías</option>
+          <option>Forex</option>
+          <option>Acciones</option>
+          <option>Índices</option>
+          <option>Futuros</option>
+          <option>Crypto</option>
+          <option>Otros</option>
+        </select>
+        <input id="filtroDesde" type="date" class="input" style="padding:.4rem .5rem;border:1px solid var(--card-border);border-radius:10px;background:var(--card);color:var(--fg);" />
+        <input id="filtroHasta" type="date" class="input" style="padding:.4rem .5rem;border:1px solid var(--card-border);border-radius:10px;background:var(--card);color:var(--fg);" />
+        <button id="btnLimpiarFiltros" class="btn btn-sm">Limpiar</button>
       </div>
     </div>
+  </section>
 
-    <!-- Tabla -->
-    <div class="card p-4">
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead>
-            <tr class="text-left border-b">
-              <th class="py-2 pr-3 whitespace-nowrap">Fecha/hora</th>
-              <th class="py-2 pr-3">Ticker</th>
-              <th class="py-2 pr-3">Mercado</th>
-              <th class="py-2 pr-3">Dir.</th>
-              <th class="py-2 pr-3 whitespace-nowrap">Cant.</th>
-              <th class="py-2 pr-3">Entrada</th>
-              <th class="py-2 pr-3">Stop</th>
-              <th class="py-2 pr-3">Take</th>
-              <th class="py-2 pr-3">Salida</th>
-              <th class="py-2 pr-3">Fees</th>
-              <th class="py-2 pr-3 whitespace-nowrap">Resultado / PnL</th>
-              <th class="py-2 pr-3">R</th>
-              <th class="py-2 pr-3">Setup</th>
-              <th class="py-2 pr-3">Notas</th>
-              <th class="py-2 pr-3">Estado</th>
-              <th class="py-2 pr-3">Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="rows"></tbody>
-        </table>
+  <!-- ========= Lista de movimientos ========= -->
+  <section style="margin-top:1rem;">
+    <h2 style="margin:.25rem 0 0 0;">Movimientos</h2>
+    <div id="listaMovimientos" class="surface" style="margin-top:.5rem;padding:1rem;"></div>
+  </section>
+
+  <!-- ========= Gráficos: tabs (Torta / Barras) ========= -->
+  <section style="margin-top:1rem;">
+    <div class="card" style="padding:1rem;">
+      <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
+        <button id="tabTorta" class="btn btn-sm btn--primary">Torta por categoría</button>
+        <button id="tabBarras" class="btn btn-sm">Barras por fecha</button>
       </div>
-      <p class="text-gray-600 text-sm mt-3">Tip: usá “Cerrar” para cargar rápido un precio de salida, o “Precio actual” para calcular PnL flotante en abiertos.</p>
+
+      <div style="margin-top:1rem;">
+        <canvas id="chartTorta" height="140"></canvas>
+        <canvas id="chartBarras" height="140" style="display:none;"></canvas>
+      </div>
     </div>
+  </section>
+</main>
 
-    <!-- Dialogo de edición/alta -->
-    <dialog id="dlg" class="rounded-2xl p-0">
-      <form id="frm" method="dialog" class="min-w-[320px] md:min-w-[560px]">
-        <header class="px-4 py-3 border-b flex items-center justify-between">
-          <h2 id="dlg-title" class="font-semibold">Nuevo trade</h2>
-          <button id="dlg-close" type="button" class="px-2 py-1 rounded-lg border">Cerrar</button>
-        </header>
-
-        <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-          <input id="id" type="hidden">
-          <label class="text-sm">
-            <span class="block text-gray-600">Fecha y hora</span>
-            <input id="dt" type="datetime-local" class="px-2 py-1 rounded-lg border">
-          </label>
-          <label class="text-sm">
-            <span class="block text-gray-600">Ticker</span>
-            <input id="ticker" type="text" class="px-2 py-1 rounded-lg border">
-          </label>
-          <label class="text-sm">
-            <span class="block text-gray-600">Mercado</span>
-            <input id="market" type="text" class="px-2 py-1 rounded-lg border">
-          </label>
-          <label class="text-sm">
-            <span class="block text-gray-600">Dirección</span>
-            <select id="side" class="px-2 py-1 rounded-lg border">
-              <option value="long">Long / Compra</option>
-              <option value="short">Short / Venta</option>
-            </select>
-          </label>
-          <label class="text-sm">
-            <span class="block text-gray-600">Cantidad</span>
-            <input id="qty" type="number" step="any" class="px-2 py-1 rounded-lg border">
-          </label>
-          <label class="text-sm">
-            <span class="block text-gray-600">Entrada</span>
-            <input id="entry" type="number" step="any" class="px-2 py-1 rounded-lg border">
-          </label>
-          <label class="text-sm">
-            <span class="block text-gray-600">Stop</span>
-            <input id="stop" type="number" step="any" class="px-2 py-1 rounded-lg border">
-          </label>
-          <label class="text-sm">
-            <span class="block text-gray-600">Take</span>
-            <input id="take" type="number" step="any" class="px-2 py-1 rounded-lg border">
-          </label>
-          <label class="text-sm">
-            <span class="block text-gray-600">Salida</span>
-            <input id="exit" type="number" step="any" class="px-2 py-1 rounded-lg border">
-          </label>
-          <label class="text-sm">
-            <span class="block text-gray-600">Fees</span>
-            <input id="fees" type="number" step="any" class="px-2 py-1 rounded-lg border">
-          </label>
-          <label class="text-sm md:col-span-2">
-            <span class="block text-gray-600">Setup</span>
-            <input id="setup" type="text" class="px-2 py-1 rounded-lg border w-full">
-          </label>
-          <label class="text-sm md:col-span-2">
-            <span class="block text-gray-600">Notas</span>
-            <textarea id="notes" class="px-2 py-1 rounded-lg border w-full" rows="3"></textarea>
-          </label>
-          <label class="text-sm md:col-span-2">
-            <span class="block text-gray-600">Precio actual (solo abiertos)</span>
-            <input id="pxNow" type="number" step="any" class="px-2 py-1 rounded-lg border">
-          </label>
-        </div>
-
-        <footer class="px-4 py-3 border-t flex items-center gap-2 justify-between">
-          <div class="flex gap-2">
-            <button id="btn-dup" type="button" class="px-3 py-2 rounded-lg border">Duplicar</button>
-            <button id="btn-del" type="button" class="px-3 py-2 rounded-lg border">Eliminar</button>
-          </div>
-          <button type="submit" class="px-3 py-2 rounded-lg border">Guardar</button>
-        </footer>
-      </form>
-    </dialog>
-  </main>
-
-  <footer class="mt-16 border-t">
-    <div class="mx-auto container-pro px-4 py-6 text-xs text-gray-500 flex items-center justify-between">
-      <span>© 2025 Cisne Blanco</span>
-      <span>v2.4 — Editar evento</span>
-    </div>
-  </footer>
-
-  <script>
-    // ===== utilidades puras (sin tocar DOM)
-    const LS_KEY = 'cisne_blanco_finanzas_v1_trades';
-    const LS_SEEDED = 'cisne_blanco_finanzas_v1_seeded';
-    const fmtMoney = (n) => (n===null || Number.isNaN(n)) ? '—' : new Intl.NumberFormat('es-AR', { maximumFractionDigits: 2 }).format(n);
-    const fmtR = (r) => (r===null || Number.isNaN(r)) ? '—' : (Math.round(r*100)/100).toFixed(2);
-    const parseNum = (v) => v==='' || v===null || v===undefined ? null : Number(v);
-    const isLong = (s) => (s||'').toString().toLowerCase().includes('long') || (s||'').toString().toLowerCase().includes('compra');
-    const isShort = (s) => (s||'').toString().toLowerCase().includes('short') || (s||'').toString().toLowerCase().includes('venta');
-    const todayISO = () => new Date(Date.now() - (new Date().getTimezoneOffset()*60000)).toISOString().slice(0,10);
-    function load(){ try{ const raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : []; }catch(e){ console.error('Error leyendo localStorage', e); return []; } }
-    function save(arr){ localStorage.setItem(LS_KEY, JSON.stringify(arr)); }
-    function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,9); }
-    function compute(tr){
-      const qty = Number(tr.qty||0);
-      const entry = Number(tr.entry||0);
-      const stop = Number(tr.stop||0);
-      const exit = (tr.exit==null||tr.exit==='') ? null : Number(tr.exit);
-      const fees = (tr.fees==null||tr.fees==='') ? 0 : Number(tr.fees);
-      const pxNow = (tr.pxNow==null||tr.pxNow==='') ? null : Number(tr.pxNow);
-      const side = tr.side;
-      const riskPerUnit = (entry && stop) ? Math.abs(entry - stop) : null;
-      const riskTotal = (riskPerUnit!=null) ? riskPerUnit * qty : null;
-      let pnl = null; let R = null; let status = 'open';
-      if(exit!=null){ status = 'closed'; const perUnit = isLong(side) ? (exit - entry) : (entry - exit); pnl = perUnit * qty - fees; }
-      else if(pxNow!=null){ status = 'open'; const perUnit = isLong(side) ? (pxNow - entry) : (entry - pxNow); pnl = perUnit * qty - fees; }
-      if(pnl!=null && riskTotal && riskTotal>0){ R = pnl / riskTotal; }
-      return { pnl, R, riskPerUnit, riskTotal, status };
-    }
-    function startOfWeek(d){ const x = new Date(d); const day = x.getDay(); const diff = (day===0 ? -6 : 1) - day; x.setDate(x.getDate() + diff); x.setHours(0,0,0,0); return x; }
-    function endOfWeek(d){ const s = startOfWeek(d); const e = new Date(s); e.setDate(s.getDate()+7); e.setMilliseconds(-1); return e; }
-    function startOfMonth(d){ const x = new Date(d); x.setDate(1); x.setHours(0,0,0,0); return x; }
-    function endOfMonth(d){ const x = new Date(d); x.setMonth(x.getMonth()+1, 1); x.setHours(0,0,0,0); x.setMilliseconds(-1); return x; }
-    function inRange(dt, from, to){ const t = new Date(dt).getTime(); if(from && t < from.getTime()) return false; if(to && t > to.getTime()) return false; return true; }
-
-    // ===== todo lo que toca el DOM, adentro de DOMContentLoaded
-    document.addEventListener('DOMContentLoaded', () => {
-      // nav activo
-      document.querySelectorAll('a[data-page]')?.forEach(a => {
-        if (a.dataset.page === 'finanzas') {
-          a.style.background = '#000';
-          a.style.color = '#fff';
-          a.style.borderRadius = '10px';
-          a.style.padding = '6px 10px';
-        }
-      });
-
-      const rowsEl = document.getElementById('rows');
-      const kpiEls = {
-        count: document.getElementById('kpi-count'),
-        winrate: document.getElementById('kpi-winrate'),
-        rAvg: document.getElementById('kpi-r-avg'),
-        rSum: document.getElementById('kpi-r-sum'),
-        pf: document.getElementById('kpi-pf'),
-        avgPnl: document.getElementById('kpi-avg-pnl'),
-      };
-
-      const dlg      = document.getElementById('dlg');
-      const frm      = document.getElementById('frm');
-      const btnClose = document.getElementById('dlg-close');
-      const btnDup   = document.getElementById('btn-dup');
-      const btnDel   = document.getElementById('btn-del');
-      const btnNuevo = document.getElementById('btn-nuevo');
-
-      function currentFilters(){
-        const period = document.getElementById('filtro-periodo').value;
-        const ticker = document.getElementById('f-ticker').value.trim().toLowerCase();
-        const side = document.getElementById('f-side').value;
-        const status = document.getElementById('f-status').value;
-        let from=null, to=null;
-        const now = new Date();
-        if(period==='semana'){ from = startOfWeek(now); to = endOfWeek(now); }
-        else if(period==='mes'){ from = startOfMonth(now); to = endOfMonth(now); }
-        else if(period==='custom'){
-          const d = document.getElementById('f-desde').value ? new Date(document.getElementById('f-desde').value+"T00:00") : null;
-          const h = document.getElementById('f-hasta').value ? new Date(document.getElementById('f-hasta').value+"T23:59:59") : null;
-          from = d; to = h;
-        }
-        return { period, ticker, side, status, from, to };
-      }
-
-      function applyFilters(list, f){
-        return list.filter(tr => {
-          if(f.ticker && !tr.ticker?.toLowerCase().includes(f.ticker)) return false;
-          if(f.side!=='all'){
-            if(f.side==='long' && !isLong(tr.side)) return false;
-            if(f.side==='short' && !isShort(tr.side)) return false;
-          }
-          const comp = compute(tr);
-          if(f.status!=='all'){
-            if(f.status==='open' && comp.status!=='open') return false;
-            if(f.status==='closed' && comp.status!=='closed') return false;
-          }
-          if(!inRange(tr.dt, f.from, f.to)) return false;
-          return true;
-        });
-      }
-
-      function render(){
-        const data = load().sort((a,b)=> new Date(b.dt)-new Date(a.dt));
-        const f = currentFilters();
-        const arr = applyFilters(data, f);
-
-        const closed = arr.filter(t => compute(t).status==='closed');
-        const wins = closed.filter(t => compute(t).pnl>0);
-        const losses = closed.filter(t => compute(t).pnl<0);
-        const sum = (xs,fn) => xs.reduce((a,x)=>a+(fn?fn(x):x),0);
-        const rVals = closed.map(t => compute(t).R).filter(x => x!=null);
-        const pnlVals = closed.map(t => compute(t).pnl).filter(x => x!=null);
-        const winrate = closed.length ? (wins.length/closed.length*100) : null;
-        const rAvg = rVals.length ? sum(rVals)/rVals.length : null;
-        const rSum = rVals.length ? sum(rVals) : null;
-        const pf = (sum(wins, t=>compute(t).pnl) && sum(losses, t=>Math.abs(compute(t).pnl))) ? (sum(wins, t=>compute(t).pnl)/sum(losses, t=>Math.abs(compute(t).pnl))) : (wins.length && !losses.length ? Infinity : (losses.length && !wins.length ? 0 : null));
-        const avgPnl = pnlVals.length ? sum(pnlVals)/pnlVals.length : null;
-
-        kpiEls.count.textContent = arr.length;
-        kpiEls.winrate.textContent = winrate==null ? '—' : (Math.round(winrate*10)/10).toFixed(1)+'%';
-        kpiEls.rAvg.textContent = fmtR(rAvg);
-        kpiEls.rSum.textContent = fmtR(rSum);
-        kpiEls.pf.textContent = pf==null ? '—' : (pf===Infinity ? '∞' : (Math.round(pf*100)/100).toFixed(2));
-        kpiEls.avgPnl.textContent = (avgPnl==null ? '—' : ('$ ' + fmtMoney(avgPnl)));
-
-        rowsEl.innerHTML = '';
-        for(const tr of arr){
-          const c = compute(tr);
-          const pnlClass = (c.pnl==null) ? '' : (c.pnl>=0 ? 'text-green-700 font-semibold' : 'text-red-700 font-semibold');
-          const sidePill = isLong(tr.side) ? '<span class="px-2 py-1 rounded-full border text-xs bg-green-50 border-green-200">Long/Compra</span>' : '<span class="px-2 py-1 rounded-full border text-xs bg-red-50 border-red-200">Short/Venta</span>';
-          const statusPill = c.status==='open' ? '<span class="px-2 py-1 rounded-full border text-xs bg-amber-50 border-amber-200">Abierto</span>' : '<span class="px-2 py-1 rounded-full border text-xs bg-emerald-50 border-emerald-200">Cerrado</span>';
-
-          const trEl = document.createElement('tr');
-          trEl.className = "border-b hover:bg-gray-50";
-          trEl.innerHTML = `
-            <td class="py-2 pr-3 whitespace-nowrap">${new Date(tr.dt).toLocaleString()}</td>
-            <td class="py-2 pr-3">${tr.ticker||'—'}</td>
-            <td class="py-2 pr-3">${tr.market||'—'}</td>
-            <td class="py-2 pr-3">${sidePill}</td>
-            <td class="py-2 pr-3 whitespace-nowrap">${tr.qty??'—'}</td>
-            <td class="py-2 pr-3">${tr.entry??'—'}</td>
-            <td class="py-2 pr-3">${tr.stop??'—'}</td>
-            <td class="py-2 pr-3">${tr.take??'—'}</td>
-            <td class="py-2 pr-3">${tr.exit??'—'}</td>
-            <td class="py-2 pr-3">${tr.fees??'—'}</td>
-            <td class="py-2 pr-3 ${pnlClass}">${c.pnl==null?'—':('$ '+fmtMoney(c.pnl))}</td>
-            <td class="py-2 pr-3">${fmtR(c.R)}</td>
-            <td class="py-2 pr-3">${tr.setup||'—'}</td>
-            <td class="py-2 pr-3">${tr.notes||'—'}</td>
-            <td class="py-2 pr-3">${statusPill}</td>
-            <td class="py-2 pr-3">
-              <div class="flex flex-wrap gap-2">
-                <button data-act="edit" data-id="${tr.id}" class="px-2 py-1 rounded-lg border">Editar</button>
-                <button data-act="dup" data-id="${tr.id}" class="px-2 py-1 rounded-lg border">Duplicar</button>
-                ${c.status==='open'
-                  ? `<button data-act="px" data-id="${tr.id}" class="px-2 py-1 rounded-lg border">Precio actual</button>
-                     <button data-act="close" data-id="${tr.id}" class="px-2 py-1 rounded-lg border">Cerrar</button>`
-                  : ''}
-                <button data-act="del" data-id="${tr.id}" class="px-2 py-1 rounded-lg border">Borrar</button>
-              </div>
-            </td>
-          `;
-          rowsEl.appendChild(trEl);
-        }
-      }
-
-      function openModal(tr){
-        if(!dlg) return;
-        document.getElementById('dlg-title').textContent = tr ? 'Editar trade' : 'Nuevo trade';
-        document.getElementById('id').value = tr?.id || '';
-        document.getElementById('dt').value = tr?.dt ? tr.dt.slice(0,16) : new Date(Date.now() - (new Date().getTimezoneOffset()*60000)).toISOString().slice(0,16);
-        document.getElementById('ticker').value = tr?.ticker || '';
-        document.getElementById('market').value = tr?.market || '';
-        document.getElementById('side').value = (tr && isShort(tr.side)) ? 'short' : 'long';
-        document.getElementById('qty').value = tr?.qty ?? '';
-        document.getElementById('entry').value = tr?.entry ?? '';
-        document.getElementById('stop').value = tr?.stop ?? '';
-        document.getElementById('take').value = tr?.take ?? '';
-        document.getElementById('exit').value = tr?.exit ?? '';
-        document.getElementById('fees').value = tr?.fees ?? '';
-        document.getElementById('setup').value = tr?.setup || '';
-        document.getElementById('notes').value = tr?.notes || '';
-        document.getElementById('pxNow').value = tr?.pxNow ?? '';
-
-        if (document.getElementById('btn-del')) document.getElementById('btn-del').style.display = tr ? '' : 'none';
-        if (document.getElementById('btn-dup')) document.getElementById('btn-dup').style.display = tr ? '' : 'none';
-
-        dlg.showModal();
-      }
-
-      function readForm(){
-        const obj = {
-          id: document.getElementById('id').value || uid(),
-          dt: new Date(document.getElementById('dt').value).toISOString(),
-          ticker: document.getElementById('ticker').value.trim(),
-          market: document.getElementById('market').value.trim() || null,
-          side: document.getElementById('side').value,
-          qty: parseNum(document.getElementById('qty').value),
-          entry: parseNum(document.getElementById('entry').value),
-          stop: parseNum(document.getElementById('stop').value),
-          take: parseNum(document.getElementById('take').value),
-          exit: parseNum(document.getElementById('exit').value),
-          fees: parseNum(document.getElementById('fees').value) || 0,
-          setup: document.getElementById('setup').value.trim() || null,
-          notes: document.getElementById('notes').value.trim() || null,
-          pxNow: parseNum(document.getElementById('pxNow').value),
-        };
-        if(!obj.ticker) throw new Error('Ticker es obligatorio');
-        if(!obj.qty || obj.qty<=0) throw new Error('Cantidad debe ser > 0');
-        if(obj.entry==null || obj.stop==null) throw new Error('Entrada y Stop son obligatorios');
-        return obj;
-      }
-
-      // listeners
-      if (btnClose && dlg) btnClose.addEventListener('click', () => dlg.close());
-      if (btnNuevo) btnNuevo.addEventListener('click', () => openModal(null));
-
-      if (frm && dlg) {
-        frm.addEventListener('submit', (e)=>{
-          e.preventDefault();
-          try{
-            const obj = readForm();
-            const arr = load();
-            const i = arr.findIndex(x=>x.id===obj.id);
-            if(i>=0) arr[i] = obj; else arr.push(obj);
-            save(arr);
-            dlg.close();
-            render();
-          }catch(err){
-            alert(err.message || 'Error al guardar');
-          }
-        });
-      }
-
-      if (btnDel && dlg) {
-        btnDel.addEventListener('click', ()=>{
-          const id = document.getElementById('id').value;
-          if(!id) return;
-          if(confirm('¿Eliminar este trade?')){
-            const arr = load().filter(x=>x.id!==id);
-            save(arr);
-            dlg.close();
-            render();
-          }
-        });
-      }
-
-      if (btnDup && dlg) {
-        btnDup.addEventListener('click', ()=>{
-          const obj = readForm();
-          obj.id = uid();
-          obj.notes = (obj.notes||'') + ' (duplicado)';
-          const arr = load(); arr.push(obj); save(arr);
-          dlg.close();
-          render();
-        });
-      }
-
-      if (rowsEl) {
-        rowsEl.addEventListener('click', (e)=>{
-          const btn = e.target.closest('button[data-act]');
-          if(!btn) return;
-          const id = btn.getAttribute('data-id');
-          const act = btn.getAttribute('data-act');
-          const arr = load();
-          const tr = arr.find(x=>x.id===id);
-          if(!tr) return;
-
-          if(act==='edit'){ openModal(tr); }
-          else if(act==='dup'){ const cp = { ...tr, id: uid(), notes: (tr.notes||'')+' (duplicado)' }; arr.push(cp); save(arr); render(); }
-          else if(act==='del'){ if(confirm('¿Eliminar este trade?')){ save(arr.filter(x=>x.id!==id)); render(); } }
-          else if(act==='px'){
-            const val = prompt('Precio actual (manual):', tr.pxNow ?? '');
-            if(val!==null){
-              const v = Number(val);
-              if(Number.isFinite(v)){ tr.pxNow = v; save(arr); render(); }
-              else alert('Número inválido');
-            }
-          }
-          else if(act==='close'){
-            const val = prompt('Precio de salida para cerrar:', tr.exit ?? '');
-            if(val!==null){
-              const v = Number(val);
-              if(Number.isFinite(v)){ tr.exit = v; tr.pxNow = null; save(arr); render(); }
-              else alert('Número inválido');
-            }
-          }
-        });
-      }
-
-      function toggleCustomDates(show){
-        document.getElementById('lbl-desde').classList.toggle('hidden', !show);
-        document.getElementById('lbl-hasta').classList.toggle('hidden', !show);
-        if(show){
-          if(!document.getElementById('f-desde').value) document.getElementById('f-desde').value = todayISO();
-          if(!document.getElementById('f-hasta').value) document.getElementById('f-hasta').value = todayISO();
-        }
-      }
-
-      // filtros
-      const selPeriodo = document.getElementById('filtro-periodo');
-      if (selPeriodo) selPeriodo.addEventListener('change', ()=>{ toggleCustomDates(selPeriodo.value==='custom'); render(); });
-      ['f-desde','f-hasta','f-ticker','f-side','f-status'].forEach(id=>{
-        const el = document.getElementById(id);
-        if(!el) return;
-        el.addEventListener((id==='f-ticker')?'input':'change', render);
-      });
-
-      // export/import
-      const btnExport = document.getElementById('btn-exportar');
-      const btnImport = document.getElementById('btn-importar');
-      const fileImport = document.getElementById('file-import');
-
-      if (btnExport) btnExport.addEventListener('click', ()=>{
-        const dataStr = JSON.stringify(load(), null, 2);
-        const blob = new Blob([dataStr], {type:'application/json'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = 'cisne_blanco_finanzas_backup.json';
-        document.body.appendChild(a); a.click(); a.remove();
-        URL.revokeObjectURL(url);
-      });
-
-      if (btnImport && fileImport) {
-        btnImport.addEventListener('click', ()=> fileImport.click());
-        fileImport.addEventListener('change', (e)=>{
-          const file = e.target.files?.[0];
-          if(!file) return;
-          const reader = new FileReader();
-          reader.onload = function(){
-            try{
-              const arr = JSON.parse(reader.result);
-              if(!Array.isArray(arr)) throw new Error('Formato inválido');
-              save(arr);
-              alert('Importado correctamente ('+arr.length+' trades)');
-              render();
-            }catch(err){
-              alert('Error al importar: '+(err.message||'desconocido'));
-            }
-          };
-          reader.readAsText(file);
-          e.target.value = '';
-        });
-      }
-
-      // seed, estado inicial
-      (function seed(){
-        if(localStorage.getItem(LS_SEEDED)) return;
-        const sample = [
-          { id: uid(), dt: new Date().toISOString(), ticker:'AAPL', market:'NASDAQ', side:'long', qty:10, entry:195, stop:190, take:null, exit:202, fees:0, setup:'Breakout', notes:'', pxNow:null },
-          { id: uid(), dt: new Date().toISOString(), ticker:'SPY', market:'NYSE', side:'short', qty:5, entry:510, stop:514, take:null, exit:503, fees:0, setup:'Reversa S/R', notes:'', pxNow:null },
-          { id: uid(), dt: new Date().toISOString(), ticker:'TSLA', market:'NASDAQ', side:'long', qty:4, entry:240, stop:232, take:null, exit:236, fees:0, setup:'Pullback EMA', notes:'', pxNow:null },
-          { id: uid(), dt: new Date().toISOString(), ticker:'BTCUSD', market:'CRYPTO', side:'long', qty:0.02, entry:61000, stop:59800, take:null, exit:null, fees:0, setup:'Tendencial', notes:'PnL flotante', pxNow:60650 },
-          { id: uid(), dt: new Date().toISOString(), ticker:'GGAL', market:'BYMA', side:'long', qty:50, entry:7800, stop:7500, take:null, exit:7650, fees:0, setup:'SFP', notes:'', pxNow:null },
-        ];
-        save(sample);
-        localStorage.setItem(LS_SEEDED, '1');
-      })();
-
-      toggleCustomDates(false);
-      render();
-    });
-  </script>
-<!-- v1.3 Toggle unificado: auto → dark → navy-ice → onyx-gold → ruby-silver -->
+<!-- ========= Toggle de tema (idéntico a Calendario; usa 'navy-ice') ========= -->
 <script>
 (function(){
-  const THEMES = ["","dark","navy-ice","onyx-gold","ruby-silver"]; // '' = auto
-  const LABELS = {
-    "":            "Tema: auto",
-    "dark":        "Tema: dark",
-    "navy-ice":    "Tema: navy-ice",
-    "onyx-gold":   "Tema: onyx-gold",
-    "ruby-silver": "Tema: ruby-silver"
-  };
-  const KEY  = "theme";
-  const root = document.documentElement;
-  const btn  = document.getElementById("theme-toggle");
-  if (!btn) { console.warn("[theme] falta #theme-toggle"); return; }
-
-  // Aplicar preferencia guardada o sistema
-  let saved = null;
-  try { saved = localStorage.getItem(KEY); } catch(e) {}
-  if (saved !== null) {
-    if (saved) root.dataset.theme = saved; else root.removeAttribute("data-theme");
-  } else if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
-    root.dataset.theme = "dark";
-    saved = "dark";
+  const root=document.documentElement;
+  const KEY="theme";
+  const btn=document.getElementById('themeToggle');
+  const lab=document.getElementById('themeLabel');
+  function apply(val){
+    if(val==='navy-ice') root.setAttribute('data-theme','navy-ice');
+    else root.removeAttribute('data-theme');
+    if(lab) lab.textContent=(val||'auto');
   }
-
-  // Etiqueta inicial
-  const current = root.dataset.theme || "";
-  btn.textContent = LABELS[current];
-
-  // Ciclo de temas
-  btn.addEventListener("click", () => {
-    const cur  = root.dataset.theme || "";
-    const next = THEMES[(THEMES.indexOf(cur) + 1) % THEMES.length];
-    if (next) root.dataset.theme = next; else root.removeAttribute("data-theme");
-    try { localStorage.setItem(KEY, next); } catch(e) {}
-    btn.textContent = LABELS[next];
-  });
+  const saved=localStorage.getItem(KEY)||'auto';
+  apply(saved);
+  if(btn) btn.onclick=()=>{
+    const next=(localStorage.getItem(KEY)==='navy-ice')?'auto':'navy-ice';
+    localStorage.setItem(KEY,next); apply(next);
+  };
 })();
 </script>
+
+<!-- ========= Finanzas v2.0-alpha ========= -->
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+  // ===== Namespace y helpers =====
+  const DB_KEY = 'cb_finanzas_v1';
+
+  const $ = (id) => document.getElementById(id);
+  const pad = (n) => String(n).padStart(2,'0');
+  const toISO = (d) => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+
+  const load = () => {
+    try { return JSON.parse(localStorage.getItem(DB_KEY) || '[]'); }
+    catch { return []; }
+  };
+  const save = (arr) => localStorage.setItem(DB_KEY, JSON.stringify(arr));
+
+  // ===== Estado =====
+  let data = load();               // [{id, date, type: 'ingreso'|'egreso', amount:number, category, note}]
+  let filtros = { categoria:'', desde:'', hasta:'' };
+
+  // ===== Referencias UI =====
+  const saldoTotalEl   = $('saldoTotal');
+  const totalIngEl     = $('totalIngresos');
+  const totalEgrEl     = $('totalEgresos');
+  const listaEl        = $('listaMovimientos');
+
+  const filtroCatEl    = $('filtroCategoria');
+  const filtroDesdeEl  = $('filtroDesde');
+  const filtroHastaEl  = $('filtroHasta');
+
+  const tabTortaEl     = $('tabTorta');
+  const tabBarrasEl    = $('tabBarras');
+  const chartTortaEl   = $('chartTorta');
+  const chartBarrasEl  = $('chartBarras');
+
+  const btnAdd         = $('btnAdd');
+  const btnExport      = $('btnExport');
+
+  // ===== Modal (cuidado especial de estabilidad) =====
+  const modal = document.createElement('dialog');
+  modal.id = 'modalFin';
+  modal.className = 'card';
+  modal.style.padding = '0';
+  modal.innerHTML = `
+    <form method="dialog" style="padding:1rem 1rem 0 1rem;">
+      <h3 id="modalTitle" style="margin:0 0 .75rem 0;">Nuevo movimiento</h3>
+      <div class="modal-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;">
+        <div>
+          <label class="muted" for="inpDate">Fecha</label>
+          <input id="inpDate" type="date" class="input" required>
+        </div>
+        <div>
+          <label class="muted" for="inpType">Tipo</label>
+          <select id="inpType" class="input" required>
+            <option value="ingreso">Ingreso</option>
+            <option value="egreso">Egreso</option>
+          </select>
+        </div>
+        <div>
+          <label class="muted" for="inpAmount">Monto</label>
+          <input id="inpAmount" type="number" step="0.01" min="0" class="input" placeholder="0.00" required>
+        </div>
+        <div>
+          <label class="muted" for="inpCategory">Categoría</label>
+          <select id="inpCategory" class="input">
+            <option value="">Sin categoría</option>
+            <option>Forex</option>
+            <option>Acciones</option>
+            <option>Índices</option>
+            <option>Futuros</option>
+            <option>Crypto</option>
+            <option>Otros</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1;">
+          <label class="muted" for="inpNote">Nota</label>
+          <textarea id="inpNote" rows="3" class="input" placeholder="Detalle o referencia"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions" style="display:flex;gap:.5rem;justify-content:flex-end;padding:1rem 0;">
+        <button id="btnSave" class="btn btn-primary">Guardar</button>
+        <button value="cancel" class="btn">Cerrar</button>
+      </div>
+    </form>`;
+  document.body.appendChild(modal);
+
+  // Para edición puntual
+  let editingId = null;
+
+  // ===== Render totales =====
+  function renderTotales(list){
+    const ingresos = list.filter(x=>x.type==='ingreso').reduce((a,b)=>a+Number(b.amount||0),0);
+    const egresos  = list.filter(x=>x.type==='egreso').reduce((a,b)=>a+Number(b.amount||0),0);
+    const saldo    = ingresos - egresos;
+
+    totalIngEl.textContent = formato(ingresos);
+    totalEgrEl.textContent = formato(egresos);
+    saldoTotalEl.textContent= formato(saldo);
+
+    // Estilo visual del saldo (verde/rojo)
+    const card = $('cardSaldo');
+    if(card){
+      card.style.borderColor = saldo>=0 ? 'var(--ok)' : 'var(--danger)';
+      card.style.boxShadow = 'var(--shadow)';
+    }
+  }
+
+  // ===== Render lista =====
+  function renderLista(list){
+    if(!list.length){
+      listaEl.innerHTML = '<div class="muted">No hay movimientos registrados.</div>';
+      return;
+    }
+    listaEl.innerHTML = '';
+    list.forEach(item=>{
+      const row = document.createElement('div');
+      row.className = 'card p-3 flex items-start justify-between';
+      row.innerHTML = `
+        <div>
+          <div class="text-sm font-semibold">${item.type==='ingreso'?'🟢 Ingreso':'🔴 Egreso'} — ${formato(item.amount)}</div>
+          <div class="text-xs muted">${item.date}${item.category?` • ${item.category}`:''}</div>
+          ${item.note?`<div class="mt-1 text-xs muted">${escapeHtml(item.note)}</div>`:''}
+        </div>
+        <div class="action-row flex gap-2">
+          <button class="btn btn-sm" data-action="edit">Editar</button>
+          <button class="btn btn-sm" data-action="delete">Borrar</button>
+        </div>`;
+      row.querySelector('[data-action="edit"]').onclick=()=>abrirModalEdicion(item.id);
+      row.querySelector('[data-action="delete"]').onclick=()=>eliminar(item.id);
+      listaEl.appendChild(row);
+    });
+  }
+
+  // ===== Filtros =====
+  function aplicarFiltros(){
+    return data.filter(x=>{
+      if(filtros.categoria && x.category!==filtros.categoria) return false;
+      if(filtros.desde && x.date < filtros.desde) return false;
+      if(filtros.hasta && x.date > filtros.hasta) return false;
+      return true;
+    });
+  }
+
+  // ===== Gráficos =====
+  let chartPie = null;
+  let chartBar = null;
+
+  function renderCharts(list){
+    // Limpia instancias previas
+    if(chartPie){ chartPie.destroy(); chartPie=null; }
+    if(chartBar){ chartBar.destroy(); chartBar=null; }
+
+    // --- Torta por categoría (suma absoluta por categoría, ingresos como +, egresos como + para ver pesos)
+    const mapCat = {};
+    list.forEach(x=>{
+      const key = x.category || 'Sin categoría';
+      const valAbs = Math.abs(Number(x.amount)||0);
+      mapCat[key] = (mapCat[key]||0) + valAbs;
+    });
+    const labelsPie = Object.keys(mapCat);
+    const dataPie = Object.values(mapCat);
+
+    chartPie = new Chart(chartTortaEl.getContext('2d'), {
+      type: 'pie',
+      data: { labels: labelsPie, datasets: [{ data: dataPie }] },
+      options: {
+        plugins: { legend: { position:'bottom' } }
+      }
+    });
+
+    // --- Barras por fecha (saldo neto por día)
+    const mapFecha = {};
+    list.forEach(x=>{
+      const s = Number(x.amount)||0;
+      const net = x.type==='ingreso' ? s : -s;
+      mapFecha[x.date] = (mapFecha[x.date]||0) + net;
+    });
+    const fechas = Object.keys(mapFecha).sort();
+    const netos  = fechas.map(f=>mapFecha[f]);
+
+    chartBar = new Chart(chartBarrasEl.getContext('2d'), {
+      type: 'bar',
+      data: { labels: fechas, datasets: [{ label: 'Neto diario', data: netos }] },
+      options: {
+        scales: { y: { beginAtZero: true } },
+        plugins: { legend: { display:false } }
+      }
+    });
+  }
+
+  // Tabs gráficos
+  tabTortaEl.onclick = ()=>{
+    tabTortaEl.classList.add('btn--primary');
+    tabBarrasEl.classList.remove('btn--primary');
+    chartTortaEl.style.display = '';
+    chartBarrasEl.style.display = 'none';
+  };
+  tabBarrasEl.onclick = ()=>{
+    tabBarrasEl.classList.add('btn--primary');
+    tabTortaEl.classList.remove('btn--primary');
+    chartTortaEl.style.display = 'none';
+    chartBarrasEl.style.display = '';
+  };
+
+  // ===== CRUD =====
+  function nuevoId(){ return Math.random().toString(36).slice(2,10); }
+
+  function abrirModalAlta(){
+    editingId = null;
+    $('modalTitle').textContent = 'Nuevo movimiento';
+    $('inpDate').value = toISO(new Date());
+    $('inpType').value = 'ingreso';
+    $('inpAmount').value = '';
+    $('inpCategory').value = '';
+    $('inpNote').value = '';
+    modal.showModal();
+  }
+
+  function abrirModalEdicion(id){
+    const it = data.find(x=>x.id===id);
+    if(!it) return;
+    editingId = id;
+    $('modalTitle').textContent = 'Editar movimiento';
+    $('inpDate').value = it.date;
+    $('inpType').value = it.type;
+    $('inpAmount').value = it.amount;
+    $('inpCategory').value = it.category || '';
+    $('inpNote').value = it.note || '';
+    modal.showModal();
+  }
+
+  function guardar(ev){
+    ev.preventDefault();
+    const date = $('inpDate').value;
+    const type = $('inpType').value;
+    const amount = parseFloat($('inpAmount').value);
+    const category = $('inpCategory').value;
+    const note = $('inpNote').value.trim();
+
+    if(!date || !type || !isFinite(amount)){
+      alert('Completá fecha, tipo y monto válido.');
+      return;
+    }
+
+    if(editingId){
+      const idx = data.findIndex(x=>x.id===editingId);
+      if(idx>-1) data[idx] = { ...data[idx], date, type, amount, category, note };
+      editingId = null;
+    } else {
+      data.push({ id:nuevoId(), date, type, amount, category, note });
+    }
+    save(data);
+    modal.close();
+    refresh(); // actualización en tiempo real
+  }
+
+  function eliminar(id){
+    if(!confirm('¿Borrar este movimiento?')) return;
+    data = data.filter(x=>x.id!==id);
+    save(data);
+    refresh();
+  }
+
+  // ===== Exportar =====
+  async function exportar(){
+    if(!data.length){ alert('No hay movimientos para exportar.'); return; }
+
+    const rows = [["Fecha","Tipo","Monto","Categoría","Nota"]];
+    aplicarFiltros().forEach(x=>{
+      rows.push([x.date, x.type, String(x.amount), x.category||"-", x.note||"-"]);
+    });
+
+    const formato = prompt('Ingresá el formato a exportar: xlsx o pdf','xlsx');
+    if(!formato) return;
+
+    if(formato.toLowerCase()==='xlsx'){
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      XLSX.utils.book_append_sheet(wb, ws, 'Finanzas');
+      XLSX.writeFile(wb, 'CisneBlanco_Finanzas.xlsx');
+    } else if(formato.toLowerCase()==='pdf'){
+      const doc = new jspdf.jsPDF();
+      doc.setFontSize(14);
+      doc.text('Cisne Blanco — Finanzas', 14, 16);
+      doc.setFontSize(10);
+
+      let y = 26;
+      rows.forEach((r,i)=>{
+        const line = r.map(c=>String(c)).join(' | ');
+        doc.text(line, 14, y);
+        y += 6;
+        if(y > 280){ doc.addPage(); y = 20; }
+      });
+
+      doc.save('CisneBlanco_Finanzas.pdf');
+    } else {
+      alert('Formato no reconocido. Usá xlsx o pdf.');
+    }
+  }
+
+  // ===== Util =====
+  function formato(n){
+    try{
+      return new Intl.NumberFormat('es-AR',{ style:'currency', currency:'ARS', maximumFractionDigits:2 }).format(n);
+    }catch{
+      return (Math.round(n*100)/100).toString();
+    }
+  }
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+  }
+
+  // ===== Refresh general (lista, totales, charts) =====
+  function refresh(){
+    const filtrada = aplicarFiltros();
+    renderTotales(filtrada);
+    renderLista(filtrada);
+    renderCharts(filtrada);
+  }
+
+  // ===== Listeners =====
+  $('btnSave').onclick = guardar;
+  btnAdd.onclick = abrirModalAlta;
+  btnExport.onclick = exportar;
+
+  filtroCatEl.onchange = ()=>{ filtros.categoria = filtroCatEl.value; refresh(); };
+  filtroDesdeEl.onchange = ()=>{ filtros.desde = filtroDesdeEl.value; refresh(); };
+  filtroHastaEl.onchange = ()=>{ filtros.hasta = filtroHastaEl.value; refresh(); };
+  $('btnLimpiarFiltros').onclick = ()=>{
+    filtros = { categoria:'', desde:'', hasta:'' };
+    filtroCatEl.value=''; filtroDesdeEl.value=''; filtroHastaEl.value='';
+    refresh();
+  };
+
+  // ===== Primer render =====
+  refresh();
+});
+</script>
+
+<!-- Librerías externas (mismas que Calendario + Chart.js + jsPDF) -->
+<script src="../assets/js/theme.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jjspdf.umd.min.js"></script>
+
 </body>
 </html>
