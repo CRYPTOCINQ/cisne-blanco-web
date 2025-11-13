@@ -10,7 +10,7 @@
 
 <body class="transition-theme">
 
-<!-- ========= Topbar (idéntico a Calendario, pestaña activa en Finanzas) ========= -->
+<!-- ========= Topbar ========= -->
 <header class="topbar">
   <div class="topbar-inner">
     <a href="../index.html" class="brand">
@@ -36,7 +36,8 @@
 
 <main style="max-width:1100px;margin:1.25rem auto;padding:0 1rem;">
 
-  <!-- ========= Panel superior: totales dinámicos ========= -->
+
+  <!-- ========= Panel superior: totales ========= -->
   <section class="surface" style="padding:1rem;">
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;">
       <div class="card p-3" id="cardSaldo">
@@ -57,11 +58,12 @@
     <div style="display:flex;gap:.5rem;align-items:center;justify-content:space-between;margin-top:.75rem;">
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
         <button id="btnAdd" class="btn btn-primary">+ Movimiento</button>
+        <button id="btnAddTrade" class="btn btn-sm btn-primary">+ Trade</button>
         <button id="btnExport" class="btn">Exportar (Excel / PDF)</button>
       </div>
 
       <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
-        <select id="filtroCategoria" class="input" style="min-width:160px;padding:.4rem .5rem;border:1px solid var(--card-border);border-radius:10px;background:var(--card);color:var(--fg);">
+        <select id="filtroCategoria" class="input" style="min-width:160px;">
           <option value="">Todas las categorías</option>
           <option>Forex</option>
           <option>Acciones</option>
@@ -70,23 +72,25 @@
           <option>Crypto</option>
           <option>Otros</option>
         </select>
-        <input id="filtroDesde" type="date" class="input" style="padding:.4rem .5rem;border:1px solid var(--card-border);border-radius:10px;background:var(--card);color:var(--fg);" />
-        <input id="filtroHasta" type="date" class="input" style="padding:.4rem .5rem;border:1px solid var(--card-border);border-radius:10px;background:var(--card);color:var(--fg);" />
+        <input id="filtroDesde" type="date" class="input" />
+        <input id="filtroHasta" type="date" class="input" />
         <button id="btnLimpiarFiltros" class="btn btn-sm">Limpiar</button>
       </div>
     </div>
   </section>
 
-  <!-- ========= Lista de movimientos ========= -->
+
+  <!-- ========= Lista Movimientos ========= -->
   <section style="margin-top:1rem;">
-    <h2 style="margin:.25rem 0 0 0;">Movimientos</h2>
+    <h2 style="margin:0;">Movimientos</h2>
     <div id="listaMovimientos" class="surface" style="margin-top:.5rem;padding:1rem;"></div>
   </section>
 
-  <!-- ========= Gráficos: tabs (Torta / Barras) ========= -->
+
+  <!-- ========= Gráficos ========= -->
   <section style="margin-top:1rem;">
     <div class="card" style="padding:1rem;">
-      <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
         <button id="tabTorta" class="btn btn-sm btn--primary">Torta por categoría</button>
         <button id="tabBarras" class="btn btn-sm">Barras por fecha</button>
       </div>
@@ -97,107 +101,123 @@
       </div>
     </div>
   </section>
+
 </main>
 
-<!-- ========= Toggle de tema (idéntico a Calendario; usa 'navy-ice') ========= -->
-<script>
-(function(){
-  const root=document.documentElement;
-  const KEY="theme";
-  const btn=document.getElementById('themeToggle');
-  const lab=document.getElementById('themeLabel');
-  function apply(val){
-    if(val==='navy-ice') root.setAttribute('data-theme','navy-ice');
-    else root.removeAttribute('data-theme');
-    if(lab) lab.textContent=(val||'auto');
-  }
-  const saved=localStorage.getItem(KEY)||'auto';
-  apply(saved);
-  if(btn) btn.onclick=()=>{
-    const next=(localStorage.getItem(KEY)==='navy-ice')?'auto':'navy-ice';
-    localStorage.setItem(KEY,next); apply(next);
-  };
-})();
-</script>
 
-<!-- ========= Finanzas v2.0-alpha ========= -->
+
+<!-- ===========================================================
+     MODAL TRADING (HTML)
+     =========================================================== -->
+<dialog id="modalTrade" class="card" style="padding:0;">
+  <form method="dialog" style="padding:1rem 1rem 0 1rem;">
+    <h3 style="margin:0 0 .75rem 0;">Nueva operación</h3>
+
+    <div class="modal-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;">
+
+      <div>
+        <label class="muted">Ticker</label>
+        <input id="tradeTicker" type="text" class="input" placeholder="EURUSD / AAPL / BTCUSDT">
+      </div>
+
+      <div>
+        <label class="muted">Hora</label>
+        <input id="tradeTime" type="time" class="input">
+      </div>
+
+      <div>
+        <label class="muted">Tipo</label>
+        <select id="tradeType" class="input">
+          <option value="buy">Buy</option>
+          <option value="sell">Sell</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="muted">Ticket</label>
+        <input id="tradeTicket" type="number" class="input" placeholder="N°">
+      </div>
+
+      <div>
+        <label class="muted">Precio entrada</label>
+        <input id="tradeEntry" type="number" class="input" step="0.0001">
+      </div>
+
+      <div>
+        <label class="muted">SL</label>
+        <input id="tradeSL" type="number" class="input" step="0.0001">
+      </div>
+
+      <div>
+        <label class="muted">TP</label>
+        <input id="tradeTP" type="number" class="input" step="0.0001">
+      </div>
+
+      <div>
+        <label class="muted">Profit</label>
+        <input id="tradeProfit" type="number" class="input" step="0.01" placeholder="0.00">
+      </div>
+
+    </div>
+
+    <div class="modal-actions" style="display:flex;gap:.5rem;justify-content:flex-end;padding:1rem 0;">
+      <button id="btnSaveTrade" class="btn btn-primary">Guardar</button>
+      <button value="cancel" class="btn">Cerrar</button>
+    </div>
+  </form>
+</dialog>
+
+
+
+<!-- ===========================================================
+     JS PRINCIPAL FINANZAS
+     =========================================================== -->
 <script>
 document.addEventListener('DOMContentLoaded', ()=>{
-  // ===== Namespace y helpers =====
+
   const DB_KEY = 'cb_finanzas_v1';
+  const $ = (id)=>document.getElementById(id);
 
-  const $ = (id) => document.getElementById(id);
-  const pad = (n) => String(n).padStart(2,'0');
-  const toISO = (d) => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const pad=n=>String(n).padStart(2,'0');
+  const toISO=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 
-  const load = () => {
-    try { return JSON.parse(localStorage.getItem(DB_KEY) || '[]'); }
-    catch { return []; }
-  };
-  const save = (arr) => localStorage.setItem(DB_KEY, JSON.stringify(arr));
+  const load = ()=>JSON.parse(localStorage.getItem(DB_KEY)||"[]");
+  const save = arr=>localStorage.setItem(DB_KEY, JSON.stringify(arr));
 
-  // ===== Estado =====
-  let data = load();               // [{id, date, type: 'ingreso'|'egreso', amount:number, category, note}]
+  let data = load();
   let filtros = { categoria:'', desde:'', hasta:'' };
 
-  // ===== Referencias UI =====
-  const saldoTotalEl   = $('saldoTotal');
-  const totalIngEl     = $('totalIngresos');
-  const totalEgrEl     = $('totalEgresos');
-  const listaEl        = $('listaMovimientos');
+  const saldoTotalEl = $('saldoTotal');
+  const totalIngEl   = $('totalIngresos');
+  const totalEgrEl   = $('totalEgresos');
+  const listaEl      = $('listaMovimientos');
 
-  const filtroCatEl    = $('filtroCategoria');
-  const filtroDesdeEl  = $('filtroDesde');
-  const filtroHastaEl  = $('filtroHasta');
+  const filtroCatEl   = $('filtroCategoria');
+  const filtroDesdeEl = $('filtroDesde');
+  const filtroHastaEl = $('filtroHasta');
 
-  const tabTortaEl     = $('tabTorta');
-  const tabBarrasEl    = $('tabBarras');
-  const chartTortaEl   = $('chartTorta');
-  const chartBarrasEl  = $('chartBarras');
+  const tabTortaEl   = $('tabTorta');
+  const tabBarrasEl  = $('tabBarras');
+  const chartTortaEl = $('chartTorta');
+  const chartBarrasEl= $('chartBarras');
 
-  const btnAdd         = $('btnAdd');
-  const btnExport      = $('btnExport');
+  const btnAdd       = $('btnAdd');
+  const btnExport    = $('btnExport');
 
-  // ===== Modal (cuidado especial de estabilidad) =====
+  // ===== Modal Finanzas generado dinámicamente =====
   const modal = document.createElement('dialog');
   modal.id = 'modalFin';
-  modal.className = 'card';
-  modal.style.padding = '0';
+  modal.className='card';
+  modal.style.padding='0';
   modal.innerHTML = `
     <form method="dialog" style="padding:1rem 1rem 0 1rem;">
-      <h3 id="modalTitle" style="margin:0 0 .75rem 0;">Nuevo movimiento</h3>
+      <h3 id="modalTitle">Nuevo movimiento</h3>
       <div class="modal-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;">
-        <div>
-          <label class="muted" for="inpDate">Fecha</label>
-          <input id="inpDate" type="date" class="input" required>
-        </div>
-        <div>
-          <label class="muted" for="inpType">Tipo</label>
-          <select id="inpType" class="input" required>
-            <option value="ingreso">Ingreso</option>
-            <option value="egreso">Egreso</option>
-          </select>
-        </div>
-        <div>
-          <label class="muted" for="inpAmount">Monto</label>
-          <input id="inpAmount" type="number" step="0.01" min="0" class="input" placeholder="0.00" required>
-        </div>
-        <div>
-          <label class="muted" for="inpCategory">Categoría</label>
-          <select id="inpCategory" class="input">
-            <option value="">Sin categoría</option>
-            <option>Forex</option>
-            <option>Acciones</option>
-            <option>Índices</option>
-            <option>Futuros</option>
-            <option>Crypto</option>
-            <option>Otros</option>
-          </select>
-        </div>
-        <div style="grid-column:1/-1;">
-          <label class="muted" for="inpNote">Nota</label>
-          <textarea id="inpNote" rows="3" class="input" placeholder="Detalle o referencia"></textarea>
-        </div>
+        <div><label class="muted">Fecha</label><input id="inpDate" type="date" class="input"></div>
+        <div><label class="muted">Tipo</label><select id="inpType" class="input"><option value="ingreso">Ingreso</option><option value="egreso">Egreso</option></select></div>
+        <div><label class="muted">Monto</label><input id="inpAmount" type="number" step="0.01" class="input"></div>
+        <div><label class="muted">Categoría</label><select id="inpCategory" class="input"><option value="">Sin categoría</option><option>Forex</option><option>Acciones</option><option>Índices</option><option>Futuros</option><option>Crypto</option><option>Otros</option></select></div>
+        <div style="grid-column:1/-1;"><label class="muted">Nota</label><textarea id="inpNote" class="input"></textarea></div>
       </div>
       <div class="modal-actions" style="display:flex;gap:.5rem;justify-content:flex-end;padding:1rem 0;">
         <button id="btnSave" class="btn btn-primary">Guardar</button>
@@ -206,10 +226,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     </form>`;
   document.body.appendChild(modal);
 
-  // Para edición puntual
   let editingId = null;
 
-  // ===== Render totales =====
   function renderTotales(list){
     const ingresos = list.filter(x=>x.type==='ingreso').reduce((a,b)=>a+Number(b.amount||0),0);
     const egresos  = list.filter(x=>x.type==='egreso').reduce((a,b)=>a+Number(b.amount||0),0);
@@ -218,16 +236,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     totalIngEl.textContent = formato(ingresos);
     totalEgrEl.textContent = formato(egresos);
     saldoTotalEl.textContent= formato(saldo);
-
-    // Estilo visual del saldo (verde/rojo)
-    const card = $('cardSaldo');
-    if(card){
-      card.style.borderColor = saldo>=0 ? 'var(--ok)' : 'var(--danger)';
-      card.style.boxShadow = 'var(--shadow)';
-    }
   }
 
-  // ===== Render lista =====
   function renderLista(list){
     if(!list.length){
       listaEl.innerHTML = '<div class="muted">No hay movimientos registrados.</div>';
@@ -235,8 +245,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
     listaEl.innerHTML = '';
     list.forEach(item=>{
-      const row = document.createElement('div');
-      row.className = 'card p-3 flex items-start justify-between';
+      const row=document.createElement('div');
+      row.className='card p-3 flex items-start justify-between';
       row.innerHTML = `
         <div>
           <div class="text-sm font-semibold">${item.type==='ingreso'?'🟢 Ingreso':'🔴 Egreso'} — ${formato(item.amount)}</div>
@@ -253,7 +263,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     });
   }
 
-  // ===== Filtros =====
   function aplicarFiltros(){
     return data.filter(x=>{
       if(filtros.categoria && x.category!==filtros.categoria) return false;
@@ -263,203 +272,214 @@ document.addEventListener('DOMContentLoaded', ()=>{
     });
   }
 
-  // ===== Gráficos =====
-  let chartPie = null;
-  let chartBar = null;
+  let chartPie=null, chartBar=null;
 
   function renderCharts(list){
-    // Limpia instancias previas
-    if(chartPie){ chartPie.destroy(); chartPie=null; }
-    if(chartBar){ chartBar.destroy(); chartBar=null; }
+    if(chartPie) chartPie.destroy();
+    if(chartBar) chartBar.destroy();
 
-    // --- Torta por categoría (suma absoluta por categoría, ingresos como +, egresos como + para ver pesos)
-    const mapCat = {};
+    const mapCat={};
     list.forEach(x=>{
-      const key = x.category || 'Sin categoría';
-      const valAbs = Math.abs(Number(x.amount)||0);
-      mapCat[key] = (mapCat[key]||0) + valAbs;
-    });
-    const labelsPie = Object.keys(mapCat);
-    const dataPie = Object.values(mapCat);
-
-    chartPie = new Chart(chartTortaEl.getContext('2d'), {
-      type: 'pie',
-      data: { labels: labelsPie, datasets: [{ data: dataPie }] },
-      options: {
-        plugins: { legend: { position:'bottom' } }
-      }
+      const key=x.category||'Sin categoría';
+      mapCat[key]=(mapCat[key]||0)+Math.abs(Number(x.amount)||0);
     });
 
-    // --- Barras por fecha (saldo neto por día)
-    const mapFecha = {};
+    chartPie=new Chart(chartTortaEl,{type:'pie',
+      data:{labels:Object.keys(mapCat),datasets:[{data:Object.values(mapCat)}]},
+      options:{plugins:{legend:{position:'bottom'}}}
+    });
+
+    const mapFecha={};
     list.forEach(x=>{
-      const s = Number(x.amount)||0;
-      const net = x.type==='ingreso' ? s : -s;
-      mapFecha[x.date] = (mapFecha[x.date]||0) + net;
+      const val=x.type==='ingreso'?+x.amount:-x.amount;
+      mapFecha[x.date]=(mapFecha[x.date]||0)+val;
     });
-    const fechas = Object.keys(mapFecha).sort();
-    const netos  = fechas.map(f=>mapFecha[f]);
 
-    chartBar = new Chart(chartBarrasEl.getContext('2d'), {
-      type: 'bar',
-      data: { labels: fechas, datasets: [{ label: 'Neto diario', data: netos }] },
-      options: {
-        scales: { y: { beginAtZero: true } },
-        plugins: { legend: { display:false } }
-      }
+    chartBar=new Chart(chartBarrasEl,{type:'bar',
+      data:{labels:Object.keys(mapFecha).sort(),datasets:[{data:Object.keys(mapFecha).sort().map(f=>mapFecha[f])}]},
+      options:{scales:{y:{beginAtZero:true}}}
     });
   }
 
-  // Tabs gráficos
-  tabTortaEl.onclick = ()=>{
+  tabTortaEl.onclick=()=>{
     tabTortaEl.classList.add('btn--primary');
     tabBarrasEl.classList.remove('btn--primary');
-    chartTortaEl.style.display = '';
-    chartBarrasEl.style.display = 'none';
+    chartTortaEl.style.display='';
+    chartBarrasEl.style.display='none';
   };
-  tabBarrasEl.onclick = ()=>{
+
+  tabBarrasEl.onclick=()=>{
     tabBarrasEl.classList.add('btn--primary');
     tabTortaEl.classList.remove('btn--primary');
-    chartTortaEl.style.display = 'none';
-    chartBarrasEl.style.display = '';
+    chartTortaEl.style.display='none';
+    chartBarrasEl.style.display='';
   };
 
-  // ===== CRUD =====
-  function nuevoId(){ return Math.random().toString(36).slice(2,10); }
 
   function abrirModalAlta(){
-    editingId = null;
-    $('modalTitle').textContent = 'Nuevo movimiento';
-    $('inpDate').value = toISO(new Date());
-    $('inpType').value = 'ingreso';
-    $('inpAmount').value = '';
-    $('inpCategory').value = '';
-    $('inpNote').value = '';
+    editingId=null;
+    $('modalTitle').textContent='Nuevo movimiento';
+    $('inpDate').value=toISO(new Date());
+    $('inpType').value='ingreso';
+    $('inpAmount').value='';
+    $('inpCategory').value='';
+    $('inpNote').value='';
     modal.showModal();
   }
 
   function abrirModalEdicion(id){
-    const it = data.find(x=>x.id===id);
+    const it=data.find(x=>x.id===id);
     if(!it) return;
-    editingId = id;
-    $('modalTitle').textContent = 'Editar movimiento';
-    $('inpDate').value = it.date;
-    $('inpType').value = it.type;
-    $('inpAmount').value = it.amount;
-    $('inpCategory').value = it.category || '';
-    $('inpNote').value = it.note || '';
+    editingId=id;
+    $('modalTitle').textContent='Editar movimiento';
+    $('inpDate').value=it.date;
+    $('inpType').value=it.type;
+    $('inpAmount').value=it.amount;
+    $('inpCategory').value=it.category||'';
+    $('inpNote').value=it.note||'';
     modal.showModal();
   }
 
   function guardar(ev){
     ev.preventDefault();
-    const date = $('inpDate').value;
-    const type = $('inpType').value;
-    const amount = parseFloat($('inpAmount').value);
-    const category = $('inpCategory').value;
-    const note = $('inpNote').value.trim();
+    const date=$('inpDate').value;
+    const type=$('inpType').value;
+    const amount=parseFloat($('inpAmount').value);
+    const category=$('inpCategory').value;
+    const note=$('inpNote').value.trim();
 
-    if(!date || !type || !isFinite(amount)){
+    if(!date||!type||!isFinite(amount)){
       alert('Completá fecha, tipo y monto válido.');
       return;
     }
 
     if(editingId){
-      const idx = data.findIndex(x=>x.id===editingId);
-      if(idx>-1) data[idx] = { ...data[idx], date, type, amount, category, note };
-      editingId = null;
+      const idx=data.findIndex(x=>x.id===editingId);
+      if(idx>-1) data[idx]={...data[idx],date,type,amount,category,note};
     } else {
-      data.push({ id:nuevoId(), date, type, amount, category, note });
+      data.push({id:nuevoId(),date,type,amount,category,note});
     }
     save(data);
     modal.close();
-    refresh(); // actualización en tiempo real
+    refresh();
+  }
+
+  function nuevoId(){
+    return Math.random().toString(36).slice(2,10);
   }
 
   function eliminar(id){
     if(!confirm('¿Borrar este movimiento?')) return;
-    data = data.filter(x=>x.id!==id);
+    data=data.filter(x=>x.id!==id);
     save(data);
     refresh();
   }
 
-  // ===== Exportar =====
   async function exportar(){
-    if(!data.length){ alert('No hay movimientos para exportar.'); return; }
+    if(!data.length){ alert('No hay movimientos.'); return; }
 
-    const rows = [["Fecha","Tipo","Monto","Categoría","Nota"]];
+    const rows=[["Fecha","Tipo","Monto","Categoría","Nota"]];
     aplicarFiltros().forEach(x=>{
-      rows.push([x.date, x.type, String(x.amount), x.category||"-", x.note||"-"]);
+      rows.push([x.date,x.type,String(x.amount),x.category||'-',x.note||'-']);
     });
 
-    const formato = prompt('Ingresá el formato a exportar: xlsx o pdf','xlsx');
-    if(!formato) return;
+    const formato=prompt('xlsx o pdf?','xlsx');
+    if(!formato)return;
 
-    if(formato.toLowerCase()==='xlsx'){
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet(rows);
-      XLSX.utils.book_append_sheet(wb, ws, 'Finanzas');
-      XLSX.writeFile(wb, 'CisneBlanco_Finanzas.xlsx');
-    } else if(formato.toLowerCase()==='pdf'){
-      const doc = new jspdf.jsPDF();
-      doc.setFontSize(14);
-      doc.text('Cisne Blanco — Finanzas', 14, 16);
-      doc.setFontSize(10);
-
-      let y = 26;
-      rows.forEach((r,i)=>{
-        const line = r.map(c=>String(c)).join(' | ');
-        doc.text(line, 14, y);
-        y += 6;
-        if(y > 280){ doc.addPage(); y = 20; }
+    if(formato==='xlsx'){
+      const wb=XLSX.utils.book_new();
+      const ws=XLSX.utils.aoa_to_sheet(rows);
+      XLSX.utils.book_append_sheet(wb,ws,'Finanzas');
+      XLSX.writeFile(wb,'CisneBlanco_Finanzas.xlsx');
+    }
+    else if(formato==='pdf'){
+      const doc=new jspdf.jsPDF();
+      let y=20;
+      rows.forEach(r=>{
+        doc.text(r.join(' | '),10,y);
+        y+=7;
+        if(y>280){ doc.addPage(); y=20; }
       });
-
       doc.save('CisneBlanco_Finanzas.pdf');
-    } else {
-      alert('Formato no reconocido. Usá xlsx o pdf.');
     }
   }
 
-  // ===== Util =====
   function formato(n){
-    try{
-      return new Intl.NumberFormat('es-AR',{ style:'currency', currency:'ARS', maximumFractionDigits:2 }).format(n);
-    }catch{
-      return (Math.round(n*100)/100).toString();
-    }
+    return new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS'}).format(n);
   }
+
   function escapeHtml(s){
-    return s.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+    return s.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   }
 
-  // ===== Refresh general (lista, totales, charts) =====
   function refresh(){
-    const filtrada = aplicarFiltros();
-    renderTotales(filtrada);
-    renderLista(filtrada);
-    renderCharts(filtrada);
+    const list=aplicarFiltros();
+    renderTotales(list);
+    renderLista(list);
+    renderCharts(list);
   }
 
-  // ===== Listeners =====
-  $('btnSave').onclick = guardar;
-  btnAdd.onclick = abrirModalAlta;
-  btnExport.onclick = exportar;
+  $('btnSave').onclick=guardar;
+  btnAdd.onclick=abrirModalAlta;
+  btnExport.onclick=exportar;
 
-  filtroCatEl.onchange = ()=>{ filtros.categoria = filtroCatEl.value; refresh(); };
-  filtroDesdeEl.onchange = ()=>{ filtros.desde = filtroDesdeEl.value; refresh(); };
-  filtroHastaEl.onchange = ()=>{ filtros.hasta = filtroHastaEl.value; refresh(); };
-  $('btnLimpiarFiltros').onclick = ()=>{
-    filtros = { categoria:'', desde:'', hasta:'' };
-    filtroCatEl.value=''; filtroDesdeEl.value=''; filtroHastaEl.value='';
+  filtroCatEl.onchange=()=>{ filtros.categoria=filtroCatEl.value; refresh(); };
+  filtroDesdeEl.onchange=()=>{ filtros.desde=filtroDesdeEl.value; refresh(); };
+  filtroHastaEl.onchange=()=>{ filtros.hasta=filtroHastaEl.value; refresh(); };
+
+  $('btnLimpiarFiltros').onclick=()=>{
+    filtros={categoria:'',desde:'',hasta:''};
+    filtroCatEl.value='';
+    filtroDesdeEl.value='';
+    filtroHastaEl.value='';
     refresh();
   };
 
-  // ===== Primer render =====
+
+  // ===========================================================
+  //      SCRIPT DEL MODAL DE TRADING
+  // ===========================================================
+  const modalTrade = $('modalTrade');
+
+  $('btnAddTrade').onclick = ()=>{
+    $('tradeTicker').value='';
+    $('tradeTime').value='';
+    $('tradeType').value='buy';
+    $('tradeTicket').value='';
+    $('tradeEntry').value='';
+    $('tradeSL').value='';
+    $('tradeTP').value='';
+    $('tradeProfit').value='';
+    modalTrade.showModal();
+  };
+
+  $('btnSaveTrade').onclick = (ev)=>{
+    ev.preventDefault();
+
+    const t = {
+      ticker: $('tradeTicker').value.trim(),
+      time: $('tradeTime').value,
+      type: $('tradeType').value,
+      ticket: $('tradeTicket').value,
+      entry: $('tradeEntry').value,
+      sl: $('tradeSL').value,
+      tp: $('tradeTP').value,
+      profit: $('tradeProfit').value
+    };
+
+    console.log("NUEVA OPERACIÓN (SOLO FRONTEND):", t);
+
+    modalTrade.close();
+  };
+
+
   refresh();
+
 });
 </script>
 
-<!-- Librerías externas (mismas que Calendario + Chart.js + jsPDF) -->
+
+<!-- ========= Librerías externas ========= -->
 <script src="../assets/js/theme.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
