@@ -167,7 +167,36 @@
   </form>
 </dialog>
 
+<!-- ========= Toggle de tema (Auto / Navy-Ice) ========= -->
+<script>
+(function () {
+  const root = document.documentElement;
+  const KEY = 'theme';
+  const btn = document.getElementById('themeToggle');
+  const lab = document.getElementById('themeLabel');
 
+  function apply(val) {
+    if (val === 'navy-ice') {
+      root.setAttribute('data-theme', 'navy-ice');
+    } else {
+      root.removeAttribute('data-theme');
+    }
+    if (lab) lab.textContent = val || 'auto';
+  }
+
+  const saved = localStorage.getItem(KEY) || 'auto';
+  apply(saved);
+
+  if (btn) {
+    btn.onclick = () => {
+      const current = localStorage.getItem(KEY) || 'auto';
+      const next = current === 'navy-ice' ? 'auto' : 'navy-ice';
+      localStorage.setItem(KEY, next);
+      apply(next);
+    };
+  }
+})();
+</script>
 
 <!-- ===========================================================
      JS PRINCIPAL FINANZAS
