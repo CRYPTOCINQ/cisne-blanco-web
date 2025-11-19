@@ -157,6 +157,28 @@
       </div>
 
     </div>
+  </form>
+</dialog>
+
+<!-- ========= Toggle de tema (Auto / Navy-Ice) ========= -->
+<script>
+(function () {
+  const root = document.documentElement;
+  const KEY = 'theme';
+  const btn = document.getElementById('themeToggle');
+  const lab = document.getElementById('themeLabel');
+
+  function apply(val) {
+    if (val === 'navy-ice') {
+      root.setAttribute('data-theme', 'navy-ice');
+    } else {
+      root.removeAttribute('data-theme');
+    }
+    if (lab) lab.textContent = val || 'auto';
+  }
+
+  const saved = localStorage.getItem(KEY) || 'auto';
+  apply(saved);
 
     <div class="modal-actions" style="display:flex;gap:.5rem;justify-content:flex-end;padding:1rem 0;">
       <button id="btnSaveTrade" class="btn btn-primary">Guardar</button>
@@ -200,6 +222,28 @@
      JS PRINCIPAL FINANZAS (ESTABLE + TRADES → MOVIMIENTOS)
      =========================================================== -->
 <script>
+  // ===========================================================
+//   SISTEMA DE CATEGORÍAS EDITABLES (combo editable)
+// ===========================================================
+const CATS_KEY = 'cb_categorias_dyn';
+let categorias = JSON.parse(localStorage.getItem(CATS_KEY) || '[]');
+
+function renderCategorias() {
+  const dl = document.getElementById('listaCategorias');
+  if (!dl) return;
+  dl.innerHTML = categorias.map(c => `<option value="${c}"></option>`).join('');
+}
+renderCategorias();
+
+function guardarCategoriaNueva(valor) {
+  if (!valor) return;
+  if (!categorias.includes(valor)) {
+    categorias.push(valor);
+    localStorage.setItem(CATS_KEY, JSON.stringify(categorias));
+    renderCategorias();
+  }
+}
+
 document.addEventListener('DOMContentLoaded', ()=>{
 
   // ===========================================================
@@ -318,15 +362,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
         </div>
         <div>
           <label class="muted">Categoría</label>
-          <select id="inpCategory" class="input">
-            <option value="">Sin categoría</option>
-            <option>Forex</option>
-            <option>Acciones</option>
-            <option>Índices</option>
-            <option>Futuros</option>
-            <option>Crypto</option>
-            <option>Otros</option>
-          </select>
+          <input id="inpCategory" list="listaCategorias" class="input" placeholder="Categoría" autocomplete="off">
+          <datalist id="listaCategorias"></datalist>
         </div>
         <div style="grid-column:1/-1;">
           <label class="muted">Nota</label>
@@ -510,6 +547,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const type = $('inpType').value;
     const amount = parseFloat($('inpAmount').value);
     const category = $('inpCategory').value;
+    guardarCategoriaNueva(category);
     const note = $('inpNote').value.trim();
 
     if(!date || !type || !isFinite(amount)){
