@@ -34,10 +34,10 @@
   </div>
 </header>
 
+
 <main style="max-width:1100px;margin:1.25rem auto;padding:0 1rem;">
 
-
-  <!-- ========= Panel superior: totales ========= -->
+  <!-- ========= Panel superior ========= -->
   <section class="surface" style="padding:1rem;">
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;">
       <div class="card p-3" id="cardSaldo">
@@ -72,6 +72,7 @@
           <option>Crypto</option>
           <option>Otros</option>
         </select>
+
         <input id="filtroDesde" type="date" class="input" />
         <input id="filtroHasta" type="date" class="input" />
         <button id="btnLimpiarFiltros" class="btn btn-sm">Limpiar</button>
@@ -80,7 +81,7 @@
   </section>
 
 
-  <!-- ========= Lista Movimientos ========= -->
+  <!-- ========= Movimientos ========= -->
   <section style="margin-top:1rem;">
     <h2 style="margin:0;">Movimientos</h2>
     <div id="listaMovimientos" class="surface" style="margin-top:.5rem;padding:1rem;"></div>
@@ -104,9 +105,8 @@
 
 </main>
 
-<!-- ===========================================================
-     MODAL TRADING (HTML)
-     =========================================================== -->
+
+<!-- ========= Modal Trading ========= -->
 <dialog id="modalTrade" class="card" style="padding:0;">
   <form method="dialog" style="padding:1rem 1rem 0 1rem;">
     <h3 style="margin:0 0 .75rem 0;">Nueva operación</h3>
@@ -115,7 +115,7 @@
 
       <div>
         <label class="muted">Ticker</label>
-        <input id="tradeTicker" list="listaTickers" class="input" placeholder="Ej: EURUSD" autocomplete="off">
+        <input id="tradeTicker" list="listaTickers" class="input" placeholder="Ej: EURUSD">
         <datalist id="listaTickers"></datalist>
       </div>
 
@@ -167,39 +167,47 @@
 </dialog>
 
 <!-- ===========================================================
-     JS PRINCIPAL FINANZAS
+     JS PRINCIPAL FINANZAS (CORREGIDO)
      =========================================================== -->
 <script>
 document.addEventListener('DOMContentLoaded', ()=>{
 
   // ===========================================================
-//   SISTEMA DE TICKERS EDITABLES (combo editable)
-// ===========================================================
-const TICKERS_KEY = 'cb_trading_tickers';
-let tickers = JSON.parse(localStorage.getItem(TICKERS_KEY) || '[]');
-
-// Render inicial del datalist
-function renderTickers() {
-  const dl = $('listaTickers');
-  dl.innerHTML = tickers.map(t => `<option value="${t}"></option>`).join('');
-}
-renderTickers();
-
-// Guardar nuevo ticker si no existe
-function guardarTickerNuevo(valor) {
-  if (!valor) return;
-  if (!tickers.includes(valor)) {
-    tickers.push(valor);
-    localStorage.setItem(TICKERS_KEY, JSON.stringify(tickers));
-    renderTickers();
-  }
-}
-
-  const DB_KEY = 'cb_finanzas_v1';
+  // 1) Helper general
+  // ===========================================================
   const $ = (id)=>document.getElementById(id);
 
-  const pad=n=>String(n).padStart(2,'0');
-  const toISO=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+
+  // ===========================================================
+  // 2) SISTEMA DE TICKERS EDITABLES (combo + datalist)
+  // ===========================================================
+  const TICKERS_KEY = 'cb_trading_tickers';
+  let tickers = JSON.parse(localStorage.getItem(TICKERS_KEY) || '[]');
+
+  function renderTickers() {
+    const dl = $('listaTickers');
+    if (!dl) return;
+    dl.innerHTML = tickers.map(t => `<option value="${t}"></option>`).join('');
+  }
+  renderTickers();
+
+  function guardarTickerNuevo(val) {
+    if (!val) return;
+    if (!tickers.includes(val)) {
+      tickers.push(val);
+      localStorage.setItem(TICKERS_KEY, JSON.stringify(tickers));
+      renderTickers();
+    }
+  }
+
+
+  // ===========================================================
+  // 3) BASE DE DATOS LOCAL (Finanzas)
+  // ===========================================================
+  const DB_KEY = 'cb_finanzas_v1';
+
+  const pad = n=>String(n).padStart(2,'0');
+  const toISO = d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 
   const load = ()=>JSON.parse(localStorage.getItem(DB_KEY)||"[]");
   const save = arr=>localStorage.setItem(DB_KEY, JSON.stringify(arr));
@@ -207,6 +215,10 @@ function guardarTickerNuevo(valor) {
   let data = load();
   let filtros = { categoria:'', desde:'', hasta:'' };
 
+
+  // ===========================================================
+  // 4) UI — referencias
+  // ===========================================================
   const saldoTotalEl = $('saldoTotal');
   const totalIngEl   = $('totalIngresos');
   const totalEgrEl   = $('totalEgresos');
@@ -224,54 +236,23 @@ function guardarTickerNuevo(valor) {
   const btnAdd       = $('btnAdd');
   const btnExport    = $('btnExport');
 
-  // ===== Modal Finanzas generado dinámicamente =====
+
+  // ===========================================================
+  // 5) MODAL MOVIMIENTOS
+  // ===========================================================
   const modal = document.createElement('dialog');
   modal.id = 'modalFin';
-  modal.className='card';
+  modal.className = 'card';
   modal.style.padding='0';
+
   modal.innerHTML = `
     <form method="dialog" style="padding:1rem 1rem 0 1rem;">
       <h3 id="modalTitle">Nuevo movimiento</h3>
+
       <div class="modal-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;">
-        <div><label class="muted">Fecha</label><input id="inpDate" type="date" class="input"></div>
-        <div><label class="muted">Tipo</label><select id="inpType" class="input"><option value="ingreso">Ingreso</option><option value="egreso">Egreso</option></select></div>
-        <div><label class="muted">Monto</label><input id="inpAmount" type="number" step="0.01" class="input"></div>
-        <div><label class="muted">Categoría</label><select id="inpCategory" class="input"><option value="">Sin categoría</option><option>Forex</option><option>Acciones</option><option>Índices</option><option>Futuros</option><option>Crypto</option><option>Otros</option></select></div>
-        <div style="grid-column:1/-1;"><label class="muted">Nota</label><textarea id="inpNote" class="input"></textarea></div>
-      </div>
-      <div class="modal-actions" style="display:flex;gap:.5rem;justify-content:flex-end;padding:1rem 0;">
-        <button id="btnSave" class="btn btn-primary">Guardar</button>
-        <button value="cancel" class="btn">Cerrar</button>
-      </div>
-    </form>`;
-  document.body.appendChild(modal);
-
-  let editingId = null;
-
-  function renderTotales(list){
-    const ingresos = list.filter(x=>x.type==='ingreso').reduce((a,b)=>a+Number(b.amount||0),0);
-    const egresos  = list.filter(x=>x.type==='egreso').reduce((a,b)=>a+Number(b.amount||0),0);
-    const saldo    = ingresos - egresos;
-
-    totalIngEl.textContent = formato(ingresos);
-    totalEgrEl.textContent = formato(egresos);
-    saldoTotalEl.textContent= formato(saldo);
-  }
-
-  function renderLista(list){
-    if(!list.length){
-      listaEl.innerHTML = '<div class="muted">No hay movimientos registrados.</div>';
-      return;
-    }
-    listaEl.innerHTML = '';
-    list.forEach(item=>{
-      const row=document.createElement('div');
-      row.className='card p-3 flex items-start justify-between';
-      row.innerHTML = `
         <div>
-          <div class="text-sm font-semibold">${item.type==='ingreso'?'🟢 Ingreso':'🔴 Egreso'} — ${formato(item.amount)}</div>
-          <div class="text-xs muted">${item.date}${item.category?` • ${item.category}`:''}</div>
-          ${item.note?`<div class="mt-1 text-xs muted">${escapeHtml(item.note)}</div>`:''}
+          <label class="muted">Fecha</label>
+          <input id="inpDate" type="date" class="input">
         </div>
         <div class="action-row flex gap-2">
           <button class="btn btn-sm" data-action="edit">Editar</button>
@@ -283,6 +264,107 @@ function guardarTickerNuevo(valor) {
     });
   }
 
+        <div>
+          <label class="muted">Tipo</label>
+          <select id="inpType" class="input">
+            <option value="ingreso">Ingreso</option>
+            <option value="egreso">Egreso</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="muted">Monto</label>
+          <input id="inpAmount" type="number" step="0.01" class="input">
+        </div>
+
+        <div>
+          <label class="muted">Categoría</label>
+          <select id="inpCategory" class="input">
+            <option value="">Sin categoría</option>
+            <option>Forex</option>
+            <option>Acciones</option>
+            <option>Índices</option>
+            <option>Futuros</option>
+            <option>Crypto</option>
+            <option>Otros</option>
+          </select>
+        </div>
+
+        <div style="grid-column:1/-1;">
+          <label class="muted">Nota</label>
+          <textarea id="inpNote" class="input"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="display:flex;gap:.5rem;justify-content:flex-end;padding:1rem 0;">
+        <button id="btnSave" class="btn btn-primary">Guardar</button>
+        <button value="cancel" class="btn">Cerrar</button>
+      </div>
+    </form>
+  `;
+
+  document.body.appendChild(modal);
+
+  let editingId = null;
+
+
+  // ===========================================================
+  // 6) RENDER — Totales
+  // ===========================================================
+  function renderTotales(list){
+    const ingresos = list.filter(x=>x.type==='ingreso').reduce((a,b)=>a+Number(b.amount||0),0);
+    const egresos  = list.filter(x=>x.type==='egreso').reduce((a,b)=>a+Number(b.amount||0),0);
+    const saldo    = ingresos - egresos;
+
+    totalIngEl.textContent  = formato(ingresos);
+    totalEgrEl.textContent  = formato(egresos);
+    saldoTotalEl.textContent = formato(saldo);
+  }
+
+
+  // ===========================================================
+  // 7) RENDER — Lista
+  // ===========================================================
+  function renderLista(list){
+    if(!list.length){
+      listaEl.innerHTML = '<div class="muted">No hay movimientos registrados.</div>';
+      return;
+    }
+
+    listaEl.innerHTML = '';
+
+    list.forEach(item=>{
+      const row=document.createElement('div');
+      row.className='card p-3 flex items-start justify-between';
+
+      row.innerHTML = `
+        <div>
+          <div class="text-sm font-semibold">
+            ${item.type==='ingreso' ? '🟢 Ingreso' : '🔴 Egreso'} — ${formato(item.amount)}
+          </div>
+          <div class="text-xs muted">
+            ${item.date}${item.category ? ` • ${item.category}` : ''}
+          </div>
+          ${item.note ? `<div class="mt-1 text-xs muted">${escapeHtml(item.note)}</div>` : ''}
+        </div>
+
+        <div class="action-row flex gap-2">
+          <button class="btn btn-sm" data-action="edit">Editar</button>
+          <button class="btn btn-sm" data-action="delete">Borrar</button>
+        </div>
+      `;
+
+      row.querySelector('[data-action="edit"]').onclick=()=>abrirModalEdicion(item.id);
+      row.querySelector('[data-action="delete"]').onclick=()=>eliminar(item.id);
+
+      listaEl.appendChild(row);
+    });
+  }
+
+
+  // ===========================================================
+  // 8) Filtros
+  // ===========================================================
   function aplicarFiltros(){
     return data.filter(x=>{
       if(filtros.categoria && x.category!==filtros.categoria) return false;
@@ -292,35 +374,52 @@ function guardarTickerNuevo(valor) {
     });
   }
 
-  let chartPie=null, chartBar=null;
+
+  // ===========================================================
+  // 9) Gráficos
+  // ===========================================================
+  let chartPie = null;
+  let chartBar = null;
 
   function renderCharts(list){
     if(chartPie) chartPie.destroy();
     if(chartBar) chartBar.destroy();
 
+    // --- Torta
     const mapCat={};
     list.forEach(x=>{
-      const key=x.category||'Sin categoría';
-      mapCat[key]=(mapCat[key]||0)+Math.abs(Number(x.amount)||0);
+      const key = x.category || 'Sin categoría';
+      const val = Math.abs(Number(x.amount)||0);
+      mapCat[key] = (mapCat[key]||0)+val;
     });
 
-    chartPie=new Chart(chartTortaEl,{type:'pie',
-      data:{labels:Object.keys(mapCat),datasets:[{data:Object.values(mapCat)}]},
-      options:{plugins:{legend:{position:'bottom'}}}
+    chartPie = new Chart(chartTortaEl, {
+      type:'pie',
+      data:{ labels:Object.keys(mapCat), datasets:[{ data:Object.values(mapCat) }]},
+      options:{ plugins:{ legend:{ position:'bottom' } }}
     });
 
+    // --- Barras
     const mapFecha={};
     list.forEach(x=>{
-      const val=x.type==='ingreso'?+x.amount:-x.amount;
-      mapFecha[x.date]=(mapFecha[x.date]||0)+val;
+      const v = x.type==='ingreso' ? +x.amount : -x.amount;
+      mapFecha[x.date] = (mapFecha[x.date]||0)+v;
     });
 
-    chartBar=new Chart(chartBarrasEl,{type:'bar',
-      data:{labels:Object.keys(mapFecha).sort(),datasets:[{data:Object.keys(mapFecha).sort().map(f=>mapFecha[f])}]},
-      options:{scales:{y:{beginAtZero:true}}}
+    const fechas = Object.keys(mapFecha).sort();
+    const valores = fechas.map(f=>mapFecha[f]);
+
+    chartBar = new Chart(chartBarrasEl, {
+      type:'bar',
+      data:{ labels:fechas, datasets:[{ data:valores }]},
+      options:{ scales:{ y:{ beginAtZero:true } }, plugins:{ legend:{ display:false }}}
     });
   }
 
+
+  // ===========================================================
+  // 10) Tabs gráficos
+  // ===========================================================
   tabTortaEl.onclick=()=>{
     tabTortaEl.classList.add('btn--primary');
     tabBarrasEl.classList.remove('btn--primary');
@@ -336,14 +435,17 @@ function guardarTickerNuevo(valor) {
   };
 
 
+  // ===========================================================
+  // 11) CRUD Movimiento
+  // ===========================================================
   function abrirModalAlta(){
     editingId=null;
     $('modalTitle').textContent='Nuevo movimiento';
-    $('inpDate').value=toISO(new Date());
-    $('inpType').value='ingreso';
-    $('inpAmount').value='';
-    $('inpCategory').value='';
-    $('inpNote').value='';
+    $('inpDate').value = toISO(new Date());
+    $('inpType').value = 'ingreso';
+    $('inpAmount').value = '';
+    $('inpCategory').value = '';
+    $('inpNote').value = '';
     modal.showModal();
   }
 
@@ -351,60 +453,69 @@ function guardarTickerNuevo(valor) {
     const it=data.find(x=>x.id===id);
     if(!it) return;
     editingId=id;
-    $('modalTitle').textContent='Editar movimiento';
-    $('inpDate').value=it.date;
-    $('inpType').value=it.type;
-    $('inpAmount').value=it.amount;
-    $('inpCategory').value=it.category||'';
-    $('inpNote').value=it.note||'';
+    $('modalTitle').textContent = 'Editar movimiento';
+    $('inpDate').value = it.date;
+    $('inpType').value = it.type;
+    $('inpAmount').value = it.amount;
+    $('inpCategory').value = it.category || '';
+    $('inpNote').value = it.note || '';
     modal.showModal();
-  }
-
-  function guardar(ev){
-    ev.preventDefault();
-    const date=$('inpDate').value;
-    const type=$('inpType').value;
-    const amount=parseFloat($('inpAmount').value);
-    const category=$('inpCategory').value;
-    const note=$('inpNote').value.trim();
-
-    if(!date||!type||!isFinite(amount)){
-      alert('Completá fecha, tipo y monto válido.');
-      return;
-    }
-
-    if(editingId){
-      const idx=data.findIndex(x=>x.id===editingId);
-      if(idx>-1) data[idx]={...data[idx],date,type,amount,category,note};
-    } else {
-      data.push({id:nuevoId(),date,type,amount,category,note});
-    }
-    save(data);
-    modal.close();
-    refresh();
   }
 
   function nuevoId(){
     return Math.random().toString(36).slice(2,10);
   }
 
+  function guardar(ev){
+    ev.preventDefault();
+
+    const date = $('inpDate').value;
+    const type = $('inpType').value;
+    const amount = parseFloat($('inpAmount').value);
+    const category = $('inpCategory').value;
+    const note = $('inpNote').value.trim();
+
+    if(!date || !type || !isFinite(amount)){
+      alert('Completá fecha, tipo y monto válido.');
+      return;
+    }
+
+    if(editingId){
+      const idx = data.findIndex(x=>x.id===editingId);
+      if(idx>-1){
+        data[idx] = {...data[idx], date, type, amount, category, note};
+      }
+    } else {
+      data.push({ id:nuevoId(), date, type, amount, category, note });
+    }
+
+    save(data);
+    modal.close();
+    refresh();
+  }
+
   function eliminar(id){
     if(!confirm('¿Borrar este movimiento?')) return;
-    data=data.filter(x=>x.id!==id);
+    data = data.filter(x=>x.id!==id);
     save(data);
     refresh();
   }
 
+
+  // ===========================================================
+  // 12) Exportar
+  // ===========================================================
   async function exportar(){
-    if(!data.length){ alert('No hay movimientos.'); return; }
+    if(!data.length){ alert('No hay datos para exportar.'); return; }
 
     const rows=[["Fecha","Tipo","Monto","Categoría","Nota"]];
+
     aplicarFiltros().forEach(x=>{
-      rows.push([x.date,x.type,String(x.amount),x.category||'-',x.note||'-']);
+      rows.push([x.date, x.type, String(x.amount), x.category||'-', x.note||'-']);
     });
 
-    const formato=prompt('xlsx o pdf?','xlsx');
-    if(!formato)return;
+    const formato = prompt('xlsx o pdf?','xlsx');
+    if(!formato) return;
 
     if(formato==='xlsx'){
       const wb=XLSX.utils.book_new();
@@ -415,49 +526,36 @@ function guardarTickerNuevo(valor) {
     else if(formato==='pdf'){
       const doc=new jspdf.jsPDF();
       let y=20;
+
       rows.forEach(r=>{
         doc.text(r.join(' | '),10,y);
         y+=7;
         if(y>280){ doc.addPage(); y=20; }
       });
+
       doc.save('CisneBlanco_Finanzas.pdf');
     }
   }
 
+
+  // ===========================================================
+  // 13) Util
+  // ===========================================================
   function formato(n){
-    return new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS'}).format(n);
+    return new Intl.NumberFormat('es-AR',{
+      style:'currency', currency:'ARS', maximumFractionDigits:2
+    }).format(n);
   }
 
   function escapeHtml(s){
-    return s.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    return s.replace(/[&<>"']/g, m=>({
+      '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+    }[m]));
   }
-
-  function refresh(){
-    const list=aplicarFiltros();
-    renderTotales(list);
-    renderLista(list);
-    renderCharts(list);
-  }
-
-  $('btnSave').onclick=guardar;
-  btnAdd.onclick=abrirModalAlta;
-  btnExport.onclick=exportar;
-
-  filtroCatEl.onchange=()=>{ filtros.categoria=filtroCatEl.value; refresh(); };
-  filtroDesdeEl.onchange=()=>{ filtros.desde=filtroDesdeEl.value; refresh(); };
-  filtroHastaEl.onchange=()=>{ filtros.hasta=filtroHastaEl.value; refresh(); };
-
-  $('btnLimpiarFiltros').onclick=()=>{
-    filtros={categoria:'',desde:'',hasta:''};
-    filtroCatEl.value='';
-    filtroDesdeEl.value='';
-    filtroHastaEl.value='';
-    refresh();
-  };
 
 
   // ===========================================================
-  //      SCRIPT DEL MODAL DE TRADING
+  // 14) Modal Trading
   // ===========================================================
   const modalTrade = $('modalTrade');
 
@@ -490,16 +588,48 @@ function guardarTickerNuevo(valor) {
     guardarTickerNuevo(t.ticker);
 
     console.log("NUEVA OPERACIÓN (SOLO FRONTEND):", t);
-
     modalTrade.close();
   };
 
 
+  // ===========================================================
+  // 15) Listeners generales
+  // ===========================================================
+  $('btnSave').onclick=guardar;
+  btnAdd.onclick=abrirModalAlta;
+  btnExport.onclick=exportar;
+
+  filtroCatEl.onchange = ()=>{
+    filtros.categoria = filtroCatEl.value;
+    refresh();
+  };
+
+  filtroDesdeEl.onchange = ()=>{
+    filtros.desde = filtroDesdeEl.value;
+    refresh();
+  };
+
+  filtroHastaEl.onchange = ()=>{
+    filtros.hasta = filtroHastaEl.value;
+    refresh();
+  };
+
+  $('btnLimpiarFiltros').onclick = ()=>{
+    filtros = { categoria:'', desde:'', hasta:'' };
+    filtroCatEl.value='';
+    filtroDesdeEl.value='';
+    filtroHastaEl.value='';
+    refresh();
+  };
+
+
+  // ===========================================================
+  // 16) REFRESH INICIAL (clave)
+  // ===========================================================
   refresh();
 
 });
 </script>
-
 
 <!-- ========= Librerías externas ========= -->
 <script src="../assets/js/theme.js"></script>
@@ -537,13 +667,3 @@ function guardarTickerNuevo(valor) {
   }
 })();
 </script>
-
-
-<!-- ========= Librerías externas ========= -->
-<script src="../assets/js/theme.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jjspdf.umd.min.js"></script>
-
-</body>
-</html>
