@@ -481,24 +481,47 @@ document.addEventListener('DOMContentLoaded', ()=>{
   };
 
   $('btnSaveTrade').onclick = (ev)=>{
-    ev.preventDefault();
+  ev.preventDefault();
 
-    const t = {
-      ticker: $('tradeTicker').value.trim(),
-      time: $('tradeTime').value,
-      type: $('tradeType').value,
-      ticket: $('tradeTicket').value,
-      entry: $('tradeEntry').value,
-      sl: $('tradeSL').value,
-      tp: $('tradeTP').value,
-      profit: $('tradeProfit').value
-    };
-
-    console.log("NUEVA OPERACIÓN (SOLO FRONTEND):", t);
-
-    modalTrade.close();
+  const t = {
+    ticker: $('tradeTicker').value.trim(),
+    time: $('tradeTime').value,
+    type: $('tradeType').value,      // buy / sell
+    ticket: $('tradeTicket').value,
+    entry: $('tradeEntry').value,
+    sl: $('tradeSL').value,
+    tp: $('tradeTP').value,
+    profit: $('tradeProfit').value
   };
 
+  // Seguimos guardando el ticker en el datalist
+  guardarTickerNuevo(t.ticker);
+
+  // --- Convertimos el trade en un movimiento de Finanzas ---
+  const profitNum = parseFloat(t.profit || '0');
+
+  if (!isNaN(profitNum) && profitNum !== 0) {
+    const esIngreso = profitNum > 0;
+
+    const movimiento = {
+      id: nuevoId(),
+      date: toISO(new Date()),                 // fecha de hoy
+      type: esIngreso ? 'ingreso' : 'egreso',  // impacta totales
+      amount: Math.abs(profitNum),
+      category: 'Trading',                     // categoría fija por ahora
+      note: `Trade ${t.ticker.toUpperCase()} (${t.type.toUpperCase()})` +
+            (t.ticket ? ` — Ticket ${t.ticket}` : '')
+    };
+
+    data.push(movimiento);
+    save(data);
+    refresh();  // actualiza totales, lista y gráficos
+  } else {
+    alert('Ingresá un Profit distinto de 0 para registrar el trade en Finanzas.');
+  }
+
+  modalTrade.close();
+};
 
   refresh();
 
