@@ -480,17 +480,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     modalTrade.showModal();
   };
 
-  // Funciones necesarias arriba para evitar ReferenceError
-function nuevoId(){
-  return Math.random().toString(36).slice(2,10);
-}
-
-function toISO(d){
-  const pad = n=>String(n).padStart(2,'0');
-  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-}
-
-  $('btnSaveTrade').onclick = (ev)=>{
+    $('btnSaveTrade').onclick = (ev)=>{
   ev.preventDefault();
 
   const t = {
