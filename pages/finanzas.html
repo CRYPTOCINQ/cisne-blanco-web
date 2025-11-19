@@ -117,7 +117,8 @@
 
       <div>
         <label class="muted">Ticker</label>
-        <input id="tradeTicker" type="text" class="input" placeholder="EURUSD / AAPL / BTCUSDT">
+        <input id="tradeTicker" list="listaTickers" class="input" placeholder="Ej: EURUSD" autocomplete="off">
+        <datalist id="listaTickers"></datalist>
       </div>
 
       <div>
@@ -203,6 +204,29 @@
      =========================================================== -->
 <script>
 document.addEventListener('DOMContentLoaded', ()=>{
+
+  // ===========================================================
+//   SISTEMA DE TICKERS EDITABLES (combo editable)
+// ===========================================================
+const TICKERS_KEY = 'cb_trading_tickers';
+let tickers = JSON.parse(localStorage.getItem(TICKERS_KEY) || '[]');
+
+// Render inicial del datalist
+function renderTickers() {
+  const dl = $('listaTickers');
+  dl.innerHTML = tickers.map(t => `<option value="${t}"></option>`).join('');
+}
+renderTickers();
+
+// Guardar nuevo ticker si no existe
+function guardarTickerNuevo(valor) {
+  if (!valor) return;
+  if (!tickers.includes(valor)) {
+    tickers.push(valor);
+    localStorage.setItem(TICKERS_KEY, JSON.stringify(tickers));
+    renderTickers();
+  }
+}
 
   const DB_KEY = 'cb_finanzas_v1';
   const $ = (id)=>document.getElementById(id);
@@ -495,6 +519,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
       tp: $('tradeTP').value,
       profit: $('tradeProfit').value
     };
+
+    guardarTickerNuevo(t.ticker);
 
     console.log("NUEVA OPERACIÓN (SOLO FRONTEND):", t);
 
