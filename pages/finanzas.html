@@ -254,6 +254,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
           <label class="muted">Fecha</label>
           <input id="inpDate" type="date" class="input">
         </div>
+        <div class="action-row flex gap-2">
+          <button class="btn btn-sm" data-action="edit">Editar</button>
+          <button class="btn btn-sm" data-action="delete">Borrar</button>
+        </div>`;
+      row.querySelector('[data-action="edit"]').onclick=()=>abrirModalEdicion(item.id);
+      row.querySelector('[data-action="delete"]').onclick=()=>eliminar(item.id);
+      listaEl.appendChild(row);
+    });
+  }
 
         <div>
           <label class="muted">Tipo</label>
