@@ -469,13 +469,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
     refresh();
   };
 
-
   // ===========================================================
   //      SCRIPT DEL MODAL DE TRADING
   // ===========================================================
   const modalTrade = $('modalTrade');
 
   $('btnAddTrade').onclick = ()=>{
+    $('tradeDate').value = toISO(new Date());
     $('tradeTicker').value='';
     $('tradeTime').value='';
     $('tradeType').value='buy';
@@ -488,30 +488,33 @@ document.addEventListener('DOMContentLoaded', ()=>{
   };
 
   $('btnSaveTrade').onclick = (ev)=>{
-  ev.preventDefault();
+    ev.preventDefault();
 
-  const date = $('tradeDate').value;
-  const profit = parseFloat($('tradeProfit').value);
+    const date   = $('tradeDate').value;
+    const profit = parseFloat($('tradeProfit').value);
 
-  if(!date || !isFinite(profit)){
-    alert("Completá fecha y profit válido.");
-    return;
-  }
+    if(!date || !isFinite(profit)){
+      alert("Completá fecha y profit válido.");
+      return;
+    }
 
-  data.push({
-    id: nuevoId(),
-    date,
-    type: profit >= 0 ? "ingreso" : "egreso",
-    amount: Math.abs(profit),
-    category: "Trades",
-    note: `Trade ${$('tradeTicker').value} (${ $('tradeType').value.toUpperCase() }) — Ticket ${$('tradeTicket').value} — Entry ${$('tradeEntry').value} — SL ${$('tradeSL').value} — TP ${$('tradeTP').value}`
-  });
+    data.push({
+      id: nuevoId(),
+      date,
+      type: profit >= 0 ? "ingreso" : "egreso",
+      amount: Math.abs(profit),
+      category: "Trades",
+      note: `Trade ${$('tradeTicker').value} (${ $('tradeType').value.toUpperCase() }) — Ticket ${$('tradeTicket').value} — Entry ${$('tradeEntry').value} — SL ${$('tradeSL').value} — TP ${$('tradeTP').value}`
+    });
 
-  save(data);
-  modalTrade.close();
+    save(data);
+    modalTrade.close();
+    refresh();
+  };
+
   refresh();
-};
 
+}); // ← CIERRE CORRECTO DEL DOMContentLoaded
 </script>
 
 
