@@ -137,7 +137,7 @@
       </div>
 
       <div>
-        <label class="muted">Precio entrada</label>
+        <label class="muted">Entry</label>
         <input id="tradeEntry" type="number" class="input" step="0.0001">
       </div>
 
@@ -302,6 +302,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   let chartPie=null, chartBar=null;
 
   function renderCharts(list){
+    mapCat["Trades"] = mapCat["Trades"] || 0;
     if(chartPie) chartPie.destroy();
     if(chartBar) chartBar.destroy();
 
