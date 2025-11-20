@@ -302,7 +302,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
   let chartPie=null, chartBar=null;
 
   function renderCharts(list){
-    mapCat["Trades"] = mapCat["Trades"] || 0;
     if(chartPie) chartPie.destroy();
     if(chartBar) chartBar.destroy();
 
@@ -311,6 +310,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
       const key=x.category||'Sin categoría';
       mapCat[key]=(mapCat[key]||0)+Math.abs(Number(x.amount)||0);
     });
+    
+    mapCat["Trades"] = mapCat["Trades"] || 0; 
 
     chartPie=new Chart(chartTortaEl,{type:'pie',
       data:{labels:Object.keys(mapCat),datasets:[{data:Object.values(mapCat)}]},
