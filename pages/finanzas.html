@@ -114,6 +114,11 @@
     <div class="modal-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;">
 
       <div>
+        <label class="muted">Fecha</label>
+        <input id="tradeDate" type="date" class="input">
+      </div>
+
+      <div>
         <label class="muted">Ticker</label>
         <input id="tradeTicker" type="text" class="input" placeholder="EURUSD / AAPL / BTCUSDT">
       </div>
@@ -483,28 +488,30 @@ document.addEventListener('DOMContentLoaded', ()=>{
   };
 
   $('btnSaveTrade').onclick = (ev)=>{
-    ev.preventDefault();
+  ev.preventDefault();
 
-    const t = {
-      ticker: $('tradeTicker').value.trim(),
-      time: $('tradeTime').value,
-      type: $('tradeType').value,
-      ticket: $('tradeTicket').value,
-      entry: $('tradeEntry').value,
-      sl: $('tradeSL').value,
-      tp: $('tradeTP').value,
-      profit: $('tradeProfit').value
-    };
+  const date = $('tradeDate').value;
+  const profit = parseFloat($('tradeProfit').value);
 
-    console.log("NUEVA OPERACIÓN (SOLO FRONTEND):", t);
+  if(!date || !isFinite(profit)){
+    alert("Completá fecha y profit válido.");
+    return;
+  }
 
-    modalTrade.close();
-  };
+  data.push({
+    id: nuevoId(),
+    date,
+    type: profit >= 0 ? "ingreso" : "egreso",
+    amount: Math.abs(profit),
+    category: "Trades",
+    note: `Trade ${$('tradeTicker').value} (${ $('tradeType').value.toUpperCase() }) — Ticket ${$('tradeTicket').value} — Entry ${$('tradeEntry').value} — SL ${$('tradeSL').value} — TP ${$('tradeTP').value}`
+  });
 
-
+  save(data);
+  modalTrade.close();
   refresh();
+};
 
-});
 </script>
 
 
