@@ -96,8 +96,8 @@
       </div>
 
       <div style="margin-top:1rem;">
-        <canvas id="chartTorta" height="140"></canvas>
-        <canvas id="chartBarras" height="140" style="display:none;"></canvas>
+        <canvas id="chartTorta" style="max-height:220px;"></canvas>
+        <canvas id="chartBarras" style="max-height:220px; display:none;"></canvas>
       </div>
     </div>
   </section>
@@ -119,13 +119,13 @@
       </div>
 
       <div>
-        <label class="muted">Ticker</label>
-        <input id="tradeTicker" type="text" class="input" placeholder="EURUSD / AAPL / BTCUSDT">
+        <label class="muted">Hora</label>
+        <input id="tradeTime" type="time" class="input">
       </div>
 
       <div>
-        <label class="muted">Hora</label>
-        <input id="tradeTime" type="time" class="input">
+        <label class="muted">Ticker</label>
+        <input id="tradeTicker" type="text" class="input" placeholder="EURUSD / AAPL / BTCUSDT">
       </div>
 
       <div>
@@ -325,8 +325,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     const mapFecha={};
     list.forEach(x=>{
-      const val=x.type==='ingreso'?+x.amount:-x.amount;
-      mapFecha[x.date]=(mapFecha[x.date]||0)+val;
+      const val = (isFinite(x.amount) ? (x.type==='ingreso' ? +x.amount : -x.amount) : 0);
+      if(!mapFecha[x.date]) mapFecha[x.date] = 0;   // ← ESTA ES LA CLAVE
+      mapFecha[x.date] += val;
     });
 
     chartBar=new Chart(chartBarrasEl,{type:'bar',
