@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   let chartPie = null;
   let chartBar = null;
 
-  function renderCharts(list){
+function renderCharts(list){
     if(chartPie) chartPie.destroy();
     if(chartBar) chartBar.destroy();
 
@@ -477,9 +477,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     refresh();
   }
 
-  function nuevoId(){
-    return Math.random().toString(36).slice(2,10);
-  }
+    list.forEach(x=>{
+      const d = x.date;
 
   function eliminar(id){
     if(!confirm('¿Borrar este movimiento?')) return;
