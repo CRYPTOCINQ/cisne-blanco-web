@@ -342,76 +342,77 @@ document.addEventListener('DOMContentLoaded', ()=>{
   let chartBar = null;
 
 function renderCharts(list){
-    if(chartPie) chartPie.destroy();
-    if(chartBar) chartBar.destroy();
+  if(chartPie) chartPie.destroy();
+  if(chartBar) chartBar.destroy();
 
-    // ======== TORTA POR CATEGORÍA ========
-    const mapCat = {};
-    list.forEach(x=>{
-      const key = x.category || 'Sin categoría';
-      mapCat[key] = (mapCat[key] || 0) + Math.abs(Number(x.amount) || 0);
-    });
+  // ======== TORTA POR CATEGORÍA ========
+  const mapCat = {};
+  list.forEach(x=>{
+    const key = x.category || 'Sin categoría';
+    mapCat[key] = (mapCat[key] || 0) + Math.abs(Number(x.amount) || 0);
+  });
 
-    // Sólo mostramos "Trades" si realmente hay trades
-    if(!mapCat["Trades"]) delete mapCat["Trades"];
+  if(!mapCat["Trades"]) delete mapCat["Trades"];
 
-    chartPie = new Chart(chartTortaEl, {
-      type: 'pie',
-      data: {
-        labels: Object.keys(mapCat),
-        datasets: [{
-          data: Object.values(mapCat)
-        }]
-      },
-      options: {
-        plugins: {
-          legend: { position: 'right' }
-        }
+  chartPie = new Chart(chartTortaEl, {
+    type: 'pie',
+    data: {
+      labels: Object.keys(mapCat),
+      datasets: [{
+        data: Object.values(mapCat)
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { position: 'right' }
       }
-    });
+    }
+  });
 
-    // ======== BARRAS POR FECHA (día / semana / mes) ========
-    const modo = (modoGraficoEl && modoGraficoEl.value) || 'dia';
-    const mapFecha = {};
+  // ======== BARRAS POR FECHA ========
+  const modo = (modoGraficoEl && modoGraficoEl.value) || 'dia';
+  const mapFecha = {};
 
-    list.forEach(x=>{
-      const d = x.date;
-      let clave = d;
+  list.forEach(x=>{
+    const d = x.date;
+    let clave = d;
 
-      if(modo === 'semana'){
-        const dt = new Date(d);
-        const first = new Date(dt.setDate(dt.getDate() - dt.getDay()));
-        clave = first.toISOString().slice(0,10);
-      } else if(modo === 'mes'){
-        clave = d.slice(0,7); // yyyy-mm
+    if(modo === 'semana'){
+      const dt = new Date(d);
+      const first = new Date(dt.setDate(dt.getDate() - dt.getDay()));
+      clave = first.toISOString().slice(0,10);
+    }
+    else if(modo === 'mes'){
+      clave = d.slice(0,7);
+    }
+
+    if(!mapFecha[clave]) mapFecha[clave] = 0;
+
+    const val = isFinite(x.amount)
+      ? (x.type === 'ingreso' ? +x.amount : -x.amount)
+      : 0;
+
+    mapFecha[clave] += val;
+  });
+
+  const labelsOrdenados = Object.keys(mapFecha).sort();
+
+  chartBar = new Chart(chartBarrasEl, {
+    type: 'bar',
+    data: {
+      labels: labelsOrdenados,
+      datasets: [{
+        label: "Balance",
+        data: labelsOrdenados.map(f => mapFecha[f])
+      }]
+    },
+    options: {
+      scales: {
+        y: { beginAtZero: true }
       }
-
-      if(!mapFecha[clave]) mapFecha[clave] = 0;
-
-      const val = (isFinite(x.amount)
-        ? (x.type==='ingreso' ? +x.amount : -x.amount)
-        : 0);
-      mapFecha[clave] += val;
-    });
-
-    const labelsOrdenados = Object.keys(mapFecha).sort();
-
-    chartBar = new Chart(chartBarrasEl, {
-      type: 'bar',
-      data: {
-        labels: labelsOrdenados,
-        datasets: [{
-          label: "Balance",
-          data: labelsOrdenados.map(f => mapFecha[f])
-        }]
-      },
-      options: {
-        scales: {
-          y: { beginAtZero: true }
-        }
-      }
-    });
-  }
+    }
+  });
+}
 
   // Toggle de tabs de gráficos
   tabTortaEl.onclick = ()=>{
@@ -513,7 +514,8 @@ function renderCharts(list){
       XLSX.utils.book_append_sheet(wb, ws, 'Finanzas');
       XLSX.writeFile(wb, 'CisneBlanco_Finanzas.xlsx');
     } else if(formato === 'pdf'){
-      const doc = new jspdf.jsPDF();
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
       let y = 20;
       rows.forEach(r=>{
         doc.text(r.join(' | '), 10, y);
@@ -625,7 +627,14 @@ function renderCharts(list){
 <script src="../assets/js/theme.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jjspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+<style>
+  [data-theme="navy-ice"] #chartTorta,
+  [data-theme="navy-ice"] #chartBarras {
+    filter: brightness(1.35) contrast(1.15);
+  }
+</style>
 
 <style>
   [data-theme="navy-ice"] #chartTorta,
