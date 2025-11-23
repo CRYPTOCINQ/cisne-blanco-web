@@ -10,6 +10,7 @@
 
 <body class="transition-theme">
 
+
 <!-- ========= Topbar ========= -->
 <header class="topbar">
   <div class="topbar-inner">
@@ -33,6 +34,7 @@
     </button>
   </div>
 </header>
+
 
 <main style="max-width:1100px;margin:1.25rem auto;padding:0 1rem;">
 
@@ -90,7 +92,6 @@
   <section style="margin-top:1rem;">
     <div class="card" style="padding:1rem; display:flex; flex-direction:column; gap:1rem;">
 
-      <!-- Selector de modo -->
       <div style="display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;">
         <button id="tabTorta" class="btn btn-sm btn--primary">Torta por categoría</button>
         <button id="tabBarras" class="btn btn-sm">Barras por fecha</button>
@@ -102,7 +103,6 @@
         </select>
       </div>
 
-      <!-- Contenedor de charts -->
       <div style="display:flex; gap:1rem; align-items:center; justify-content:center;">
         <canvas id="chartTorta" style="max-height:240px; width:100%;"></canvas>
         <canvas id="chartBarras" style="max-height:240px; width:100%; display:none;"></canvas>
@@ -111,9 +111,10 @@
     </div>
   </section>
 
+
 <!-- ===========================================================
-     MODAL TRADING (HTML)
-     =========================================================== -->
+     MODAL TRADING
+=========================================================== -->
 <dialog id="modalTrade" class="card" style="padding:0;">
   <form method="dialog" style="padding:1rem 1rem 0 1rem;">
     <h3 style="margin:0 0 .75rem 0;">Nueva operación</h3>
@@ -177,7 +178,11 @@
   </form>
 </dialog>
 
-<!-- ========= Toggle de tema (Auto / Navy-Ice) ========= -->
+
+
+<!-- ===========================================================
+     TOGGLE TEMA
+=========================================================== -->
 <script>
 (function () {
   const root = document.documentElement;
@@ -191,33 +196,33 @@
     } else {
       root.removeAttribute('data-theme');
     }
-    if (lab) lab.textContent = val || 'auto';
+    lab.textContent = val || 'auto';
   }
 
   const saved = localStorage.getItem(KEY) || 'auto';
   apply(saved);
 
-  if (btn) {
-    btn.onclick = () => {
-      const current = localStorage.getItem(KEY) || 'auto';
-      const next = current === 'navy-ice' ? 'auto' : 'navy-ice';
-      localStorage.setItem(KEY, next);
-      apply(next);
-    };
-  }
+  btn.onclick = () => {
+    const current = localStorage.getItem(KEY) || 'auto';
+    const next = current === 'navy-ice' ? 'auto' : 'navy-ice';
+    localStorage.setItem(KEY, next);
+    apply(next);
+  };
 })();
 </script>
 
+
+
 <!-- ===========================================================
-     JS PRINCIPAL FINANZAS
-     =========================================================== -->
+     JS PRINCIPAL FINANZAS (CORREGIDO)
+=========================================================== -->
 <script>
 document.addEventListener('DOMContentLoaded', ()=>{
 
   const DB_KEY = 'cb_finanzas_v1';
-  const $ = (id)=>document.getElementById(id);
+  const $ = id => document.getElementById(id);
 
-  const pad = n => String(n).padStart(2,'0');
+  const pad  = n => String(n).padStart(2,'0');
   const toISO = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 
   const load = ()=> JSON.parse(localStorage.getItem(DB_KEY) || "[]");
@@ -240,12 +245,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const chartTortaEl = $('chartTorta');
   const chartBarrasEl= $('chartBarras');
 
-  const btnAdd       = $('btnAdd');
-  const btnExport    = $('btnExport');
-
   const modoGraficoEl = $('modoGrafico');
 
-  // ===== Modal Finanzas generado dinámicamente =====
+  let chartPie = null;
+  let chartBar = null;
+
+
+
+  /* ==========================
+        MODAL MOVIMIENTOS
+  =========================== */
   const modal = document.createElement('dialog');
   modal.id = 'modalFin';
   modal.className = 'card';
@@ -288,6 +297,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   let editingId = null;
 
+
+
+  /* ==========================
+        RENDER DE TOTALES
+  =========================== */
   function renderTotales(list){
     const ingresos = list.filter(x=>x.type==='ingreso')
                          .reduce((a,b)=>a+Number(b.amount||0),0);
@@ -300,15 +314,22 @@ document.addEventListener('DOMContentLoaded', ()=>{
     saldoTotalEl.textContent = formato(saldo);
   }
 
+
+
+  /* ==========================
+        RENDER DE LISTA
+  =========================== */
   function renderLista(list){
     if(!list.length){
       listaEl.innerHTML = '<div class="muted">No hay movimientos registrados.</div>';
       return;
     }
     listaEl.innerHTML = '';
+
     list.forEach(item=>{
       const row = document.createElement('div');
       row.className = 'card p-3 flex items-start justify-between';
+
       row.innerHTML = `
         <div>
           <div class="text-sm font-semibold">
@@ -319,117 +340,117 @@ document.addEventListener('DOMContentLoaded', ()=>{
           </div>
           ${item.note ? `<div class="mt-1 text-xs muted">${escapeHtml(item.note)}</div>` : ''}
         </div>
+
         <div class="action-row flex gap-2">
           <button class="btn btn-sm" data-action="edit">Editar</button>
           <button class="btn btn-sm" data-action="delete">Borrar</button>
-        </div>`;
+        </div>
+      `;
+
       row.querySelector('[data-action="edit"]').onclick = ()=>abrirModalEdicion(item.id);
       row.querySelector('[data-action="delete"]').onclick = ()=>eliminar(item.id);
+
       listaEl.appendChild(row);
     });
   }
 
+
+
+  /* ==========================
+        FILTROS
+  =========================== */
   function aplicarFiltros(){
     return data.filter(x=>{
-      if(filtros.categoria && x.category!==filtros.categoria) return false;
-      if(filtros.desde && x.date < filtros.desde) return false;
-      if(filtros.hasta && x.date > filtros.hasta) return false;
+
+      if(filtros.categoria && x.category !== filtros.categoria)
+        return false;
+
+      if(filtros.desde && x.date < filtros.desde)
+        return false;
+
+      if(filtros.hasta && x.date > filtros.hasta)
+        return false;
+
       return true;
     });
   }
 
-  let chartPie = null;
-  let chartBar = null;
 
-function renderCharts(list){
-  if(chartPie) chartPie.destroy();
-  if(chartBar) chartBar.destroy();
 
-  // ======== TORTA POR CATEGORÍA ========
-  const mapCat = {};
-  list.forEach(x=>{
-    const key = x.category || 'Sin categoría';
-    mapCat[key] = (mapCat[key] || 0) + Math.abs(Number(x.amount) || 0);
-  });
+  /* ==========================
+        CHARTS
+  =========================== */
+  function renderCharts(list){
+    if(chartPie){ chartPie.destroy(); chartPie = null; }
+    if(chartBar){ chartBar.destroy(); chartBar = null; }
 
-  if(!mapCat["Trades"]) delete mapCat["Trades"];
+    /* ---- TORTA ---- */
+    const mapCat = {};
+    list.forEach(x=>{
+      const key = x.category || 'Sin categoría';
+      mapCat[key] = (mapCat[key] || 0) + Math.abs(Number(x.amount)||0);
+    });
 
-  chartPie = new Chart(chartTortaEl, {
-    type: 'pie',
-    data: {
-      labels: Object.keys(mapCat),
-      datasets: [{
-        data: Object.values(mapCat)
-      }]
-    },
-    options: {
-      plugins: {
-        legend: { position: 'right' }
+    if(!mapCat["Trades"]) delete mapCat["Trades"];
+
+    chartPie = new Chart(chartTortaEl, {
+      type: 'pie',
+      data: {
+        labels: Object.keys(mapCat),
+        datasets: [{
+          data: Object.values(mapCat)
+        }]
+      },
+      options: {
+        plugins: { legend: { position:'right' } }
       }
-    }
-  });
+    });
 
-  // ======== BARRAS POR FECHA ========
-  const modo = (modoGraficoEl && modoGraficoEl.value) || 'dia';
-  const mapFecha = {};
+    /* ---- BARRAS ---- */
+    const modo = modoGraficoEl.value || 'dia';
+    const mapFecha = {};
 
-  list.forEach(x=>{
-    const d = x.date;
-    let clave = d;
+    list.forEach(x=>{
+      const d = x.date;
+      let clave = d;
 
-    if(modo === 'semana'){
-      const dt = new Date(d);
-      const first = new Date(dt.setDate(dt.getDate() - dt.getDay()));
-      clave = first.toISOString().slice(0,10);
-    }
-    else if(modo === 'mes'){
-      clave = d.slice(0,7);
-    }
-
-    if(!mapFecha[clave]) mapFecha[clave] = 0;
-
-    const val = isFinite(x.amount)
-      ? (x.type === 'ingreso' ? +x.amount : -x.amount)
-      : 0;
-
-    mapFecha[clave] += val;
-  });
-
-  const labelsOrdenados = Object.keys(mapFecha).sort();
-
-  chartBar = new Chart(chartBarrasEl, {
-    type: 'bar',
-    data: {
-      labels: labelsOrdenados,
-      datasets: [{
-        label: "Balance",
-        data: labelsOrdenados.map(f => mapFecha[f])
-      }]
-    },
-    options: {
-      scales: {
-        y: { beginAtZero: true }
+      if(modo === 'semana'){
+        const dt = new Date(d);
+        const first = new Date(dt.setDate(dt.getDate() - dt.getDay()));
+        clave = first.toISOString().slice(0,10);
       }
-    }
-  });
-}
+      else if(modo === 'mes'){
+        clave = d.slice(0,7);
+      }
 
-  // Toggle de tabs de gráficos
-  tabTortaEl.onclick = ()=>{
-    tabTortaEl.classList.add('btn--primary');
-    tabBarrasEl.classList.remove('btn--primary');
-    chartTortaEl.style.display = '';
-    chartBarrasEl.style.display = 'none';
-  };
+      if(!mapFecha[clave]) mapFecha[clave] = 0;
 
-  tabBarrasEl.onclick = ()=>{
-    tabBarrasEl.classList.add('btn--primary');
-    tabTortaEl.classList.remove('btn--primary');
-    chartTortaEl.style.display = 'none';
-    chartBarrasEl.style.display = '';
-  };
+      const val = (x.type==='ingreso' ? +x.amount : -x.amount) || 0;
+      mapFecha[clave] += val;
+    });
 
-  // ==== Modal Finanzas (alta/edición) ====
+    const labels = Object.keys(mapFecha).sort();
+
+    chartBar = new Chart(chartBarrasEl, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: "Balance",
+          data: labels.map(f => mapFecha[f])
+        }]
+      },
+      options: {
+        scales: { y:{ beginAtZero:true } }
+      }
+    });
+  }
+
+
+
+  /* ==========================
+        MODAL MOVIMIENTOS
+  =========================== */
   function abrirModalAlta(){
     editingId = null;
     $('modalTitle').textContent = 'Nuevo movimiento';
@@ -444,18 +465,23 @@ function renderCharts(list){
   function abrirModalEdicion(id){
     const it = data.find(x=>x.id===id);
     if(!it) return;
+
     editingId = id;
+
     $('modalTitle').textContent = 'Editar movimiento';
     $('inpDate').value = it.date;
     $('inpType').value = it.type;
     $('inpAmount').value = it.amount;
     $('inpCategory').value = it.category || '';
     $('inpNote').value = it.note || '';
+
     modal.showModal();
   }
 
+
   function guardar(ev){
     ev.preventDefault();
+
     const date = $('inpDate').value;
     const type = $('inpType').value;
     const amount = parseFloat($('inpAmount').value);
@@ -469,18 +495,26 @@ function renderCharts(list){
 
     if(editingId){
       const idx = data.findIndex(x=>x.id===editingId);
-      if(idx>-1) data[idx] = {...data[idx], date, type, amount, category, note};
+      if(idx>-1){
+        data[idx] = {...data[idx], date, type, amount, category, note };
+      }
     } else {
-      data.push({ id:nuevoId(), date, type, amount, category, note });
+      data.push({
+        id: crypto.randomUUID(),
+        date, type, amount, category, note
+      });
     }
+
     save(data);
     modal.close();
     refresh();
   }
 
-    list.forEach(x=>{
-      const d = x.date;
 
+
+  /* ==========================
+        ELIMINAR
+  =========================== */
   function eliminar(id){
     if(!confirm('¿Borrar este movimiento?')) return;
     data = data.filter(x=>x.id!==id);
@@ -488,6 +522,12 @@ function renderCharts(list){
     refresh();
   }
 
+
+
+  /* ==========================
+        EXPORTACIÓN
+     (xlsx + PDF corregido)
+  =========================== */
   async function exportar(){
     if(!data.length){
       alert('No hay movimientos.');
@@ -513,9 +553,12 @@ function renderCharts(list){
       const ws = XLSX.utils.aoa_to_sheet(rows);
       XLSX.utils.book_append_sheet(wb, ws, 'Finanzas');
       XLSX.writeFile(wb, 'CisneBlanco_Finanzas.xlsx');
-    } else if(formato === 'pdf'){
+    }
+
+    else if(formato === 'pdf'){
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
+
       let y = 20;
       rows.forEach(r=>{
         doc.text(r.join(' | '), 10, y);
@@ -525,27 +568,34 @@ function renderCharts(list){
           y = 20;
         }
       });
+
       doc.save('CisneBlanco_Finanzas.pdf');
     }
   }
 
+
+
+  /* ==========================
+        UTILIDADES
+  =========================== */
   function formato(n){
     return new Intl.NumberFormat('es-AR',{
-      style:'currency',
-      currency:'ARS'
+      style:'currency', currency:'ARS'
     }).format(n);
   }
 
   function escapeHtml(s){
     return s.replace(/[&<>"']/g, m=>({
-      '&':'&amp;',
-      '<':'&lt;',
-      '>':'&gt;',
-      '"':'&quot;',
-      "'":'&#39;'
+      '&':'&amp;', '<':'&lt;', '>':'&gt;',
+      '"':'&quot;', "'":'&#39;'
     }[m]));
   }
 
+
+
+  /* ==========================
+        REFRESH GENERAL
+  =========================== */
   function refresh(){
     const list = aplicarFiltros();
     renderTotales(list);
@@ -553,10 +603,14 @@ function renderCharts(list){
     renderCharts(list);
   }
 
-  // === Listeners principales ===
-  $('btnSave').onclick = guardar;
-  btnAdd.onclick        = abrirModalAlta;
-  btnExport.onclick     = exportar;
+
+
+  /* ==========================
+        EVENTOS
+  =========================== */
+  $('btnAdd').onclick      = abrirModalAlta;
+  $('btnSave').onclick     = guardar;
+  $('btnExport').onclick   = exportar;
 
   filtroCatEl.onchange   = ()=>{ filtros.categoria = filtroCatEl.value; refresh(); };
   filtroDesdeEl.onchange = ()=>{ filtros.desde     = filtroDesdeEl.value; refresh(); };
@@ -564,19 +618,19 @@ function renderCharts(list){
 
   $('btnLimpiarFiltros').onclick = ()=>{
     filtros = { categoria:'', desde:'', hasta:'' };
-    filtroCatEl.value   = '';
+    filtroCatEl.value = '';
     filtroDesdeEl.value = '';
     filtroHastaEl.value = '';
     refresh();
   };
 
-  if(modoGraficoEl){
-    modoGraficoEl.onchange = refresh;
-  }
+  modoGraficoEl.onchange = refresh;
 
-  // ===========================================================
-  //      SCRIPT DEL MODAL DE TRADING
-  // ===========================================================
+
+
+  /* ==========================
+        MODAL TRADING
+  =========================== */
   const modalTrade = $('modalTrade');
 
   $('btnAddTrade').onclick = ()=>{
@@ -592,7 +646,7 @@ function renderCharts(list){
     modalTrade.showModal();
   };
 
-  $('btnSaveTrade').onclick = (ev)=>{
+  $('btnSaveTrade').onclick = ev=>{
     ev.preventDefault();
 
     const date   = $('tradeDate').value;
@@ -604,7 +658,7 @@ function renderCharts(list){
     }
 
     data.push({
-      id: nuevoId(),
+      id: crypto.randomUUID(),
       date,
       type: profit >= 0 ? "ingreso" : "egreso",
       amount: Math.abs(profit),
@@ -617,24 +671,26 @@ function renderCharts(list){
     refresh();
   };
 
-  // Primera carga
+
+  /* ==========================
+        CARGA INICIAL
+  =========================== */
   refresh();
 
-}); // fin DOMContentLoaded
+
+}); // FIN DOMContentLoaded
 </script>
+
+
+
 
 <!-- ========= Librerías externas ========= -->
 <script src="../assets/js/theme.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
-<style>
-  [data-theme="navy-ice"] #chartTorta,
-  [data-theme="navy-ice"] #chartBarras {
-    filter: brightness(1.35) contrast(1.15);
-  }
-</style>
+<!-- jsPDF CORRECTO -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
   [data-theme="navy-ice"] #chartTorta,
