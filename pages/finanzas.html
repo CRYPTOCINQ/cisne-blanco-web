@@ -86,23 +86,30 @@
     <div id="listaMovimientos" class="surface" style="margin-top:.5rem;padding:1rem;"></div>
   </section>
 
-
   <!-- ========= Gráficos ========= -->
   <section style="margin-top:1rem;">
-    <div class="card" style="padding:1rem;">
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+    <div class="card" style="padding:1rem; display:flex; flex-direction:column; gap:1rem;">
+
+      <!-- Selector de modo -->
+      <div style="display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;">
         <button id="tabTorta" class="btn btn-sm btn--primary">Torta por categoría</button>
         <button id="tabBarras" class="btn btn-sm">Barras por fecha</button>
+
+        <select id="modoGrafico" class="input" style="max-width:130px; margin-left:auto;">
+          <option value="dia">Día</option>
+          <option value="semana">Semana</option>
+          <option value="mes">Mes</option>
+        </select>
       </div>
 
-      <div style="margin-top:1rem;">
-        <canvas id="chartTorta" style="max-height:220px;"></canvas>
-        <canvas id="chartBarras" style="max-height:220px; display:none;"></canvas>
+      <!-- Contenedor de charts -->
+      <div style="display:flex; gap:1rem; align-items:center; justify-content:center;">
+        <canvas id="chartTorta" style="max-height:240px; width:100%;"></canvas>
+        <canvas id="chartBarras" style="max-height:240px; width:100%; display:none;"></canvas>
       </div>
+
     </div>
   </section>
-
-</main>
 
 <!-- ===========================================================
      MODAL TRADING (HTML)
@@ -306,153 +313,64 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   let chartPie=null, chartBar=null;
 
-  function renderCharts(list){
+function renderCharts(list){
     if(chartPie) chartPie.destroy();
     if(chartBar) chartBar.destroy();
 
-    const mapCat={};
+    // ======== TORTA POR CATEGORÍA ========
+    const mapCat = {};
     list.forEach(x=>{
-      const key=x.category||'Sin categoría';
-      mapCat[key]=(mapCat[key]||0)+Math.abs(Number(x.amount)||0);
-    });
-    
-    mapCat["Trades"] = mapCat["Trades"] || 0; 
-
-    chartPie=new Chart(chartTortaEl,{type:'pie',
-      data:{labels:Object.keys(mapCat),datasets:[{data:Object.values(mapCat)}]},
-      options:{plugins:{legend:{position:'bottom'}}}
+      const key = x.category || 'Sin categoría';
+      mapCat[key] = (mapCat[key] || 0) + Math.abs(Number(x.amount) || 0);
     });
 
-    const mapFecha={};
+    // Si querés que "Trades" solo aparezca si hay trades:
+    if(!mapCat["Trades"]) delete mapCat["Trades"];
+
+    chartPie = new Chart(chartTortaEl, {
+      type: 'pie',
+      data: {
+        labels: Object.keys(mapCat),
+        datasets: [{ data: Object.values(mapCat) }]
+      },
+      options: {
+        plugins: {
+          legend: { position: 'right' }
+        }
+      }
+    });
+
+    // ======== BARRAS POR FECHA ========
+    const modo = document.getElementById('modoGrafico')?.value || 'dia';
+
+    const mapFecha = {};
+
     list.forEach(x=>{
+      const d = x.date;
+
+      let clave = d;
+      if (modo === 'semana') {
+        const dt = new Date(d);
+        const first = new Date(dt.setDate(dt.getDate() - dt.getDay()));
+        clave = first.toISOString().slice(0,10);
+      } else if (modo === 'mes') {
+        clave = d.slice(0,7); // yyyy-mm
+      }
+
+      if(!mapFecha[clave]) mapFecha[clave] = 0;
+
       const val = (isFinite(x.amount) ? (x.type==='ingreso' ? +x.amount : -x.amount) : 0);
-      if(!mapFecha[x.date]) mapFecha[x.date] = 0;   // ← ESTA ES LA CLAVE
-      mapFecha[x.date] += val;
+      mapFecha[clave] += val;
     });
 
-    chartBar=new Chart(chartBarrasEl,{type:'bar',
-      data:{labels:Object.keys(mapFecha).sort(),datasets:[{data:Object.keys(mapFecha).sort().map(f=>mapFecha[f])}]},
-      options:{scales:{y:{beginAtZero:true}}}
-    });
-  }
+    chartBar = new Chart(chartBarrasEl, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(mapFecha).sort(),
+        datasets: [{
+          label: "Balance",
+          data: Object.keys(mapFecha).sort().map(f => mapFecha[f])
 
-  tabTortaEl.onclick=()=>{
-    tabTortaEl.classList.add('btn--primary');
-    tabBarrasEl.classList.remove('btn--primary');
-    chartTortaEl.style.display='';
-    chartBarrasEl.style.display='none';
-  };
-
-  tabBarrasEl.onclick=()=>{
-    tabBarrasEl.classList.add('btn--primary');
-    tabTortaEl.classList.remove('btn--primary');
-    chartTortaEl.style.display='none';
-    chartBarrasEl.style.display='';
-  };
-
-
-  function abrirModalAlta(){
-    editingId=null;
-    $('modalTitle').textContent='Nuevo movimiento';
-    $('inpDate').value=toISO(new Date());
-    $('inpType').value='ingreso';
-    $('inpAmount').value='';
-    $('inpCategory').value='';
-    $('inpNote').value='';
-    modal.showModal();
-  }
-
-  function abrirModalEdicion(id){
-    const it=data.find(x=>x.id===id);
-    if(!it) return;
-    editingId=id;
-    $('modalTitle').textContent='Editar movimiento';
-    $('inpDate').value=it.date;
-    $('inpType').value=it.type;
-    $('inpAmount').value=it.amount;
-    $('inpCategory').value=it.category||'';
-    $('inpNote').value=it.note||'';
-    modal.showModal();
-  }
-
-  function guardar(ev){
-    ev.preventDefault();
-    const date=$('inpDate').value;
-    const type=$('inpType').value;
-    const amount=parseFloat($('inpAmount').value);
-    const category=$('inpCategory').value;
-    const note=$('inpNote').value.trim();
-
-    if(!date||!type||!isFinite(amount)){
-      alert('Completá fecha, tipo y monto válido.');
-      return;
-    }
-
-    if(editingId){
-      const idx=data.findIndex(x=>x.id===editingId);
-      if(idx>-1) data[idx]={...data[idx],date,type,amount,category,note};
-    } else {
-      data.push({id:nuevoId(),date,type,amount,category,note});
-    }
-    save(data);
-    modal.close();
-    refresh();
-  }
-
-  function nuevoId(){
-    return Math.random().toString(36).slice(2,10);
-  }
-
-  function eliminar(id){
-    if(!confirm('¿Borrar este movimiento?')) return;
-    data=data.filter(x=>x.id!==id);
-    save(data);
-    refresh();
-  }
-
-  async function exportar(){
-    if(!data.length){ alert('No hay movimientos.'); return; }
-
-    const rows=[["Fecha","Tipo","Monto","Categoría","Nota"]];
-    aplicarFiltros().forEach(x=>{
-      rows.push([x.date,x.type,String(x.amount),x.category||'-',x.note||'-']);
-    });
-
-    const formato=prompt('xlsx o pdf?','xlsx');
-    if(!formato)return;
-
-    if(formato==='xlsx'){
-      const wb=XLSX.utils.book_new();
-      const ws=XLSX.utils.aoa_to_sheet(rows);
-      XLSX.utils.book_append_sheet(wb,ws,'Finanzas');
-      XLSX.writeFile(wb,'CisneBlanco_Finanzas.xlsx');
-    }
-    else if(formato==='pdf'){
-      const doc=new jspdf.jsPDF();
-      let y=20;
-      rows.forEach(r=>{
-        doc.text(r.join(' | '),10,y);
-        y+=7;
-        if(y>280){ doc.addPage(); y=20; }
-      });
-      doc.save('CisneBlanco_Finanzas.pdf');
-    }
-  }
-
-  function formato(n){
-    return new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS'}).format(n);
-  }
-
-  function escapeHtml(s){
-    return s.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  }
-
-  function refresh(){
-    const list=aplicarFiltros();
-    renderTotales(list);
-    renderLista(list);
-    renderCharts(list);
-  }
 
   $('btnSave').onclick=guardar;
   btnAdd.onclick=abrirModalAlta;
@@ -469,6 +387,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     filtroHastaEl.value='';
     refresh();
   };
+
+  $('modoGrafico').onchange = refresh;
 
   // ===========================================================
   //      SCRIPT DEL MODAL DE TRADING
@@ -524,6 +444,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jjspdf.umd.min.js"></script>
+
+<style>
+  [data-theme="navy-ice"] #chartTorta,
+  [data-theme="navy-ice"] #chartBarras {
+    filter: brightness(1.35) contrast(1.15);
+  }
+</style>
 
 </body>
 </html>
