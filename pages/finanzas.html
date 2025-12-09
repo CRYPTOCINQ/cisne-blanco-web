@@ -453,67 +453,69 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
 
 /* ==========================
-     NUEVA LÓGICA DE TABS
+     NUEVA LÓGICA DE TABS (CORREGIDA)
 ========================== */
 
-let modoActual = 'torta';
+let modoActual = 'torta';  // estado persistente de la vista
 
 function actualizarModoVista(modo) {
 
+  if (!chartContainer || !chartTortaEl || !chartBarrasEl) return;
+
   modoActual = modo;
 
-  // Reset visual
+  // Reset visual de botones
   [tabTortaEl, tabBarrasEl, tabAmbosEl].forEach(btn => {
-    btn.classList.remove('btn--primary');
+    if (btn) btn.classList.remove('btn--primary');
   });
 
-  // Asegura que los canvas escalen correctamente
-  chartTortaEl.style.width = '100%';
+  // Asegura que ambos canvas escalen bien
+  chartTortaEl.style.width  = '100%';
   chartBarrasEl.style.width = '100%';
 
   if (modo === 'torta') {
     tabTortaEl.classList.add('btn--primary');
-    chartTortaEl.style.display = 'block';
-    chartBarrasEl.style.display = 'none';
     chartContainer.style.display = 'flex';
     chartContainer.style.gridTemplateColumns = '';
+    chartTortaEl.style.display  = 'block';
+    chartBarrasEl.style.display = 'none';
   }
 
   if (modo === 'barras') {
     tabBarrasEl.classList.add('btn--primary');
-    chartTortaEl.style.display = 'none';
-    chartBarrasEl.style.display = 'block';
     chartContainer.style.display = 'flex';
     chartContainer.style.gridTemplateColumns = '';
+    chartTortaEl.style.display  = 'none';
+    chartBarrasEl.style.display = 'block';
   }
 
   if (modo === 'ambos') {
     tabAmbosEl.classList.add('btn--primary');
-    chartTortaEl.style.display = 'block';
-    chartBarrasEl.style.display = 'block';
-
-    // grid para dividir en dos
     chartContainer.style.display = 'grid';
     chartContainer.style.gridTemplateColumns = '1fr 1fr';
+    chartTortaEl.style.display  = 'block';
+    chartBarrasEl.style.display = 'block';
   }
 
-  // Redimensiona charts para evitar desbordes
+  // Evitar desbordes
   if (chartPie) chartPie.resize();
   if (chartBar) chartBar.resize();
 }
 
-// Eventos tabs
-tabTortaEl.onclick  = () => actualizarModoVista('torta');
-tabBarrasEl.onclick = () => actualizarModoVista('barras');
-tabAmbosEl.onclick  = () => actualizarModoVista('ambos');
+// ---- Eventos de botones ----
+if (tabTortaEl)  tabTortaEl.onclick  = () => actualizarModoVista('torta');
+if (tabBarrasEl) tabBarrasEl.onclick = () => actualizarModoVista('barras');
+if (tabAmbosEl)  tabAmbosEl.onclick  = () => actualizarModoVista('ambos');
 
-// Mantener el modo seleccionado cuando cambian filtros
-modoGraficoEl.onchange = () => {
-  refresh();
-  actualizarModoVista(modoActual);
-};
+// ---- Mantener modo al cambiar intervalo día/semana/mes ----
+if (modoGraficoEl) {
+  modoGraficoEl.onchange = () => {
+    refresh();
+    actualizarModoVista(modoActual);
+  };
+}
 
-// Vista inicial
+// ---- Vista inicial ----
 actualizarModoVista('torta');
 
   /* ==========================
