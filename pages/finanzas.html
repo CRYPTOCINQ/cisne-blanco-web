@@ -1,4 +1,4 @@
-<!doctype html>
+<!doctype html> 
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -115,76 +115,77 @@
   </section>
 
 
+  <!-- ===========================================================
+       MODAL TRADING
+  =========================================================== -->
+  <dialog id="modalTrade" class="card" style="padding:0;">
+    <form method="dialog" style="padding:1rem 1rem 0 1rem;">
+      <h3 style="margin:0 0 .75rem 0;">Nueva operación</h3>
+
+      <div class="modal-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;">
+
+        <div>
+          <label class="muted">Fecha</label>
+          <input id="tradeDate" type="date" class="input">
+        </div>
+
+        <div>
+          <label class="muted">Hora</label>
+          <input id="tradeTime" type="time" class="input">
+        </div>
+
+        <div>
+          <label class="muted">Ticker</label>
+          <input id="tradeTicker" type="text" class="input" placeholder="EURUSD / AAPL / BTCUSDT">
+        </div>
+
+        <div>
+          <label class="muted">Tipo</label>
+          <select id="tradeType" class="input">
+            <option value="buy">Buy</option>
+            <option value="sell">Sell</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="muted">Ticket</label>
+          <input id="tradeTicket" type="number" class="input" placeholder="N°">
+        </div>
+
+        <div>
+          <label class="muted">Entry</label>
+          <input id="tradeEntry" type="number" class="input" step="0.0001">
+        </div>
+
+        <div>
+          <label class="muted">SL</label>
+          <input id="tradeSL" type="number" class="input" step="0.0001">
+        </div>
+
+        <div>
+          <label class="muted">TP</label>
+          <input id="tradeTP" type="number" class="input" step="0.0001">
+        </div>
+
+        <div>
+          <label class="muted">Profit</label>
+          <input id="tradeProfit" type="number" class="input" step="0.01" placeholder="0.00">
+        </div>
+
+      </div>
+
+      <div class="modal-actions" style="display:flex;gap:.5rem;justify-content:flex-end;padding:1rem 0;">
+        <button id="btnSaveTrade" class="btn btn-primary">Guardar</button>
+        <button value="cancel" class="btn">Cerrar</button>
+      </div>
+    </form>
+  </dialog>
+
+</main>
+
+
 <!-- ===========================================================
-     MODAL TRADING
-=========================================================== -->
-<dialog id="modalTrade" class="card" style="padding:0;">
-  <form method="dialog" style="padding:1rem 1rem 0 1rem;">
-    <h3 style="margin:0 0 .75rem 0;">Nueva operación</h3>
-
-    <div class="modal-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;">
-
-      <div>
-        <label class="muted">Fecha</label>
-        <input id="tradeDate" type="date" class="input">
-      </div>
-
-      <div>
-        <label class="muted">Hora</label>
-        <input id="tradeTime" type="time" class="input">
-      </div>
-
-      <div>
-        <label class="muted">Ticker</label>
-        <input id="tradeTicker" type="text" class="input" placeholder="EURUSD / AAPL / BTCUSDT">
-      </div>
-
-      <div>
-        <label class="muted">Tipo</label>
-        <select id="tradeType" class="input">
-          <option value="buy">Buy</option>
-          <option value="sell">Sell</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="muted">Ticket</label>
-        <input id="tradeTicket" type="number" class="input" placeholder="N°">
-      </div>
-
-      <div>
-        <label class="muted">Entry</label>
-        <input id="tradeEntry" type="number" class="input" step="0.0001">
-      </div>
-
-      <div>
-        <label class="muted">SL</label>
-        <input id="tradeSL" type="number" class="input" step="0.0001">
-      </div>
-
-      <div>
-        <label class="muted">TP</label>
-        <input id="tradeTP" type="number" class="input" step="0.0001">
-      </div>
-
-      <div>
-        <label class="muted">Profit</label>
-        <input id="tradeProfit" type="number" class="input" step="0.01" placeholder="0.00">
-      </div>
-
-    </div>
-
-    <div class="modal-actions" style="display:flex;gap:.5rem;justify-content:flex-end;padding:1rem 0;">
-      <button id="btnSaveTrade" class="btn btn-primary">Guardar</button>
-      <button value="cancel" class="btn">Cerrar</button>
-    </div>
-  </form>
-</dialog>
-
-
-
-<!-- ===========================================================
-     TOGGLE TEMA
+     TOGGLE TEMA (lo dejamos igual)
 =========================================================== -->
 <script>
 (function () {
@@ -214,479 +215,19 @@
 })();
 </script>
 
-
-
-<!-- ===========================================================
-     JS PRINCIPAL FINANZAS (CORREGIDO)
-=========================================================== -->
-<script>
-document.addEventListener('DOMContentLoaded', ()=>{
-
-  const DB_KEY = 'cb_finanzas_v1';
-  const $ = id => document.getElementById(id);
-
-  const pad  = n => String(n).padStart(2,'0');
-  const toISO = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-
-  const load = ()=> JSON.parse(localStorage.getItem(DB_KEY) || "[]");
-  const save = arr => localStorage.setItem(DB_KEY, JSON.stringify(arr));
-
-  let data = load();
-  let filtros = { categoria:'', desde:'', hasta:'' };
-
-  const saldoTotalEl = $('saldoTotal');
-  const totalIngEl   = $('totalIngresos');
-  const totalEgrEl   = $('totalEgresos');
-  const listaEl      = $('listaMovimientos');
-
-  const filtroCatEl   = $('filtroCategoria');
-  const filtroDesdeEl = $('filtroDesde');
-  const filtroHastaEl = $('filtroHasta');
-
-  const tabTortaEl   = $('tabTorta');
-  const tabBarrasEl  = $('tabBarras');
-  const tabAmbosEl   = $('tabAmbos');
-  const chartContainer = $('chartContainer');
-  const chartTortaEl = $('chartTorta');
-  const chartBarrasEl= $('chartBarras');
-
-  const modoGraficoEl = $('modoGrafico');
-
-  let chartPie = null;
-  let chartBar = null;
-
-
-
-  /* ==========================
-        MODAL MOVIMIENTOS
-  =========================== */
-  const modal = document.createElement('dialog');
-  modal.id = 'modalFin';
-  modal.className = 'card';
-  modal.style.padding = '0';
-  modal.innerHTML = `
-    <form method="dialog" style="padding:1rem 1rem 0 1rem;">
-      <h3 id="modalTitle">Nuevo movimiento</h3>
-      <div class="modal-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;">
-        <div><label class="muted">Fecha</label><input id="inpDate" type="date" class="input"></div>
-        <div><label class="muted">Tipo</label>
-          <select id="inpType" class="input">
-            <option value="ingreso">Ingreso</option>
-            <option value="egreso">Egreso</option>
-          </select>
-        </div>
-        <div><label class="muted">Monto</label><input id="inpAmount" type="number" step="0.01" class="input"></div>
-        <div>
-          <label class="muted">Categoría</label>
-          <select id="inpCategory" class="input">
-            <option value="">Sin categoría</option>
-            <option>Forex</option>
-            <option>Acciones</option>
-            <option>Índices</option>
-            <option>Futuros</option>
-            <option>Crypto</option>
-            <option>Otros</option>
-          </select>
-        </div>
-        <div style="grid-column:1/-1;">
-          <label class="muted">Nota</label>
-          <textarea id="inpNote" class="input"></textarea>
-        </div>
-      </div>
-      <div class="modal-actions" style="display:flex;gap:.5rem;justify-content:flex-end;padding:1rem 0;">
-        <button id="btnSave" class="btn btn-primary">Guardar</button>
-        <button value="cancel" class="btn">Cerrar</button>
-      </div>
-    </form>`;
-  document.body.appendChild(modal);
-
-  let editingId = null;
-
-
-
-  /* ==========================
-        RENDER DE TOTALES
-  =========================== */
-  function renderTotales(list){
-    const ingresos = list.filter(x=>x.type==='ingreso')
-                         .reduce((a,b)=>a+Number(b.amount||0),0);
-    const egresos  = list.filter(x=>x.type==='egreso')
-                         .reduce((a,b)=>a+Number(b.amount||0),0);
-    const saldo    = ingresos - egresos;
-
-    totalIngEl.textContent   = formato(ingresos);
-    totalEgrEl.textContent   = formato(egresos);
-    saldoTotalEl.textContent = formato(saldo);
-  }
-
-
-
-  /* ==========================
-        RENDER DE LISTA
-  =========================== */
-  function renderLista(list){
-    if(!list.length){
-      listaEl.innerHTML = '<div class="muted">No hay movimientos registrados.</div>';
-      return;
-    }
-    listaEl.innerHTML = '';
-
-    list.forEach(item=>{
-      const row = document.createElement('div');
-      row.className = 'card p-3 flex items-start justify-between';
-
-      row.innerHTML = `
-        <div>
-          <div class="text-sm font-semibold">
-            ${item.type==='ingreso'?'🟢 Ingreso':'🔴 Egreso'} — ${formato(item.amount)}
-          </div>
-          <div class="text-xs muted">
-            ${item.date}${item.category ? ` • ${item.category}` : ''}
-          </div>
-          ${item.note ? `<div class="mt-1 text-xs muted">${escapeHtml(item.note)}</div>` : ''}
-        </div>
-
-        <div class="action-row flex gap-2">
-          <button class="btn btn-sm" data-action="edit">Editar</button>
-          <button class="btn btn-sm" data-action="delete">Borrar</button>
-        </div>
-      `;
-
-      row.querySelector('[data-action="edit"]').onclick = ()=>abrirModalEdicion(item.id);
-      row.querySelector('[data-action="delete"]').onclick = ()=>eliminar(item.id);
-
-      listaEl.appendChild(row);
-    });
-  }
-
-
-
-  /* ==========================
-        FILTROS
-  =========================== */
-  function aplicarFiltros(){
-    return data.filter(x=>{
-
-      if(filtros.categoria && x.category !== filtros.categoria)
-        return false;
-
-      if(filtros.desde && x.date < filtros.desde)
-        return false;
-
-      if(filtros.hasta && x.date > filtros.hasta)
-        return false;
-
-      return true;
-    });
-  }
-
-
-
-  /* ==========================
-        CHARTS
-  =========================== */
-  function renderCharts(list){
-    if(chartPie){ chartPie.destroy(); chartPie = null; }
-    if(chartBar){ chartBar.destroy(); chartBar = null; }
-
-    /* ---- TORTA ---- */
-    const mapCat = {};
-    list.forEach(x=>{
-      const key = x.category || 'Sin categoría';
-      mapCat[key] = (mapCat[key] || 0) + Math.abs(Number(x.amount)||0);
-    });
-
-    if(!mapCat["Trades"]) delete mapCat["Trades"];
-
-    chartPie = new Chart(chartTortaEl, {
-      type: 'pie',
-      data: {
-        labels: Object.keys(mapCat),
-        datasets: [{
-          data: Object.values(mapCat)
-        }]
-      },
-      options: {
-        plugins: { legend: { position:'right' } }
-      }
-    });
-
-    /* ---- BARRAS ---- */
-    const modo = modoGraficoEl.value || 'dia';
-    const mapFecha = {};
-
-    list.forEach(x=>{
-      const d = x.date;
-      let clave = d;
-
-      if(modo === 'semana'){
-        const dt = new Date(d);
-        const first = new Date(dt.setDate(dt.getDate() - dt.getDay()));
-        clave = first.toISOString().slice(0,10);
-      }
-      else if(modo === 'mes'){
-        clave = d.slice(0,7);
-      }
-
-      if(!mapFecha[clave]) mapFecha[clave] = 0;
-
-      const val = (x.type==='ingreso' ? +x.amount : -x.amount) || 0;
-      mapFecha[clave] += val;
-    });
-
-    const labels = Object.keys(mapFecha).sort();
-
-    chartBar = new Chart(chartBarrasEl, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          label: "Balance",
-          data: labels.map(f => mapFecha[f])
-        }]
-      },
-      options: {
-        scales: { y:{ beginAtZero:true } }
-      }
-    });
-  }
-
-  /* ==========================
-        MODAL MOVIMIENTOS
-  =========================== */
-  function abrirModalAlta(){
-    editingId = null;
-    $('modalTitle').textContent = 'Nuevo movimiento';
-    $('inpDate').value = toISO(new Date());
-    $('inpType').value = 'ingreso';
-    $('inpAmount').value = '';
-    $('inpCategory').value = '';
-    $('inpNote').value = '';
-    modal.showModal();
-  }
-
-  function abrirModalEdicion(id){
-    const it = data.find(x=>x.id===id);
-    if(!it) return;
-
-    editingId = id;
-
-    $('modalTitle').textContent = 'Editar movimiento';
-    $('inpDate').value = it.date;
-    $('inpType').value = it.type;
-    $('inpAmount').value = it.amount;
-    $('inpCategory').value = it.category || '';
-    $('inpNote').value = it.note || '';
-
-    modal.showModal();
-  }
-
-
-  function guardar(ev){
-    ev.preventDefault();
-
-    const date = $('inpDate').value;
-    const type = $('inpType').value;
-    const amount = parseFloat($('inpAmount').value);
-    const category = $('inpCategory').value;
-    const note = $('inpNote').value.trim();
-
-    if(!date || !type || !isFinite(amount)){
-      alert('Completá fecha, tipo y monto válido.');
-      return;
-    }
-
-    if(editingId){
-      const idx = data.findIndex(x=>x.id===editingId);
-      if(idx>-1){
-        data[idx] = {...data[idx], date, type, amount, category, note };
-      }
-    } else {
-      data.push({
-        id: crypto.randomUUID(),
-        date, type, amount, category, note
-      });
-    }
-
-    save(data);
-    modal.close();
-    refresh();
-  }
-
-
-
-  /* ==========================
-        ELIMINAR
-  =========================== */
-  function eliminar(id){
-    if(!confirm('¿Borrar este movimiento?')) return;
-    data = data.filter(x=>x.id!==id);
-    save(data);
-    refresh();
-  }
-
-
-
-  /* ==========================
-        EXPORTAR XLSX / PDF
-  =========================== */
-  async function exportar(){
-    if(!data.length){
-      alert('No hay movimientos.');
-      return;
-    }
-
-    const rows = [["Fecha","Tipo","Monto","Categoría","Nota"]];
-    aplicarFiltros().forEach(x=>{
-      rows.push([
-        x.date,
-        x.type,
-        String(x.amount),
-        x.category || '-',
-        x.note || '-'
-      ]);
-    });
-
-    const formato = prompt('xlsx o pdf?','xlsx');
-    if(!formato) return;
-
-    if(formato === 'xlsx'){
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet(rows);
-      XLSX.utils.book_append_sheet(wb, ws, 'Finanzas');
-      XLSX.writeFile(wb, 'CisneBlanco_Finanzas.xlsx');
-    }
-
-    else if(formato === 'pdf'){
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-
-      let y = 20;
-      rows.forEach(r=>{
-        doc.text(r.join(' | '), 10, y);
-        y += 7;
-        if(y > 280){
-          doc.addPage();
-          y = 20;
-        }
-      });
-
-      doc.save('CisneBlanco_Finanzas.pdf');
-    }
-  }
-
-
-
-  /* ==========================
-        UTILIDADES
-  =========================== */
-  function formato(n){
-    return new Intl.NumberFormat('es-AR',{
-      style:'currency', currency:'ARS'
-    }).format(n);
-  }
-
-  function escapeHtml(s){
-    return s.replace(/[&<>"']/g, m=>({
-      '&':'&amp;', '<':'&lt;', '>':'&gt;',
-      '"':'&quot;', "'":'&#39;'
-    }[m]));
-  }
-
-
-
-  /* ==========================
-        REFRESH GENERAL
-  =========================== */
-  function refresh(){
-    const list = aplicarFiltros();
-    renderTotales(list);
-    renderLista(list);
-    renderCharts(list);
-  }
-
-
-
-  /* ==========================
-        EVENTOS
-  =========================== */
-  $('btnAdd').onclick      = abrirModalAlta;
-  $('btnSave').onclick     = guardar;
-  $('btnExport').onclick   = exportar;
-
-  filtroCatEl.onchange   = ()=>{ filtros.categoria = filtroCatEl.value; refresh(); };
-  filtroDesdeEl.onchange = ()=>{ filtros.desde     = filtroDesdeEl.value; refresh(); };
-  filtroHastaEl.onchange = ()=>{ filtros.hasta     = filtroHastaEl.value; refresh(); };
-
-  $('btnLimpiarFiltros').onclick = ()=>{
-    filtros = { categoria:'', desde:'', hasta:'' };
-    filtroCatEl.value = '';
-    filtroDesdeEl.value = '';
-    filtroHastaEl.value = '';
-    refresh();
-  };
-
-  /* ==========================
-        MODAL TRADING
-  =========================== */
-  const modalTrade = $('modalTrade');
-
-  $('btnAddTrade').onclick = ()=>{
-    $('tradeDate').value   = toISO(new Date());
-    $('tradeTicker').value = '';
-    $('tradeTime').value   = '';
-    $('tradeType').value   = 'buy';
-    $('tradeTicket').value = '';
-    $('tradeEntry').value  = '';
-    $('tradeSL').value     = '';
-    $('tradeTP').value     = '';
-    $('tradeProfit').value = '';
-    modalTrade.showModal();
-  };
-
-  $('btnSaveTrade').onclick = ev=>{
-    ev.preventDefault();
-
-    const date   = $('tradeDate').value;
-    const profit = parseFloat($('tradeProfit').value);
-
-    if(!date || !isFinite(profit)){
-      alert("Completá fecha y profit válido.");
-      return;
-    }
-
-    data.push({
-      id: crypto.randomUUID(),
-      date,
-      type: profit >= 0 ? "ingreso" : "egreso",
-      amount: Math.abs(profit),
-      category: "Trades",
-      note: `Trade ${$('tradeTicker').value} (${ $('tradeType').value.toUpperCase() }) — Ticket ${$('tradeTicket').value} — Entry ${$('tradeEntry').value} — SL ${$('tradeSL').value} — TP ${$('tradeTP').value}`
-    });
-
-    save(data);
-    modalTrade.close();
-    refresh();
-  };
-
-  /* ==========================
-     NUEVA LÓGICA DE TABS (CORREGIDA)
-  /* ==========================
-        CARGA INICIAL
-  =========================== */
-  refresh();
-
-
-}); // FIN DOMContentLoaded
-</script>
-
 <!-- ========= Librerías externas ========= -->
 <script src="../assets/js/theme.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
-<!-- jsPDF CORRECTO -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- ========= Módulos Finanzas ========= -->
+<script src="./js/finanzas.core.js"></script>
+<script src="./js/finanzas.ui.js"></script>
+<script src="./js/finanzas.charts.js"></script>
+<script src="./js/finanzas.export.js"></script>
+<script src="./js/finanzas.modals.js"></script>
+<script src="./js/finanzas.main.js"></script>
 
 <style>
   [data-theme="navy-ice"] #chartTorta,
