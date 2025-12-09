@@ -452,53 +452,69 @@ document.addEventListener('DOMContentLoaded', ()=>{
     });
   }
 
+/* ==========================
+     NUEVA LÓGICA DE TABS
+========================== */
 
+let modoActual = 'torta';
 
-  /* ==========================
-     NUEVA LÓGICA DE TABS (TORTA / BARRAS / AMBOS)
-  =========================== */
+function actualizarModoVista(modo) {
 
-  function actualizarModoVista(modo) {
+  modoActual = modo;
 
-    // Reset visual
-    [tabTortaEl, tabBarrasEl, tabAmbosEl].forEach(btn => {
-      btn.classList.remove('btn--primary');
-    });
+  // Reset visual
+  [tabTortaEl, tabBarrasEl, tabAmbosEl].forEach(btn => {
+    btn.classList.remove('btn--primary');
+  });
 
-    if (modo === 'torta') {
-      tabTortaEl.classList.add('btn--primary');
-      chartTortaEl.style.display = 'block';
-      chartBarrasEl.style.display = 'none';
-      chartContainer.style.display = 'flex';
-      chartContainer.style.gridTemplateColumns = '';
-    }
+  // Asegura que los canvas escalen correctamente
+  chartTortaEl.style.width = '100%';
+  chartBarrasEl.style.width = '100%';
 
-    if (modo === 'barras') {
-      tabBarrasEl.classList.add('btn--primary');
-      chartTortaEl.style.display = 'none';
-      chartBarrasEl.style.display = 'block';
-      chartContainer.style.display = 'flex';
-      chartContainer.style.gridTemplateColumns = '';
-    }
-
-    if (modo === 'ambos') {
-      tabAmbosEl.classList.add('btn--primary');
-      chartTortaEl.style.display = 'block';
-      chartBarrasEl.style.display = 'block';
-      chartContainer.style.display = 'grid';
-      chartContainer.style.gridTemplateColumns = '1fr 1fr';
-    }
+  if (modo === 'torta') {
+    tabTortaEl.classList.add('btn--primary');
+    chartTortaEl.style.display = 'block';
+    chartBarrasEl.style.display = 'none';
+    chartContainer.style.display = 'flex';
+    chartContainer.style.gridTemplateColumns = '';
   }
 
-  // Eventos de tabs
-  tabTortaEl.onclick  = () => actualizarModoVista('torta');
-  tabBarrasEl.onclick = () => actualizarModoVista('barras');
-  tabAmbosEl.onclick  = () => actualizarModoVista('ambos');
+  if (modo === 'barras') {
+    tabBarrasEl.classList.add('btn--primary');
+    chartTortaEl.style.display = 'none';
+    chartBarrasEl.style.display = 'block';
+    chartContainer.style.display = 'flex';
+    chartContainer.style.gridTemplateColumns = '';
+  }
 
-  // Vista inicial
-  actualizarModoVista('torta');
+  if (modo === 'ambos') {
+    tabAmbosEl.classList.add('btn--primary');
+    chartTortaEl.style.display = 'block';
+    chartBarrasEl.style.display = 'block';
 
+    // grid para dividir en dos
+    chartContainer.style.display = 'grid';
+    chartContainer.style.gridTemplateColumns = '1fr 1fr';
+  }
 
+  // Redimensiona charts para evitar desbordes
+  if (chartPie) chartPie.resize();
+  if (chartBar) chartBar.resize();
+}
+
+// Eventos tabs
+tabTortaEl.onclick  = () => actualizarModoVista('torta');
+tabBarrasEl.onclick = () => actualizarModoVista('barras');
+tabAmbosEl.onclick  = () => actualizarModoVista('ambos');
+
+// Mantener el modo seleccionado cuando cambian filtros
+modoGraficoEl.onchange = () => {
+  refresh();
+  actualizarModoVista(modoActual);
+};
+
+// Vista inicial
+actualizarModoVista('torta');
 
   /* ==========================
         MODAL MOVIMIENTOS
