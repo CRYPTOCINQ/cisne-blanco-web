@@ -93,9 +93,11 @@
   <section style="margin-top:1rem;">
     <div class="card" style="padding:1rem; display:flex; flex-direction:column; gap:1rem;">
 
+      <!-- ############ BOTONERA MODIFICADA (Torta / Barras / Ambos) -->
       <div style="display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;">
-        <button id="tabTorta" class="btn btn-sm btn--primary">Torta por categoría</button>
-        <button id="tabBarras" class="btn btn-sm">Barras por fecha</button>
+        <button id="tabTorta" class="btn btn-sm btn--primary">Torta</button>
+        <button id="tabBarras" class="btn btn-sm">Barras</button>
+        <button id="tabAmbos" class="btn btn-sm">Ambos</button>
 
         <select id="modoGrafico" class="input" style="max-width:130px; margin-left:auto;">
           <option value="dia">Día</option>
@@ -104,7 +106,8 @@
         </select>
       </div>
 
-      <div style="display:flex; gap:1rem; align-items:flex-start; justify-content:space-between;">
+      <!-- ############ CONTENEDOR AJUSTADO PARA DOS GRÁFICOS -->
+      <div id="chartContainer" style="display:flex; gap:1rem; align-items:flex-start; justify-content:space-between;">
           <canvas id="chartTorta" style="max-height:240px; flex:1;"></canvas>
           <canvas id="chartBarras" style="max-height:240px; flex:1; display:none;"></canvas>
       </div>
@@ -243,6 +246,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   const tabTortaEl   = $('tabTorta');
   const tabBarrasEl  = $('tabBarras');
+  const tabAmbosEl   = $('tabAmbos');
+  const chartContainer = $('chartContainer');
   const chartTortaEl = $('chartTorta');
   const chartBarrasEl= $('chartBarras');
 
@@ -450,6 +455,52 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 
   /* ==========================
+     NUEVA LÓGICA DE TABS (TORTA / BARRAS / AMBOS)
+  =========================== */
+
+  function actualizarModoVista(modo) {
+
+    // Reset visual
+    [tabTortaEl, tabBarrasEl, tabAmbosEl].forEach(btn => {
+      btn.classList.remove('btn--primary');
+    });
+
+    if (modo === 'torta') {
+      tabTortaEl.classList.add('btn--primary');
+      chartTortaEl.style.display = 'block';
+      chartBarrasEl.style.display = 'none';
+      chartContainer.style.display = 'flex';
+      chartContainer.style.gridTemplateColumns = '';
+    }
+
+    if (modo === 'barras') {
+      tabBarrasEl.classList.add('btn--primary');
+      chartTortaEl.style.display = 'none';
+      chartBarrasEl.style.display = 'block';
+      chartContainer.style.display = 'flex';
+      chartContainer.style.gridTemplateColumns = '';
+    }
+
+    if (modo === 'ambos') {
+      tabAmbosEl.classList.add('btn--primary');
+      chartTortaEl.style.display = 'block';
+      chartBarrasEl.style.display = 'block';
+      chartContainer.style.display = 'grid';
+      chartContainer.style.gridTemplateColumns = '1fr 1fr';
+    }
+  }
+
+  // Eventos de tabs
+  tabTortaEl.onclick  = () => actualizarModoVista('torta');
+  tabBarrasEl.onclick = () => actualizarModoVista('barras');
+  tabAmbosEl.onclick  = () => actualizarModoVista('ambos');
+
+  // Vista inicial
+  actualizarModoVista('torta');
+
+
+
+  /* ==========================
         MODAL MOVIMIENTOS
   =========================== */
   function abrirModalAlta(){
@@ -526,8 +577,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 
   /* ==========================
-        EXPORTACIÓN
-     (xlsx + PDF corregido)
+        EXPORTAR XLSX / PDF
   =========================== */
   async function exportar(){
     if(!data.length){
@@ -681,9 +731,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 }); // FIN DOMContentLoaded
 </script>
-
-
-
 
 <!-- ========= Librerías externas ========= -->
 <script src="../assets/js/theme.js"></script>
