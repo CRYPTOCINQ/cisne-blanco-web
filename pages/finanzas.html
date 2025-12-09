@@ -186,38 +186,6 @@
 
 </main>
 
-
-<!-- ===========================================================
-     TOGGLE TEMA (lo dejamos igual)
-=========================================================== -->
-<script>
-(function () {
-  const root = document.documentElement;
-  const KEY = 'theme';
-  const btn = document.getElementById('themeToggle');
-  const lab = document.getElementById('themeLabel');
-
-  function apply(val) {
-    if (val === 'navy-ice') {
-      root.setAttribute('data-theme', 'navy-ice');
-    } else {
-      root.removeAttribute('data-theme');
-    }
-    lab.textContent = val || 'auto';
-  }
-
-  const saved = localStorage.getItem(KEY) || 'auto';
-  apply(saved);
-
-  btn.onclick = () => {
-    const current = localStorage.getItem(KEY) || 'auto';
-    const next = current === 'navy-ice' ? 'auto' : 'navy-ice';
-    localStorage.setItem(KEY, next);
-    apply(next);
-  };
-})();
-</script>
-
 <!-- ========= Librerías externas ========= -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
