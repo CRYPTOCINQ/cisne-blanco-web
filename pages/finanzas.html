@@ -451,53 +451,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     });
   }
 
-
-
-  /* ==========================
-     NUEVA LÓGICA DE TABS (TORTA / BARRAS / AMBOS)
-  =========================== */
-
-  function actualizarModoVista(modo) {
-
-    // Reset visual
-    [tabTortaEl, tabBarrasEl, tabAmbosEl].forEach(btn => {
-      btn.classList.remove('btn--primary');
-    });
-
-    if (modo === 'torta') {
-      tabTortaEl.classList.add('btn--primary');
-      chartTortaEl.style.display = 'block';
-      chartBarrasEl.style.display = 'none';
-      chartContainer.style.display = 'flex';
-      chartContainer.style.gridTemplateColumns = '';
-    }
-
-    if (modo === 'barras') {
-      tabBarrasEl.classList.add('btn--primary');
-      chartTortaEl.style.display = 'none';
-      chartBarrasEl.style.display = 'block';
-      chartContainer.style.display = 'flex';
-      chartContainer.style.gridTemplateColumns = '';
-    }
-
-    if (modo === 'ambos') {
-      tabAmbosEl.classList.add('btn--primary');
-      chartTortaEl.style.display = 'block';
-      chartBarrasEl.style.display = 'block';
-      chartContainer.style.display = 'grid';
-      chartContainer.style.gridTemplateColumns = '1fr 1fr';
-    }
-  }
-
-  // Eventos de tabs
-  tabTortaEl.onclick  = () => actualizarModoVista('torta');
-  tabBarrasEl.onclick = () => actualizarModoVista('barras');
-  tabAmbosEl.onclick  = () => actualizarModoVista('ambos');
-
-  // Vista inicial
-  actualizarModoVista('torta');
-
-
+/* ==========================
+     NUEVA LÓGICA DE TABS
 
   /* ==========================
         MODAL MOVIMIENTOS
@@ -730,7 +685,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 }); // FIN DOMContentLoaded
 </script>
-
 
 
 <!-- ========= Librerías externas ========= -->
