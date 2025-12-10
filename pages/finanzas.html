@@ -185,18 +185,35 @@
 
 </main>
 
+
+<!-- ===========================================================
+     TOGGLE TEMA (lo dejamos igual)
+
+
+  btn.onclick = () => {
+    const current = localStorage.getItem(KEY) || 'auto';
+    const next = current === 'navy-ice' ? 'auto' : 'navy-ice';
+    localStorage.setItem(KEY, next);
+    apply(next);
+  };
+})();
+</script>
+
+</main>
+
 <!-- ========= Librerías externas ========= -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script src="../assets/js/theme.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <!-- ========= Módulos Finanzas ========= -->
-<script src="./js/finanzas.core.js" defer></script>
-<script src="./js/finanzas.ui.js" defer></script>
-<script src="./js/finanzas.charts.js" defer></script>
-<script src="./js/finanzas.export.js" defer></script>
-<script src="./js/finanzas.modals.js" defer></script>
-<script src="./js/finanzas.main.js" defer></script>
+<script src="./js/finanzas.core.js"></script>
+<script src="./js/finanzas.ui.js"></script>
+<script src="./js/finanzas.charts.js"></script>
+<script src="./js/finanzas.export.js"></script>
+<script src="./js/finanzas.modals.js"></script>
+<script src="./js/finanzas.main.js"></script>
 
 <style>
   [data-theme="navy-ice"] #chartTorta,

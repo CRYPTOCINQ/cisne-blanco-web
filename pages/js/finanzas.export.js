@@ -1,18 +1,9 @@
 // finanzas.export.js
 (function (global) {
-  // Nos aseguramos de no romper nada aunque aún no exista FinanzasApp
-  const root = global;
+  const FinanzasApp = global.FinanzasApp;
+  const { state, utils } = FinanzasApp;
 
-  function exportar() {
-    const FinanzasApp = root.FinanzasApp;
-
-    if (!FinanzasApp || !FinanzasApp.state || !FinanzasApp.utils) {
-      console.error('FinanzasApp no está inicializado al ejecutar exportar()');
-      alert('Error: la app de Finanzas no está inicializada.');
-      return;
-    }
-
-    const { state, utils } = FinanzasApp;
+  async function exportar() {
     const data = state.data || [];
 
     if (!data.length) {
@@ -21,7 +12,6 @@
     }
 
     const rows = [['Fecha', 'Tipo', 'Monto', 'Categoría', 'Nota']];
-
     utils.aplicarFiltros(data, state.filtros).forEach((x) => {
       rows.push([
         x.date,
@@ -45,6 +35,7 @@
       const doc = new jsPDF();
 
       let y = 20;
+
       rows.forEach((r) => {
         doc.text(r.join(' | '), 10, y);
         y += 7;
@@ -58,8 +49,9 @@
     }
   }
 
-  // Registramos el módulo sin pisar nada existente
-  root.FinanzasApp = root.FinanzasApp || {};
-  root.FinanzasApp.exportar = { exportar };
+  FinanzasApp.exportar = {
+    exportar,
+  };
 
+  global.FinanzasApp = FinanzasApp;
 })(window);
