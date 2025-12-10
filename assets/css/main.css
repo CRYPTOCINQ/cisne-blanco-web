@@ -364,4 +364,46 @@ dialog input[type="time"]{
   transition: all 0.2s ease-in-out;
 }
 
+/* =========================================================
+   FIX FINANZAS — LAYOUT DE GRÁFICOS (Torta / Barras / Ambos)
+   ========================================================= */
+
+/* Contenedor general de ambos gráficos */
+#chartContainer {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 1rem !important;
+  align-items: start !important;
+  width: 100% !important;
+}
+
+/* Ajuste individual de los canvas */
+#chartTorta,
+#chartBarras {
+  max-width: 100% !important;
+  height: 260px !important;        /* ajustable si querés otra altura */
+  display: block !important;
+}
+
+/* En modo Torta */
+.fin-view-torta #chartContainer {
+  grid-template-columns: 1fr !important;
+}
+.fin-view-torta #chartTorta { display: block !important; }
+.fin-view-torta #chartBarras { display: none !important; }
+
+/* En modo Barras */
+.fin-view-barras #chartContainer {
+  grid-template-columns: 1fr !important;
+}
+.fin-view-barras #chartTorta { display: none !important; }
+.fin-view-barras #chartBarras { display: block !important; }
+
+/* En modo Ambos */
+.fin-view-ambos #chartContainer {
+  grid-template-columns: 1fr 1fr !important;
+}
+.fin-view-ambos #chartTorta { display: block !important; }
+.fin-view-ambos #chartBarras { display: block !important; }
+
 /* ================== Fin ================== */
