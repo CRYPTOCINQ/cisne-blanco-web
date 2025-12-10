@@ -143,14 +143,42 @@ a:hover{ color: var(--link-hover); }
 
 /* 🔥 Torta siempre tamaño fijo */
 #chartTorta {
-  width: 360px !important;
-  height: 360px !important;
+  width: 100% !important;
+  height: auto !important;
+  max-height: 380px;
 }
 
 /* 🔥 Barras adaptables */
 #chartBarras {
   width: 100% !important;
-  height: 360px !important;
+  height: auto !important;
+  max-height: 380px;
+}
+
+/* ============================
+   FINANZAS — VISTA GRÁFICOS
+============================ */
+
+/* Modo torta o barras */
+.fin-view-torta #chartContainer,
+.fin-view-barras #chartContainer {
+  display: flex !important;
+}
+
+/* Modo ambos: torta fija, barras adaptables */
+.fin-view-ambos #chartContainer {
+  display: grid !important;
+  grid-template-columns: 360px 1fr !important;
+  gap: 2rem;
+  align-items: center;
+}
+
+/* Canvas: proporción siempre correcta */
+#chartTorta, 
+#chartBarras {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 380px;
 }
 
 /* =================================================

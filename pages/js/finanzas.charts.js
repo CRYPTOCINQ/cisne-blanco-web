@@ -28,31 +28,26 @@
     });
 
     state.charts.pie = new Chart(chartTortaEl, {
-      type: "pie",
-      data: {
-        labels: Object.keys(mapCat),
-        datasets: [
-          {
-            data: Object.values(mapCat),
-          },
-        ],
-      },
-      options: {
-        plugins: {
-          legend: {
-            position: "left",
-            align: "center",
-            labels: {
-              padding: 10,
-              usePointStyle: true,
-            },
-          },
-        },
-        layout: {
-          padding: { left: 10 },
-        },
-      },
-    });
+  type: 'pie',
+  data: {
+    labels: Object.keys(mapCat),
+    datasets: [{
+      data: Object.values(mapCat),
+    }],
+  },
+  options: {
+  responsive: true,
+  maintainAspectRatio: true,
+  plugins: {
+    legend: {
+      position: 'left',
+      labels: { padding: 12, usePointStyle: true }
+    }
+  },
+  layout: { padding: { left: 20 } }
+}
+
+});
 
     // ============================
     //   GRÁFICO DE BARRAS
@@ -101,20 +96,12 @@
           },
         ],
       },
-      options: {
-        scales: {
-          x: { ticks: { color: isNavy ? "#E9F2FF" : "#111" } },
-          y: { ticks: { color: isNavy ? "#E9F2FF" : "#111" } },
-        },
-        plugins: {
-          legend: {
-            labels: {
-              color: isNavy ? "#E9F2FF" : "#111",
-            },
-          },
-        },
-      },
-    });
+    options: {
+  responsive: true,
+  maintainAspectRatio: true,
+  scales: { y: { beginAtZero: true } }
+}
+});
   }
 
   // ===============================================================

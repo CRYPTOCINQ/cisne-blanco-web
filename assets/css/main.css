@@ -380,8 +380,9 @@ dialog input[type="time"]{
 /* Ajuste individual de los canvas */
 #chartTorta,
 #chartBarras {
-  max-width: 100% !important;
-  height: 260px !important;        /* ajustable si querés otra altura */
+  width: 100% !important;
+  height: auto !important;
+  max-height: 380px !important;
   display: block !important;
 }
 
@@ -401,7 +402,7 @@ dialog input[type="time"]{
 
 /* En modo Ambos */
 .fin-view-ambos #chartContainer {
-  grid-template-columns: 1fr 1fr !important;
+  grid-template-columns: 360px 1fr !important;
 }
 .fin-view-ambos #chartTorta { display: block !important; }
 .fin-view-ambos #chartBarras { display: block !important; }
