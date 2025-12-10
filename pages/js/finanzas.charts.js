@@ -33,15 +33,7 @@
     // ====================================================
     //  TORTA POR CATEGORÍA
     // ====================================================
-    const mapCat = {};
-    dataList.forEach((x) => {
-      const key = x.category || 'Sin categoría';
-      mapCat[key] = (mapCat[key] || 0) + Math.abs(Number(x.amount) || 0);
-    });
-
-    const pieLabels = Object.keys(mapCat);
-    const pieValues = Object.values(mapCat);
-
+    
     // paleta sencilla (se repite si hay más categorías)
     const pieColorsBase = [
       '#3b82f6', // azul
@@ -53,66 +45,76 @@
     ];
     const pieColors = pieLabels.map((_, i) => pieColorsBase[i % pieColorsBase.length]);
 
-    state.charts.pie = new Chart(chartTortaEl, {
-      type: 'pie',
-      data: {
-        labels: pieLabels,
-        datasets: [
-          {
-            data: pieValues,
-            backgroundColor: pieColors,
-            borderWidth: 1,
-          },
-        ],
+    // ---- TORTA ----
+const mapCat = {};
+(list || []).forEach((x) => {
+  const key = x.category || 'Sin categoría';
+  mapCat[key] = (mapCat[key] || 0) + Math.abs(Number(x.amount) || 0);
+});
+
+// color de texto según tema (auto/navy-ice)
+const textColor =
+  getComputedStyle(document.documentElement)
+    .getPropertyValue('--text')
+    .trim() || '#111827';
+
+state.charts.pie = new Chart(chartTortaEl, {
+  type: 'pie',
+  data: {
+    labels: Object.keys(mapCat),
+    datasets: [
+      {
+        data: Object.values(mapCat),
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: {
+        position: 'left',
+        labels: {
+          color: textColor,          // 🔹 ahora sigue el tema
+          padding: 12,
+          usePointStyle: true,
+          generateLabels(chart) {
+            const data = chart.data.datasets[0].data;
+            const labels = chart.data.labels;
+            const total = data.reduce((a, b) => a + b, 0);
 
-        plugins: {
-          legend: {
-            position: 'left',
-            labels: {
-              padding: 12,
-              usePointStyle: true,
-              generateLabels(chart) {
-                const data = chart.data.datasets[0].data;
-                const labels = chart.data.labels;
-                const total = data.reduce((a, b) => a + b, 0) || 1;
-
-                return labels.map((label, i) => {
-                  const value = data[i];
-                  const pct = ((value / total) * 100).toFixed(1);
-                  return {
-                    text: `${pct}% – ${label}`,
-                    fillStyle: chart.data.datasets[0].backgroundColor[i],
-                    strokeStyle: 'transparent',
-                    lineWidth: 0,
-                  };
-                });
-              },
-            },
-          },
-
-          tooltip: {
-            callbacks: {
-              label(context) {
-                const label = context.label || '';
-                const value = Number(context.raw || 0);
-                const data = context.chart.data.datasets[0].data;
-                const total = data.reduce((a, b) => a + b, 0) || 1;
-                const pct = ((value / total) * 100).toFixed(1);
-                return `${label}: ${value} (${pct}%)`;
-              },
-            },
+            return labels.map((label, i) => {
+              const value = data[i];
+              const pct = ((value / total) * 100).toFixed(1);
+              return {
+                text: `${pct}% – ${label}`,
+                fillStyle:
+                  chart.data.datasets[0].backgroundColor?.[i] || '#ccc',
+                strokeStyle: 'transparent',
+                lineWidth: 0,
+              };
+            });
           },
         },
+      },
 
-        layout: {
-          padding: { left: 20 },
+      tooltip: {
+        callbacks: {
+          label(context) {
+            const label = context.label || '';
+            const value = context.raw || 0;
+            const data = context.chart.data.datasets[0].data;
+            const total = data.reduce((a, b) => a + b, 0);
+            const pct = ((value / total) * 100).toFixed(1);
+            return `${label}: ${value} (${pct}%)`;
+          },
         },
       },
-    });
+    },
+
+    layout: { padding: { left: 20 } },
+  },
+});
 
     // ====================================================
     //  BARRAS POR FECHA (DÍA / SEMANA / MES)
@@ -170,7 +172,7 @@
     });
   }
 
-  
+
   function actualizarModoVista(modo) {
     const {
       chartContainer,
