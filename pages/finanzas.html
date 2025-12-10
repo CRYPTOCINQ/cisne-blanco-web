@@ -4,10 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cisne Blanco — Finanzas</title>
-  <link rel="icon" href="../assets/favicon.png" type="image/png" />
+  <link rel="icon" href="../assets/favicon.ico" />
   <link rel="stylesheet" href="../assets/css/main.css?v=1401.1" />
-
-  <script src="../assets/js/theme.js"></script>
 </head>
 
 <body class="transition-theme">
@@ -186,18 +184,52 @@
 
 </main>
 
+
+<!-- ===========================================================
+     TOGGLE TEMA (lo dejamos igual)
+=========================================================== -->
+<script>
+(function () {
+  const root = document.documentElement;
+  const KEY = 'theme';
+  const btn = document.getElementById('themeToggle');
+  const lab = document.getElementById('themeLabel');
+
+  function apply(val) {
+    if (val === 'navy-ice') {
+      root.setAttribute('data-theme', 'navy-ice');
+    } else {
+      root.removeAttribute('data-theme');
+    }
+    lab.textContent = val || 'auto';
+  }
+
+  const saved = localStorage.getItem(KEY) || 'auto';
+  apply(saved);
+
+  btn.onclick = () => {
+    const current = localStorage.getItem(KEY) || 'auto';
+    const next = current === 'navy-ice' ? 'auto' : 'navy-ice';
+    localStorage.setItem(KEY, next);
+    apply(next);
+  };
+})();
+</script>
+
+
 <!-- ========= Librerías externas ========= -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script src="../assets/js/theme.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <!-- ========= Módulos Finanzas ========= -->
-<script src="./js/finanzas.core.js" defer></script>
-<script src="./js/finanzas.ui.js" defer></script>
-<script src="./js/finanzas.charts.js" defer></script>
-<script src="./js/finanzas.export.js" defer></script>
-<script src="./js/finanzas.modals.js" defer></script>
-<script src="./js/finanzas.main.js" defer></script>
+<script src="./js/finanzas.core.js"></script>
+<script src="./js/finanzas.ui.js"></script>
+<script src="./js/finanzas.charts.js"></script>
+<script src="./js/finanzas.export.js"></script>
+<script src="./js/finanzas.modals.js"></script>
+<script src="./js/finanzas.main.js"></script>
 
 <style>
   [data-theme="navy-ice"] #chartTorta,
