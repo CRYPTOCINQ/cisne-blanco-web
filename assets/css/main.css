@@ -407,4 +407,11 @@ dialog input[type="time"]{
 .fin-view-ambos #chartTorta { display: block !important; }
 .fin-view-ambos #chartBarras { display: block !important; }
 
+/* === Legend de Chart.js en NAVY-ICE === */
+[data-theme="navy-ice"] .chartjs-legend li span,
+[data-theme="navy-ice"] .chartjs-legend li {
+  color: #e9f2ff !important;     /* texto claro */
+  font-weight: 500;
+}
+
 /* ================== Fin ================== */
