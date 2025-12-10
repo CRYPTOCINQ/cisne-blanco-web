@@ -355,4 +355,30 @@ dialog input[type="time"]{
   border-color: color-mix(in srgb, var(--card-border) 85%, transparent);
 }
 
+/* ============================
+   FINANZAS — MODO DE VISTA
+============================ */
+
+.fin-view-torta #chartContainer {
+  display: flex !important;
+}
+.fin-view-barras #chartContainer {
+  display: flex !important;
+}
+
+.fin-view-ambos #chartContainer {
+  display: grid !important;
+  grid-template-columns: 0.9fr 1.1fr !important;
+  gap: 1rem !important;
+}
+
+.fin-view-ambos #chartTorta {
+  max-width: 380px !important;
+  margin: 0 auto;
+}
+
+.fin-view-ambos #chartBarras {
+  max-width: 100% !important;
+}
+
 /* ================== Fin ================== */
