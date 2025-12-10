@@ -426,3 +426,43 @@ dialog input[type="time"]{
 }
 
 /* ================== Fin ================== */
+
+/* =========================================================
+   FIX GLOBAL — FLECHAS DE INPUT NUMBER (spinners)
+   ========================================================= */
+
+/* Comportamiento base: heredan color normal del sistema */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: .55;
+  filter: none;
+}
+
+/* NAVY-ICE → flechas claras y visibles */
+[data-theme="navy-ice"] input[type="number"] {
+  color-scheme: dark;
+}
+
+[data-theme="navy-ice"] input[type="number"]::-webkit-inner-spin-button,
+[data-theme="navy-ice"] input[type="number"]::-webkit-outer-spin-button {
+  filter: invert(1) brightness(1.3);
+  opacity: .9;
+}
+
+/* TEMA CLARO → flechas oscuras (para que nunca desaparezcan) */
+:root:not([data-theme="navy-ice"]) input[type="number"]::-webkit-inner-spin-button,
+:root:not([data-theme="navy-ice"]) input[type="number"]::-webkit-outer-spin-button {
+  filter: invert(0);
+  opacity: .75;
+}
+
+
+/* =========================================================
+   FIX LEGEND CHART.JS (TEXTO VISIBLE EN AMBOS TEMAS)
+   ========================================================= */
+
+.chartjs-legend li,
+.chartjs-legend li span {
+  color: var(--text) !important;
+  font-weight: 500;
+}
