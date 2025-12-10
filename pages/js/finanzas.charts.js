@@ -86,51 +86,40 @@
   }
 
   function actualizarModoVista(modo) {
-    const {
-      chartContainer,
-      chartTortaEl,
-      chartBarrasEl,
-      tabTortaEl,
-      tabBarrasEl,
-      tabAmbosEl,
-    } = state.elements;
+  const {
+    chartContainer,
+    tabTortaEl,
+    tabBarrasEl,
+    tabAmbosEl,
+  } = state.elements;
 
-    if (!chartContainer || !chartTortaEl || !chartBarrasEl) return;
+  if (!chartContainer) return;
 
-    state.modoActual = modo;
+  // Guardamos modo
+  state.modoActual = modo;
 
-    [tabTortaEl, tabBarrasEl, tabAmbosEl].forEach((btn) => {
-      if (btn) btn.classList.remove('btn--primary');
-    });
+  // Reseteo de botones
+  [tabTortaEl, tabBarrasEl, tabAmbosEl].forEach((btn) => {
+    if (btn) btn.classList.remove('btn--primary');
+  });
 
-    chartTortaEl.style.width = '100%';
-    chartBarrasEl.style.width = '100%';
+  if (modo === 'torta' && tabTortaEl) tabTortaEl.classList.add('btn--primary');
+  if (modo === 'barras' && tabBarrasEl) tabBarrasEl.classList.add('btn--primary');
+  if (modo === 'ambos' && tabAmbosEl) tabAmbosEl.classList.add('btn--primary');
 
-    if (modo === 'torta') {
-      if (tabTortaEl) tabTortaEl.classList.add('btn--primary');
-      chartContainer.style.display = 'flex';
-      chartContainer.style.gridTemplateColumns = '';
-      chartTortaEl.style.display = 'block';
-      chartBarrasEl.style.display = 'none';
-    } else if (modo === 'barras') {
-      if (tabBarrasEl) tabBarrasEl.classList.add('btn--primary');
-      chartContainer.style.display = 'flex';
-      chartContainer.style.gridTemplateColumns = '';
-      chartTortaEl.style.display = 'none';
-      chartBarrasEl.style.display = 'block';
-    } else if (modo === 'ambos') {
-      if (tabAmbosEl) tabAmbosEl.classList.add('btn--primary');
-      chartContainer.style.display = 'grid';
-      chartContainer.style.gridTemplateColumns = '1fr 1fr';
-      chartTortaEl.style.display = 'block';
-      chartBarrasEl.style.display = 'block';
-    }
+  // 🔥 NUEVO SISTEMA: manejado por CSS mediante clases globales
+  document.body.classList.remove('fin-view-torta', 'fin-view-barras', 'fin-view-ambos');
 
-    if (state.charts.pie) state.charts.pie.resize();
-    if (state.charts.bar) state.charts.bar.resize();
-  }
+  if (modo === 'torta') document.body.classList.add('fin-view-torta');
+  if (modo === 'barras') document.body.classList.add('fin-view-barras');
+  if (modo === 'ambos') document.body.classList.add('fin-view-ambos');
 
-  FinanzasApp.charts = {
+  // Resize gráficos
+  if (state.charts.pie) state.charts.pie.resize();
+  if (state.charts.bar) state.charts.bar.resize();
+}
+
+FinanzasApp.charts = {
     renderCharts,
     actualizarModoVista,
   };
