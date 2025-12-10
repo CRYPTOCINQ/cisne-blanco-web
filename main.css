@@ -124,34 +124,3 @@ a:hover{ color: var(--link-hover); }
 
 /* ============================================================================
    FINANZAS — SISTEMA DE VISTA (TORTA / BARRAS / AMBOS)
-============================================================================ */
-
-/* 🔥 Layout general por modo */
-.fin-view-torta #chartContainer,
-.fin-view-barras #chartContainer {
-  display: flex !important;
-  justify-content: center;
-  gap: 2rem;
-}
-
-.fin-view-ambos #chartContainer {
-  display: grid !important;
-  grid-template-columns: 360px 1fr !important;  /* torta fija + barras adaptables */
-  gap: 2rem !important;
-  align-items: center !important;
-}
-
-/* 🔥 Torta siempre tamaño fijo */
-#chartTorta {
-  width: 360px !important;
-  height: 360px !important;
-}
-
-/* 🔥 Barras adaptables */
-#chartBarras {
-  width: 100% !important;
-  height: 360px !important;
-}
-
-/* =================================================
-   FIN
