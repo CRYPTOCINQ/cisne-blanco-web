@@ -1,14 +1,24 @@
 // finanzas.charts.js
 (function (global) {
   const FinanzasApp = global.FinanzasApp;
+  if (!FinanzasApp) {
+    console.error('FinanzasApp no está definido en finanzas.charts.js');
+    return;
+  }
+
   const { state } = FinanzasApp;
+  state.charts = state.charts || { pie: null, bar: null };
 
   function renderCharts(list) {
-    const { chartTortaEl, chartBarrasEl, modoGraficoEl } = state.elements;
+    const {
+      chartTortaEl,
+      chartBarrasEl,
+      modoGraficoEl,
+    } = state.elements || {};
 
     if (!chartTortaEl || !chartBarrasEl || !modoGraficoEl) return;
 
-    // Destruir instancias anteriores
+    // --- destruir instancias previas ---
     if (state.charts.pie) {
       state.charts.pie.destroy();
       state.charts.pie = null;
@@ -18,122 +28,173 @@
       state.charts.bar = null;
     }
 
-    // ============================
-    //   GRÁFICO DE TORTA
-    // ============================
+    const dataList = list || [];
+
+    // ====================================================
+    //  TORTA POR CATEGORÍA
+    // ====================================================
     const mapCat = {};
-    (list || []).forEach((x) => {
-      const key = x.category || "Sin categoría";
+    dataList.forEach((x) => {
+      const key = x.category || 'Sin categoría';
       mapCat[key] = (mapCat[key] || 0) + Math.abs(Number(x.amount) || 0);
     });
 
+    const pieLabels = Object.keys(mapCat);
+    const pieValues = Object.values(mapCat);
+
+    // paleta sencilla (se repite si hay más categorías)
+    const pieColorsBase = [
+      '#3b82f6', // azul
+      '#ec4899', // rosa
+      '#f97316', // naranja
+      '#eab308', // amarillo
+      '#22c55e', // verde
+      '#a855f7', // violeta
+    ];
+    const pieColors = pieLabels.map((_, i) => pieColorsBase[i % pieColorsBase.length]);
+
     state.charts.pie = new Chart(chartTortaEl, {
-  type: 'pie',
-  data: {
-    labels: Object.keys(mapCat),
-    datasets: [{
-      data: Object.values(mapCat),
-    }],
-  },
-  options: {
-  responsive: true,
-  maintainAspectRatio: true,
-  plugins: {
-    legend: {
-      position: 'left',
-      labels: { padding: 12, usePointStyle: true }
-    }
-  },
-  layout: { padding: { left: 20 } }
-}
+      type: 'pie',
+      data: {
+        labels: pieLabels,
+        datasets: [
+          {
+            data: pieValues,
+            backgroundColor: pieColors,
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
 
-});
+        plugins: {
+          legend: {
+            position: 'left',
+            labels: {
+              padding: 12,
+              usePointStyle: true,
+              generateLabels(chart) {
+                const data = chart.data.datasets[0].data;
+                const labels = chart.data.labels;
+                const total = data.reduce((a, b) => a + b, 0) || 1;
 
-    // ============================
-    //   GRÁFICO DE BARRAS
-    // ============================
-    const modo = modoGraficoEl.value || "dia";
-    const isNavy =
-      document.documentElement.getAttribute("data-theme") === "navy-ice";
+                return labels.map((label, i) => {
+                  const value = data[i];
+                  const pct = ((value / total) * 100).toFixed(1);
+                  return {
+                    text: `${pct}% – ${label}`,
+                    fillStyle: chart.data.datasets[0].backgroundColor[i],
+                    strokeStyle: 'transparent',
+                    lineWidth: 0,
+                  };
+                });
+              },
+            },
+          },
 
+          tooltip: {
+            callbacks: {
+              label(context) {
+                const label = context.label || '';
+                const value = Number(context.raw || 0);
+                const data = context.chart.data.datasets[0].data;
+                const total = data.reduce((a, b) => a + b, 0) || 1;
+                const pct = ((value / total) * 100).toFixed(1);
+                return `${label}: ${value} (${pct}%)`;
+              },
+            },
+          },
+        },
+
+        layout: {
+          padding: { left: 20 },
+        },
+      },
+    });
+
+    // ====================================================
+    //  BARRAS POR FECHA (DÍA / SEMANA / MES)
+    // ====================================================
+    const modo = modoGraficoEl.value || 'dia';
     const mapFecha = {};
 
-    (list || []).forEach((x) => {
+    dataList.forEach((x) => {
       const d = x.date;
+      if (!d) return;
+
       let clave = d;
 
-      if (modo === "semana") {
+      if (modo === 'semana') {
         const dt = new Date(d);
-        const first = new Date(dt.setDate(dt.getDate() - dt.getDay()));
+        const first = new Date(dt);
+        first.setDate(dt.getDate() - dt.getDay());
         clave = first.toISOString().slice(0, 10);
-      } else if (modo === "mes") {
+      } else if (modo === 'mes') {
         clave = d.slice(0, 7);
       }
 
       if (!mapFecha[clave]) mapFecha[clave] = 0;
 
-      const val = (x.type === "ingreso" ? +x.amount : -x.amount) || 0;
+      const val = (x.type === 'ingreso' ? +x.amount : -x.amount) || 0;
       mapFecha[clave] += val;
     });
 
-    const labels = Object.keys(mapFecha).sort();
+    const barLabels = Object.keys(mapFecha).sort();
+    const barValues = barLabels.map((f) => mapFecha[f]);
 
     state.charts.bar = new Chart(chartBarrasEl, {
-      type: "bar",
+      type: 'bar',
       data: {
-        labels,
+        labels: barLabels,
         datasets: [
           {
-            label: "Balance",
-            data: labels.map((f) => mapFecha[f]),
-            backgroundColor: isNavy
-              ? "rgba(88,166,255,0.55)"
-              : "rgba(0,123,255,0.55)",
-            borderColor: isNavy
-              ? "rgba(88,166,255,1)"
-              : "rgba(0,123,255,1)",
-            borderWidth: 1.2,
+            label: 'Balance',
+            data: barValues,
+            backgroundColor: 'rgba(56, 189, 248, 0.7)',
+            borderColor: 'rgba(56, 189, 248, 1)',
+            borderWidth: 1,
           },
         ],
       },
-    options: {
-  responsive: true,
-  maintainAspectRatio: true,
-  scales: { y: { beginAtZero: true } }
-}
-});
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+      },
+    });
   }
 
-  // ===============================================================
-  //    CAMBIO DE MODO (TORTA / BARRAS / AMBOS) — CLASES CSS
-  // ===============================================================
+  
   function actualizarModoVista(modo) {
     const {
       chartContainer,
       tabTortaEl,
       tabBarrasEl,
       tabAmbosEl,
-    } = state.elements;
+    } = state.elements || {};
 
     if (!chartContainer) return;
 
     state.modoActual = modo;
 
-    [tabTortaEl, tabBarrasEl, tabAmbosEl].forEach((btn) =>
-      btn?.classList.remove("btn--primary")
-    );
+    [tabTortaEl, tabBarrasEl, tabAmbosEl].forEach((btn) => {
+      if (btn) btn.classList.remove('btn--primary');
+    });
 
-    if (modo === "torta") tabTortaEl?.classList.add("btn--primary");
-    if (modo === "barras") tabBarrasEl?.classList.add("btn--primary");
-    if (modo === "ambos") tabAmbosEl?.classList.add("btn--primary");
+    if (modo === 'torta' && tabTortaEl) tabTortaEl.classList.add('btn--primary');
+    if (modo === 'barras' && tabBarrasEl) tabBarrasEl.classList.add('btn--primary');
+    if (modo === 'ambos' && tabAmbosEl) tabAmbosEl.classList.add('btn--primary');
 
-    // NUEVO — control visual por clases globales
-    document.body.classList.remove(
-      "fin-view-torta",
-      "fin-view-barras",
-      "fin-view-ambos"
-    );
-    document.body.classList.add(`fin-view-${modo}`);
+    document.body.classList.remove('fin-view-torta', 'fin-view-barras', 'fin-view-ambos');
+    if (modo === 'torta') document.body.classList.add('fin-view-torta');
+    if (modo === 'barras') document.body.classList.add('fin-view-barras');
+    if (modo === 'ambos') document.body.classList.add('fin-view-ambos');
 
     if (state.charts.pie) state.charts.pie.resize();
     if (state.charts.bar) state.charts.bar.resize();
