@@ -407,6 +407,7 @@ dialog input[type="time"]{
 .fin-view-ambos #chartTorta { display: block !important; }
 .fin-view-ambos #chartBarras { display: block !important; }
 
+<<<<<<< HEAD
 /* === Legend de Chart.js en NAVY-ICE === */
 [data-theme="navy-ice"] .chartjs-legend li span,
 [data-theme="navy-ice"] .chartjs-legend li {
@@ -425,6 +426,8 @@ dialog input[type="time"]{
   opacity: 0.9;
 }
 
+=======
+>>>>>>> parent of e0e25d9 (Finanzas v1.4 — Estilos de leyenda optimizados + estabilidad en navy-ice)
 /* ================== Fin ================== */
 
 /* =========================================================
