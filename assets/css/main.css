@@ -407,24 +407,6 @@ dialog input[type="time"]{
 .fin-view-ambos #chartTorta { display: block !important; }
 .fin-view-ambos #chartBarras { display: block !important; }
 
-/* === Legend de Chart.js en NAVY-ICE === */
-[data-theme="navy-ice"] .chartjs-legend li span,
-[data-theme="navy-ice"] .chartjs-legend li {
-  color: #e9f2ff !important;     /* texto claro */
-  font-weight: 500;
-}
-
-/* NAVY-ICE: hacer visibles las flechas de inputs numéricos */
-[data-theme="navy-ice"] input[type="number"] {
-  color-scheme: dark;
-}
-
-[data-theme="navy-ice"] input[type="number"]::-webkit-inner-spin-button,
-[data-theme="navy-ice"] input[type="number"]::-webkit-outer-spin-button {
-  filter: invert(1) brightness(1.8) contrast(1.2);
-  opacity: 0.9;
-}
-
 /* ================== Fin ================== */
 
 /* =========================================================
