@@ -4,8 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cisne Blanco — Finanzas</title>
-  <link rel="icon" href="../assets/favicon.ico" />
+  <link rel="icon" href="../assets/favicon.png" type="image/png" />
   <link rel="stylesheet" href="../assets/css/main.css?v=1401.1" />
+
+  <script src="../assets/js/theme.js"></script>
 </head>
 
 <body class="transition-theme">
@@ -87,7 +89,6 @@
     <h2 style="margin:0;">Movimientos</h2>
     <div id="listaMovimientos" class="surface" style="margin-top:.5rem;padding:1rem;"></div>
   </section>
-
 
   <!-- ========= Gráficos ========= -->
   <section style="margin-top:1rem;">
@@ -187,26 +188,6 @@
 
 <!-- ===========================================================
      TOGGLE TEMA (lo dejamos igual)
-=========================================================== -->
-<script>
-(function () {
-  const root = document.documentElement;
-  const KEY = 'theme';
-  const btn = document.getElementById('themeToggle');
-  const lab = document.getElementById('themeLabel');
-
-  function apply(val) {
-    if (val === 'navy-ice') {
-      root.setAttribute('data-theme', 'navy-ice');
-    } else {
-      root.removeAttribute('data-theme');
-    }
-    lab.textContent = val || 'auto';
-  }
-
-  const saved = localStorage.getItem(KEY) || 'auto';
-  apply(saved);
-
   btn.onclick = () => {
     const current = localStorage.getItem(KEY) || 'auto';
     const next = current === 'navy-ice' ? 'auto' : 'navy-ice';
@@ -216,6 +197,7 @@
 })();
 </script>
 
+</main>
 
 <!-- ========= Librerías externas ========= -->
 <script src="../assets/js/theme.js"></script>
