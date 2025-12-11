@@ -1,4 +1,4 @@
-// finanzas.main.js
+// finanzas.main.js — versión estable corregida
 (function (global) {
   const FinanzasApp = global.FinanzasApp;
   const { state, utils } = FinanzasApp;
@@ -20,9 +20,12 @@
       btnAdd: $('btnAdd'),
       btnExport: $('btnExport'),
 
+      // Botones de vista (quedan, pero sin lógica de gráficos)
       tabTortaEl: $('tabTorta'),
       tabBarrasEl: $('tabBarras'),
       tabAmbosEl: $('tabAmbos'),
+
+      // Gráficos
       chartContainer: $('chartContainer'),
       chartTortaEl: $('chartTorta'),
       chartBarrasEl: $('chartBarras'),
@@ -34,8 +37,9 @@
     const list = utils.aplicarFiltros(state.data, state.filtros);
     FinanzasApp.ui.renderTotales(list);
     FinanzasApp.ui.renderLista(list);
+
+    // Solo renderCharts (versión estable)
     FinanzasApp.charts.renderCharts(list);
-    FinanzasApp.charts.actualizarModoVista(state.modoActual || 'torta');
   }
 
   function bindEventos() {
@@ -52,14 +56,17 @@
       modoGraficoEl,
     } = state.elements;
 
+    // Alta de movimiento
     if (btnAdd) {
       btnAdd.onclick = FinanzasApp.modals.abrirModalAlta;
     }
 
+    // Exportar
     if (btnExport) {
       btnExport.onclick = FinanzasApp.exportar.exportar;
     }
 
+    // Filtros
     if (filtroCatEl) {
       filtroCatEl.onchange = () => {
         state.filtros.categoria = filtroCatEl.value;
@@ -84,31 +91,33 @@
     if (btnLimpiarFiltros) {
       btnLimpiarFiltros.onclick = () => {
         state.filtros = { categoria: '', desde: '', hasta: '' };
-        if (filtroCatEl) filtroCatEl.value = '';
-        if (filtroDesdeEl) filtroDesdeEl.value = '';
-        if (filtroHastaEl) filtroHastaEl.value = '';
+        filtroCatEl.value = '';
+        filtroDesdeEl.value = '';
+        filtroHastaEl.value = '';
         refresh();
       };
     }
 
+    // --- Vista de gráficos (desactivada porque tu charts.js estable no la usa) ---
+
     if (tabTortaEl) {
       tabTortaEl.onclick = () => {
-        state.modoActual = 'torta';
-        FinanzasApp.charts.actualizarModoVista('torta');
+        // función eliminada en la versión estable
+        refresh();
       };
     }
 
     if (tabBarrasEl) {
       tabBarrasEl.onclick = () => {
-        state.modoActual = 'barras';
-        FinanzasApp.charts.actualizarModoVista('barras');
+        // función eliminada en la versión estable
+        refresh();
       };
     }
 
     if (tabAmbosEl) {
       tabAmbosEl.onclick = () => {
-        state.modoActual = 'ambos';
-        FinanzasApp.charts.actualizarModoVista('ambos');
+        // función eliminada en la versión estable
+        refresh();
       };
     }
 
@@ -120,22 +129,23 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    // Cargar datos
+    // Cargar datos (si querés ignorar localStorage mañana lo ajustamos)
     state.data = utils.load() || [];
 
-    // Bind DOM
+    // Bind de elementos
     bindElements();
 
-    // Inicializar modales (movimientos + trading)
+    // Inicializar modales
     FinanzasApp.modals.initModals();
 
-    // Exponer refresh para modals
+    // Exponer refresh para los modales
     FinanzasApp.refresh = refresh;
 
-    // Eventos
+    // Bind eventos UI
     bindEventos();
 
-    // Primera carga
+    // Primera renderización
     refresh();
   });
+
 })(window);
