@@ -1,10 +1,8 @@
 // finanzas.charts.js
 (function (global) {
   const FinanzasApp = global.FinanzasApp;
-  
   const { state } = FinanzasApp;
 
-  
   function renderCharts(list) {
     const { chartTortaEl, chartBarrasEl, modoGraficoEl } = state.elements;
     if (!chartTortaEl || !chartBarrasEl) return;
@@ -16,7 +14,7 @@
     const dataList = list || [];
 
     // ==========================
-    //   MAPA PARA LA TORTA
+    //   MAPA TORTA
     // ==========================
     const mapCat = {};
     dataList.forEach((x) => {
@@ -26,9 +24,12 @@
 
     const pieLabels = Object.keys(mapCat);
     const pieValues = Object.values(mapCat);
+    const totalPie = pieValues.reduce((a, b) => a + b, 0);
 
-    // Colores
-    const pieColors = ["#3b82f6", "#ec4899", "#f97316", "#eab308", "#22c55e", "#a855f7"];
+    const pieColors = [
+      "#3b82f6", "#ec4899", "#f97316",
+      "#eab308", "#22c55e", "#a855f7"
+    ];
 
     // ==========================
     //   CHART TORTA
@@ -40,26 +41,26 @@
         datasets: [
           {
             data: pieValues,
-            backgroundColor: pieLabels.map((_, i) => pieColors[i % pieColors.length]),
+            backgroundColor: pieLabels.map((_, i) => pieColors[i % pieColors.length])
           },
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-
         plugins: {
           legend: {
             position: "left",
             labels: {
-              color: getComputedStyle(document.body).color,
+              usePointStyle: true,
+              padding: 12,
               generateLabels(chart) {
                 const data = chart.data.datasets[0].data;
-                const total = data.reduce((a, b) => a + b, 0);
+                const labels = chart.data.labels;
 
-                return chart.data.labels.map((label, i) => {
+                return labels.map((label, i) => {
                   const value = data[i];
-                  const pct = ((value / total) * 100).toFixed(1);
+                  const pct = ((value / totalPie) * 100).toFixed(1);
                   return {
                     text: `${pct}% — ${label}`,
                     fillStyle: chart.data.datasets[0].backgroundColor[i],
@@ -76,13 +77,14 @@
               label(context) {
                 const label = context.label;
                 const value = context.raw;
-                const data = context.chart.data.datasets[0].data;
-                const total = data.reduce((a, b) => a + b, 0);
-                const pct = ((value / total) * 100).toFixed(1);
+                const pct = ((value / totalPie) * 100).toFixed(1);
                 return `${label}: ${value} (${pct}%)`;
               },
             },
           },
+        },
+        layout: {
+          padding: { left: 10 }
         },
       },
     });
@@ -90,6 +92,8 @@
     // ==========================
     //   CHART BARRAS
     // ==========================
+
+    const isNavy = document.body.dataset.theme === "navy-ice";
     const modo = modoGraficoEl.value;
     const mapFecha = {};
 
@@ -127,24 +131,38 @@
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          x: { ticks: { color: getComputedStyle(document.body).color }},
-          y: { ticks: { color: getComputedStyle(document.body).color }},
+          x: {
+            ticks: { color: isNavy ? "#E9F2FF" : "#111" }
+          },
+          y: {
+            ticks: { color: isNavy ? "#E9F2FF" : "#111" }
+          },
         },
         plugins: {
-          legend: { labels: { color: getComputedStyle(document.body).color }},
+          legend: {
+            labels: { color: isNavy ? "#E9F2FF" : "#111" },
+          },
         },
       },
     });
   }
 
-
+  // ==========================
+  //   MODO DE VISTA
+  // ==========================
   function actualizarModoVista(modo) {
-    const { chartContainer, tabTortaEl, tabBarrasEl, tabAmbosEl } = state.elements;
+    const { tabTortaEl, tabBarrasEl, tabAmbosEl } = state.elements;
 
-    document.body.classList.remove("fin-view-torta", "fin-view-barras", "fin-view-ambos");
+    document.body.classList.remove(
+      "fin-view-torta",
+      "fin-view-barras",
+      "fin-view-ambos"
+    );
     document.body.classList.add(`fin-view-${modo}`);
 
-    [tabTortaEl, tabBarrasEl, tabAmbosEl].forEach((b) => b?.classList.remove("btn--primary"));
+    [tabTortaEl, tabBarrasEl, tabAmbosEl].forEach((b) =>
+      b?.classList.remove("btn--primary")
+    );
     if (modo === "torta") tabTortaEl.classList.add("btn--primary");
     if (modo === "barras") tabBarrasEl.classList.add("btn--primary");
     if (modo === "ambos") tabAmbosEl.classList.add("btn--primary");
@@ -155,4 +173,5 @@
 
   FinanzasApp.charts = { renderCharts, actualizarModoVista };
   global.FinanzasApp = FinanzasApp;
+
 })(window);
